@@ -7,7 +7,7 @@ const log = require("electron-log");
 const { autoUpdater } = require('electron-updater');
 
 // Backend
-const { cleanUp } = require('./backend');
+require('./backend');
 
 // Autoupdater Debug Setup
 autoUpdater.logger = log
@@ -50,7 +50,7 @@ function createWindow() {
             preload: path.join(__dirname, "preload.js"), // use a preload script,
         },
 
-        title: "Mirage School Software"
+        title: "Mirage Software"
     });
 
     // In production, set the initial browser path to the local bundle generated
@@ -59,7 +59,7 @@ function createWindow() {
 
     const appUrl = app.isPackaged ?
         `file://${path.join(__dirname, '../build/index.html')}` :
-        "http://localhost:3000";
+        "http://localhost:8090";
 
     mainWindow.setBackgroundColor("#563d7c");
     mainWindow.loadURL(appUrl);
@@ -94,9 +94,6 @@ function createWindow() {
     mainWindow.on('close',()=>{
         console.log("Closing app....")
         if (!app.isPackaged) return
-        // only runs when app is packed
-        // to avaoid always login in development
-        cleanUp()
     })
 
     // mainWindow.isDestroyed
@@ -120,7 +117,7 @@ function loadLauncher() {
         title: 'Launching Mirage School Software',
     });
 
-    const appUrl = `file://${path.join(__dirname, 'Launcher','launcher.html')}`
+    const appUrl = `file://${path.join(__dirname,'launcher.html')}`
 
     launcher_win.loadURL(appUrl);
     if (!app.isPackaged) {
@@ -172,17 +169,6 @@ app.on('ready', async () => {
             await launchApp()
         }
     });
-
-    // let appDir = app.getPath('userData');
-    // const app_data_dir = path.join(appDir, "data")
-
-    // protocol.registerFileProtocol('mirage', (request, callback) => {
-    //     // console.log("Received URL", request.url)
-    //     const url = request.url.substr(9)
-    //     let cb = path.normalize(`${app_data_dir}/${url.replaceAll('--','\\')}`)
-
-    //     callback({ path: cb })
-    // });
 
     autoUpdater.checkForUpdates()
         .then(res => {

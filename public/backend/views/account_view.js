@@ -13,8 +13,6 @@ class Account {
 
             const {username, ...rest} = user;
 
-
-
             let doc = await accountsDb.update({ username }, {username, ...rest}, {upsert:true});
 
             return doc;
@@ -44,7 +42,7 @@ class Account {
 
         }
 
-        this.query = async (query) => {
+        this.query = async (query={}) => {
 
             let doc = await accountsDb.find({ ...query });
 

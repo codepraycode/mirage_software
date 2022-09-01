@@ -5,15 +5,13 @@ import { statuses } from '../constants/statuses';
 
 const initialState = {
     status: statuses.idle, // 'idle' | 'loading' | 'loaded' |'failed'
+    error: null,
     
     // Settings
     school:null,
-    software:null,
     sessions: null,
     subjects: null,
     staffs: null,
-
-    error:null,
 }
 
 
@@ -21,17 +19,13 @@ const initialState = {
 export const loadSettings = createAsyncThunk('settings/loadSettings', async () => {
     const app_settings = await window.api.request(settings_channel.all);
 
-    // return {
-    //     school: school_setting,
-    //     software: software_setting
-    // }
     return app_settings;
 })
 
-export const updateSettings = createAsyncThunk('settings/updateSettings', async (setting_data) => {
-    await window.api.request(settings_channel.initialize, setting_data)
-    return setting_data;
-})
+// export const updateSettings = createAsyncThunk('settings/updateSettings', async (setting_data) => {
+//     await window.api.request(settings_channel.initialize, setting_data)
+//     return setting_data;
+// })
 
 const settingsSlice = createSlice({
     name:'settings',
@@ -66,16 +60,16 @@ const settingsSlice = createSlice({
             })
 
             // Update Instance
-            .addCase(updateSettings.fulfilled, (state, action) => {
-                state.status = 'loaded'
+            // .addCase(updateSettings.fulfilled, (state, action) => {
+            //     state.status = 'loaded'
 
-                state = {...state,...action.payload};
+            //     state = {...state,...action.payload};
 
-            })
-            .addCase(updateSettings.rejected, (state, action) => {
-                state.status = 'failed'
-                state.error = action.error.message;
-            })
+            // })
+            // .addCase(updateSettings.rejected, (state, action) => {
+            //     state.status = 'failed'
+            //     state.error = action.error.message;
+            // })
     }
 });
 
@@ -85,14 +79,13 @@ const settingsSlice = createSlice({
 
 
 // Selectors
-export const getSettingsSoftware = (state)=>state.settings.software;
 export const getSettingsSchool = (state)=>state.settings.school;
 export const getSettingsSessions = (state) => state.settings.sessions;
 export const getSettingsSubjects = (state) => state.settings.subjects;
 export const getSettingsStaffs = (state) => state.settings.staffs;
 
 
-export const getInstanceError = (state) => state.settings.error;
+export const getSettingsError = (state) => state.settings.error;
 export const getSettingsStatus = (state) => state.settings.status;
 
 export default settingsSlice.reducer;

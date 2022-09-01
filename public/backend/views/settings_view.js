@@ -7,7 +7,6 @@ class Settings {
 
     __settings_pattern = {
         school:'school',
-        software:'software',
         sessions:'sessions',
         subjects: 'subjects',
         staffs: 'staffs',
@@ -84,7 +83,7 @@ class Settings {
         }
 
 
-        this.reset = () => {
+        this.reset = async() => {
             // Set everything to null
             for (let field in this.__settings_pattern) {                
 
@@ -95,7 +94,8 @@ class Settings {
                 }
 
                 // add it to the settings
-                await settingsDb.insert(st_dt)
+                await settingsDb.remove({},{multi:true});
+                await settingsDb.insert(st_dt);
             }
 
             return 

@@ -6,14 +6,7 @@ const path = require('path');
 
 const appUserDir = app.getPath('documents');
 
-// In Production, use userData path to store db
-// in Development, use the public folder
-const isPacked = app.isPackaged;
-
-const app_db_dir = path.join(appUserDir, "mirage_software_data", "db")
-
-// isPacked ? 
-//         path.join(appUserDir, "mrgdt","db") : path.join(__dirname,'../../data/db')
+const app_db_dir = path.join(appUserDir, ".mirage_software_data", "db")
 
 
 const dbFactory = (db_name)=>{

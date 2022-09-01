@@ -42,7 +42,11 @@ class SchoolSet {
             // update the data
             const updated_data = { ...prev_set_data, ...data }
 
-            await setsDb.update({ _id }, updated_data)
+            try{
+                await setsDb.update({ _id }, updated_data)
+            }catch (err){
+                console.error(err);
+            }
 
             return updated_data
 
@@ -100,15 +104,11 @@ class SchoolSet {
         this.save_student = async(set_id, data)=>{
             // student_data.set_id = set_id;
             
-            if (Array.isArray(data)){
-                return await Promise.all(data.map(async (student_data) => {
-                    const { _id } = student_data
-                    return await studentsDb.update({ _id }, { ...student_data, set_id }, { upsert: true })
-                }));
-            }
             const { _id } = data;
 
-            return await studentsDb.update({ _id }, { ...data, set_id}, {upsert:true});
+            await studentsDb.update({ _id }, { ...data, set_id}, {upsert:true});
+
+            return { ...data, set_id }
 
         }
 

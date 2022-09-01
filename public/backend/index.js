@@ -1,25 +1,13 @@
 const { ipcMain} = require('electron');
 
 // Views
-const { Settings, Account, SchoolSet, AcademicSessions } = require('./views');
-const { Activity } = require('./activity_log');
+const { Settings, Account, SchoolSet, Sessions } = require('./views');
 
 
 const settings = new Settings()
 const account = new Account()
 const schoolset = new SchoolSet()
-const academicSession = new AcademicSessions();
-
-const activity_log = new Activity()
-
-
-ipcMain.handle("activity:log", async (_e, log) => {
-
-    const { auth_id, info, ref } = log
-    await activity_log.write(auth_id, info, ref);
-
-    return null
-});
+const academicSession = new Sessions();
 
 
 // Portal
@@ -28,6 +16,7 @@ ipcMain.handle("activity:log", async (_e, log) => {
     When app is launched, settings module creates all the settings templates
     if they don't exists, and returns true otherwise error.
 */
+
 ipcMain.handle("settings:start", async () => {
     
 
@@ -43,25 +32,14 @@ ipcMain.handle("settings:start", async () => {
 })
 
 
-ipcMain.handle("settings:initialize",async(_event,initializing_data)=>{
-
-    console.log(initializing_data)
+ipcMain.handle("settings:initialize",async(_event,school_info)=>{
     
-   
-    // Extract school data and slot
-    const {school,software} = initializing_data;
 
     // add school data to settings
 
-    await settings.update('school', school)
-
-    // add slot to settings
-
-    await settings.update('software', software)
+    await settings.update('school', school_info)
 
     return true
-
-
 
 })
 
@@ -74,21 +52,9 @@ ipcMain.handle("settings:all",async()=>{
     return data
 })
 
-ipcMain.handle("settings:instance",async()=>{
-
-    // Get settings school collection
-
-    const school_data = await settings.get('school')
-
-    const software_data = await settings.get('software')
 
 
-
-    return [school_data, software_data]
-})
-
-
-
+// ================= Account =======================
 ipcMain.handle("account:new", async (_e, user_data) => {
 
     /* 
@@ -115,197 +81,34 @@ ipcMain.handle("account:new", async (_e, user_data) => {
     return 
 })
 
+ipcMain.handle("account:authenticate", async (_e, auth_data) => {
 
-ipcMain.handle("account:upsert", async (_e, user_data) => {
-
-    /* 
-        Add new user after registered with core, or update a user
-
-
-        data sample {
-            "prefix":"Mr.",
-            "firstname":"Paul",
-            "lastname":"Harris",
-            "email":"greeneana@ford.info",
-            "contacts":"001-050-793-9951",
-            "username":"tara71",
-            "password":"*******"
-        }
-    */
-
-
-    // delete user_data.school_key
-
-    const {username} = user_data;
-
-    await account.upsert({username},user_data)
-
-    return
+    return await account.authenticate(auth_data);
 });
 
-ipcMain.handle("account:remove", async (_e, {username}) => {
+ipcMain.handle("account:check_password", async (_e, { user_id,password}) => {
 
-    await account.delete({ username })
+    if (!Boolean(user_id) || !Boolean(password)) return false;
 
-    return
-});
+    const user_query = await account.query({ _id:user_id});
 
-
-ipcMain.handle("account:login", async (_e, login_data) => {
-
-    /* 
-        Logs in user, first check if username/email exists
-        then create an authentication log
-
-        returns an array [error_string||null, authentication_log]
-    */
-
-    const {username_email, username,email,password} = login_data;
-
-    let user = null;
-
-    if(username){
-        user = await account.query({ username: username })
-    }else if(email){
-        user = await account.query({ email: email })
-    }else{
-        // check for both
-
-        // verify username or email exists
-        const username_exists = await account.__exists({ username: username_email })
-        // run validations
-        if (!username_exists) {
-
-            const email_exists = await account.__exists({ email: username_email })
-
-            if (email_exists){
-
-                user = await account.query({ email: username_email })
-
-            }
-            
-        } else {
-
-            user = await account.query({ username: username_email })
-
-        }    
-    }
- 
-
-
-    if(user===null){
-        return ["Invalid username or email", null]
-    }
-    
+    if (!Boolean(user_query) || user_query?.length < 1) return false;
     
 
-    // compare password
-    const password_match = user.password === password;
+    const user = user_query[0];
 
-    if (!password_match) return ["Password does not match",null];
-    
-    // create auth log
-    const user_id = user._id;
-
-    const auth_log = await account.newAuthlog(user_id)
-
-
-    const { _id, logged_in, } = auth_log;
-
-    const auth_data = {
-        auth_id:_id,
-        logged_in,
-        
-        user_id,
-        user_pk: user.id,
-        avatar:user.avatar,
-        username:user.username,
-        email:user.email,
-        //avatar
-    }
-
-    return [null, auth_data]
+    return user.password === password;
 
 })
 
-
-ipcMain.handle("account:check_password", async (_e, { auth_log,password}) => {
-
-    /* 
-        Receive active auth_log, get the user from the auth log
-        get the user password, compare password
-        and return comparison result
-    */
-
-    if (!Boolean(auth_log) || !Boolean(password)) return false;
-
-    const isSame = await account.check_password({ auth_log,password});
-
-    return isSame;
-
-})
-
-ipcMain.handle("account:exists", async () => {
-
-    /* 
-        Logs in user, first check if username/email exists
-        then create an authentication log
-
-        returns an array [error_string||null, authentication_log]
-    */
+ipcMain.handle("account:all", async () => {    
 
     // verify username or email exists
-    const _exists = await account.__exists();
+    const users = await account.query();
 
-    return _exists
+    return users;
 
 })
-
-ipcMain.handle("account:running", async () => {
-
-    // Get the Session that is still alive
-    // a auth session is still alive when there is no logged_out date
-
-    const last_seen_log = await account.getLastActiveAuthlog()
-
-    if (!last_seen_log) return null
-
-
-    const { _id, logged_in, user:user_id } = last_seen_log;
-
-    const user = await account.get(user_id);
-
-    if (!user){
-
-        await account.closeAuthlog(_id)
-        return null
-    }
-
-
-    const auth_data = {
-        auth_id: _id,
-        logged_in,
-
-        user_id,
-        user_pk:user.id,
-        avatar: user.avatar,
-        username: user.username,
-        email: user.email,
-        //avatar
-    }
-
-    return auth_data;
-
-    
-})
-
-
-ipcMain.handle("account:logout", async (_e,auth_id) => {
-    // Close an authtication log
-    await account.closeAuthlog(auth_id)
-
-    return null
-});
 
 
 // ================= Set =======================
@@ -327,43 +130,54 @@ ipcMain.handle("set:new", async (_e, set_data) => {
         }
     */
 
-
-    await schoolset.new(set_data)
-
-    return
+    try{
+        const data = await schoolset.create(set_data)
+        
+        return [null, data];
+    }
+    catch (err){
+        return [err.message, null];
+    }
 })
 
+ipcMain.handle("set:all", async () => {
 
-ipcMain.handle("set:save_students", async (_e,admission_instances_raw) => {
+    return await schoolset.all();
+})
+
+ipcMain.handle("set:update", async (_e, {set_id, set_data}) => {
+
+    return await schoolset.update(set_id, set_data);
+})
+
+// ================= Student =======================
+ipcMain.handle("set:save_student", async (_e,{set_id, data}) => {
     // fetch school tha is_opened
 
-    const admission_instances = JSON.parse(admission_instances_raw)
-
-    const doc = await schoolset.save_students(admission_instances)
+    const doc = await schoolset.save_student(set_id,data);
     
     return doc
 });
-
-
-ipcMain.handle("set:all", async () => {
+ipcMain.handle("set:save_sponsor", async (_e, { student_id, data }) => {
     // fetch school tha is_opened
 
-    // const admission_instances = JSON.parse(admission_instances_raw)
+    const doc = await schoolset.save_sponsor(student_id, data);
 
-    const docs = await schoolset.all();
+    return doc
+});
+
+ipcMain.handle("set:load_students", async (_e, set_id) => {
+
+    const docs = await schoolset.load_students(set_id)
 
     return docs;
 });
 
+ipcMain.handle("set:load_admitted_students", async (_e, set_id) => {
 
-ipcMain.handle("set:load_students", async (_e, set_id) => {
-    // fetch school tha is_opened
+    const docs = await schoolset.load_admitted_students(set_id)
 
-    // const admission_instances = JSON.parse(admission_instances_raw)
-
-    const doc = await schoolset.load_students(set_id)
-
-    return doc
+    return docs;
 });
 
 // ============================================
@@ -400,33 +214,5 @@ ipcMain.handle("session:all", async () => {
 });
 
 
-// ipcMain.handle("set:load_students", async (_e, set_id) => {
-//     // fetch school tha is_opened
-
-//     // const admission_instances = JSON.parse(admission_instances_raw)
-
-//     const doc = await schoolset.load_students(set_id)
-
-//     return doc
-// });
-
 // ============================================
 
-
-// Methods to be used within app native events
-const cleanUp = async () => {
-    // Hooked in the close event of the app window
-    // auto logs out authenticated user
-    
-    const last_seen_log = await account.getLastActiveAuthlog()
-    
-    if (!last_seen_log) return null
-
-    await account.closeAuthlog(last_seen_log._id)
-
-    return
-}
-
-module.exports = {
-    cleanUp
-}

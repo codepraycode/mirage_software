@@ -10,6 +10,7 @@ module.exports = {
         clean: true,
     },
     devtool: "source-map",
+    devServer:{port:8090,},
     module: {
         rules: [
             {
