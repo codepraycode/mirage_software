@@ -43,9 +43,11 @@ const settingsSlice = createSlice({
                 state.error = null;
             })
             .addCase(loadSettings.fulfilled, (state, action) => {
-                state.status = 'loaded'
+                state.status = 'loaded';
 
                 const settings = action.payload;
+
+                console.log(settings);
 
                 state.software = settings.software || null;
                 state.school = settings.school || null;

@@ -12,6 +12,24 @@ class Settings {
         staffs: 'staffs',
     }
 
+    /* 
+        * School data
+        {
+            - logo: str,
+            - name: str,
+            - description: str,
+            - motto: str,
+            - address: str,
+            - state: str,
+            - city: str,
+            - zipcode: str,
+            - country: str,
+            - contacts: str,
+            - email: str,
+            - website: str,
+        }
+    */
+
 
     constructor() {
 

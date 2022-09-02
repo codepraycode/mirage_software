@@ -1,7 +1,7 @@
 const { ipcMain} = require('electron');
 
 // Views
-const { Settings, Account, SchoolSet, Sessions } = require('./views');
+const { Settings, Account, SchoolSet, Sessions, app_files_dir } = require('./views');
 
 
 const settings = new Settings()
@@ -216,3 +216,4 @@ ipcMain.handle("session:all", async () => {
 
 // ============================================
 
+module.exports = { app_files_dir };

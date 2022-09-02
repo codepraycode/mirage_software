@@ -4,9 +4,11 @@ const path = require('path');
 
 // =============== SETUP ==================
 
-const appUserDir = app.getPath('documents');
+const appDocumentDir = app.getPath('documents');
+const app_data_dir = path.join(appDocumentDir, ".mirage_software_data")
 
-const app_db_dir = path.join(appUserDir, ".mirage_software_data", "db")
+const app_db_dir = path.join(app_data_dir, "db")
+const app_files_dir = path.join(app_data_dir, "files");
 
 
 const dbFactory = (db_name)=>{
@@ -26,6 +28,7 @@ const dbFactory = (db_name)=>{
 
 module.exports = {
     dbFactory,
+    app_files_dir,
 }
 
 

@@ -1,11 +1,13 @@
 // Screens
-const homeUrl = "/"
+const setupUrl = "/"
+const homeUrl = "/home"
 const authUrl = "/auth"
+const initializeUrl = "/initialize"
 
 // actions
 const loginUrl = "/auth/login"
 const newUserUrl = "/auth/new"
 
 export {
-    homeUrl,authUrl,loginUrl, newUserUrl 
+    homeUrl, authUrl, loginUrl, newUserUrl, initializeUrl, setupUrl
 }

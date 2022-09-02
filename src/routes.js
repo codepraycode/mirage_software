@@ -1,15 +1,15 @@
 import React,{Suspense} from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
-import { authUrl, homeUrl, loginUrl } from './constants/app_urls';
+import { authUrl, setupUrl, initializeUrl } from './constants/app_urls';
 
 
 import Preloader from './widgets/Preloader';
 
+import SetupScreen from './screens/Setup';
 import Authentication from './screens/Authentication';
 
-// Authentication
+const Initialization = React.lazy(()=> import ('./screens/Initialization'));
 const Home = React.lazy(() => import('./screens/Home'));
-const CreateAccount = React.lazy(() => import('./pages/CreateAccount'));
 
 
 const AppRoutes = ()=>{
@@ -20,12 +20,14 @@ const AppRoutes = ()=>{
                 <Route path={authUrl} element={<Authentication/>}/>
                 <Route path={`${authUrl}/:side`} element={<Authentication />} />
 
+                <Route path={`${initializeUrl}`} element={<Initialization />} />
+
 
                 <Route 
-                    path={homeUrl} 
+                    path={setupUrl} 
                     element={
                         <Suspense fallback={<Preloader type={"module_loader"} />}>
-                            <Home/>
+                            <SetupScreen />
                         </Suspense>
                     } 
                 />

@@ -1,27 +1,161 @@
 // Form configurations
 
-const InitializeAppFormConfig = {
-    slot_id: {
-        required: true,
-        type: "text",
-        name: "slot_id",
-        label: "Slot ID",
-        placeholder: "Enter a school's slot id",
+const form_configs_options = {
+    image: {
+        elem: 'image',
+        config: {
+            type: 'text',
+            value: null,
+            readOnly: true,
+            placeholder: 'No Image Uploaded (.jpg, .png, .jpeg images are supported)',
+        }
     },
-    // email: {
-    //     required: true,
-    //     type: "email",
-    //     name: "email",
-    //     label: "Onwer's email",
-    //     placeholder: "Enter school's creator email address",
-    // },
+
+    text: {
+        elem: 'input',
+        config: {
+            type: 'text',
+            value: '',
+        }
+    },
+    long_text: {
+        elem: 'textarea',
+        config: {
+            value: '',
+        }
+    },
+    email_text: {
+        elem: 'input',
+        config: {
+            type: 'email',
+            value: '',
+        }
+    },
     password: {
-        required: true,
-        type: "password",
-        name: "password",
-        label: "Owner's password",
-        placeholder: "Enter school's creator password",
+        elem: 'input',
+        config: {
+            type: 'password',
+            value: '',
+        }
     },
+
+    date: {
+        elem: 'input',
+        config: {
+            type: 'date',
+            value: ''
+        }
+    },
+
+    radio_selected_text: {
+        elem: 'radio',
+        options: [],
+        config: {
+            type: 'radio',
+            value: '',
+        }
+    },
+    dropdown_selected_text: {
+        elem: 'select',
+        options: [],
+        config: {
+            value: '',
+        }
+    },
+
+    checked_text: {
+        elem: 'checkbox',
+        label: '',
+        config: {
+            value: '',
+            // checked:false
+        }
+    },
+
+}
+
+const InitializeSchoolFormConfig = {
+    form_data: {
+        logo: {
+            data_type: 'image',
+            name: 'logo',
+            required: true,
+            file_category: 'profile'
+        },
+        name: {
+            data_type: 'text',
+            name: 'name',
+            placeholder: "",
+            required: true
+        },
+        description: {
+            data_type: 'long_text',
+            name: 'description',
+            placeholder: "",
+            required: false
+        },
+        motto: {
+            data_type: 'text',
+            name: 'motto',
+            placeholder: "",
+            required: false
+        },
+        address: {
+            data_type: 'long_text',
+            name: 'address',
+            placeholder: "",
+            required: true
+        },
+        state: {
+            data_type: 'text',
+            name: 'state',
+            placeholder: "",
+            required: true
+        },
+        city: {
+            data_type: 'text',
+            name: 'city',
+            placeholder: "",
+            required: true
+        },
+
+        zipcode: {
+            data_type: 'text',
+            name: 'zipcode',
+            placeholder: "",
+            required: false
+        },
+        country: {
+            data_type: 'text',
+            name: 'country',
+            placeholder: "",
+            required: true
+        },
+        contacts: {
+            data_type: 'text',
+            name: 'contacts',
+            placeholder: "",
+            required: true
+        },
+        email: {
+            data_type: 'email_text',
+            name: 'email',
+            placeholder: "Email Address",
+            required: true
+        },
+        website: {
+            data_type: 'text',
+            name: 'website',
+            placeholder: "Official website (optional)",
+            required: false
+        },
+    },
+    groups: [
+        [
+            ['logo', 'name', 'website', 'motto', 'description'],
+            ['contacts', 'email', 'address', 'city', 'state', 'zipcode', 'country']
+        ],
+    ],
 };
 
 
@@ -159,38 +293,5 @@ const NewSessionFormConfig = {
     },
 };
 
-function serializeFormErrorData(error_data, pattern = null) {
 
-
-    let res = {}
-
-
-    if (pattern) {
-        res = {...pattern }
-    }
-
-
-    Object.entries(error_data).map(([field, value]) => {
-        // check if issues field is predefined
-        // in issues, otherwise, treat as formIssue
-        let val = Array.isArray(value) ? value[0] : value;
-
-        // console.log(field, value, val)
-
-        if (field in res) {
-            res[field] = val;
-            // console.log(new_issue)
-        } else {
-            res.formIssues[field] = val;
-            // console.log(new_issue)
-        }
-
-
-        return null;
-
-    })
-
-    return res;
-}
-
-export { InitializeAppFormConfig, LoginFormConfig, UserCreationFormConfig, NewSetFormConfig,NewSessionFormConfig,serializeFormErrorData }
+export { InitializeSchoolFormConfig, LoginFormConfig, UserCreationFormConfig, NewSetFormConfig, NewSessionFormConfig, form_configs_options }

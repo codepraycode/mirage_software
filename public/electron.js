@@ -1,5 +1,5 @@
 // Main App Module
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, protocol } = require('electron');
 const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer');
 
 const path = require('path');
@@ -7,7 +7,10 @@ const log = require("electron-log");
 const { autoUpdater } = require('electron-updater');
 
 // Backend
-require('./backend');
+const {app_files_dir} = require('./backend');
+
+// File manager
+const { ImageManager } = require('./backend/file_managers');
 
 // Autoupdater Debug Setup
 autoUpdater.logger = log
@@ -38,8 +41,8 @@ const installExtensions = async () => {
 function createWindow() {
     mainWindow = new BrowserWindow({
 
-        // minWidth: 1002,
-        // minHeight: 585,
+        minWidth: 1145,
+        minHeight: 585,
         // Set the path of an additional "preload" script that can be used to
         // communicate between node-land and browser-land.
         webPreferences: {
@@ -71,6 +74,25 @@ function createWindow() {
     }
 
     mainWindow.maximize();
+
+    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+        return {
+            action: 'allow',
+            overrideBrowserWindowOptions: {
+                minWidth: 990,
+                minHeight: 550,
+                webPreferences: {
+                    nodeIntegration: true, // is default value after Electron v5
+                    contextIsolation: true, // protect against prototype pollution
+                    enableRemoteModule: false, // turn off remote
+                    preload: path.join(__dirname, "preload.js")
+                },
+                title: "Mirage Software"
+            }
+        }
+
+    });
+
 
     mainWindow.once('ready-to-show', () => {
         // Delay main window from showing as the launcher is processing
@@ -157,18 +179,22 @@ async function launchApp() {
 // is ready to create the browser windows.
 // Some APIs can only be used after this event occurs.
 
-app.on('ready', async () => {
+// app.on('ready', async () => {
 
+// });
+
+app.on('activate', async function () {
+    // On macOS it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (BrowserWindow.getAllWindows().length === 0) {
+        // createWindow();
+        await launchApp()
+    }
+});
+
+
+app.whenReady().then(async()=>{
     await launchApp() // launch application
-
-    app.on('activate', async function() {
-        // On macOS it's common to re-create a window in the app when the
-        // dock icon is clicked and there are no other windows open.
-        if (BrowserWindow.getAllWindows().length === 0) {
-            // createWindow();
-            await launchApp()
-        }
-    });
 
     autoUpdater.checkForUpdates()
         .then(res => {
@@ -178,8 +204,15 @@ app.on('ready', async () => {
             // console.log(err);
             console.log("Unable to Check update");
         })
-});
+    
+    protocol.registerFileProtocol('mirage', (request, callback) => {
+        // console.log("Received URL", request.url)
+        const url = request.url.substr(9);
+        let cb = path.normalize(`${app_files_dir}/${url.replaceAll('--', '\\')}`)
 
+        callback({ path: cb })
+    })
+});
 
 
 
@@ -254,3 +287,87 @@ ipcMain.on('restart_app', () => {
 });
 
 // ==================== ooooooooooooooooooooo ==============================
+
+
+// ==================== FILE MANAGEMENT ==============================
+let win_image_config = {
+    title: 'Select the File to Upload',
+    // defaultPath:path.join(__dirname,'../assets/'),
+    buttonLabel: 'Upload',
+    filters: [{
+        name: 'Image Files',
+        extensions: ['png', 'jpg', 'jpeg']
+    },],
+    // Specifying the file selector property
+    properties: ['openFile']
+}
+
+let macOs_image_config = {
+    title: 'Select the File to be uploaded',
+    // defaultPath: path.join(__dirname, '../assets/'),
+    buttonLabel: 'Upload',
+    filters: [{
+        name: 'Text Files',
+        extensions: ['txt', 'docx']
+    },],
+    // Specifying the File Selector and Directory 
+    // Selector Property In macOS
+    properties: ['openFile', 'openDirectory']
+}
+
+
+
+
+ipcMain.handle('file:image_upload', (event, args = {}) => {
+    // console.log("Handling File Upload Dialog!");
+    let activeDialog = null;
+    // console.log(args)
+    // If Platform is Windows or Linux
+    let { type, file_name, configs } = args;
+
+    if (process.platform !== 'darwin') {
+        activeDialog = dialog.showOpenDialog({ ...win_image_config, ...configs })
+    } else {
+        // If the platform is 'darwin' (macOS)
+        activeDialog = dialog.showOpenDialog({ ...macOs_image_config, ...configs })
+        // .then(file => {
+        //     console.log(file.canceled);
+        //     if (!file.canceled) {
+        //         let filepath = file.filePaths[0].toString();
+        //         console.log(filepath);
+        //     }
+        // }).catch(err => {
+        //     console.log(err)
+        // });
+    }
+
+
+    if (!activeDialog) return;
+
+    activeDialog.then(file => {
+        // Check of dialog operation was cancelled or not
+        // console.log(file.canceled);
+        if (!file.canceled) {
+            // Get the file path;
+            let raw_filepath = file.filePaths[0].toString();
+            if (type === 'image') {
+                // console.log(filepath);
+                ImageManager(raw_filepath, { file_name }).then(filepath => {
+                    // console.log("File path >>>>", filepath)
+                    event.sender.send('file:image_uploaded', { filepath });
+                    // ipcMain.invoke('file_uploaded', { filepath })
+                    return;
+                })
+                    .catch(err => {
+                        console.log("Could Not Upload Image", err)
+                        return;
+                    });
+            }
+
+        }
+    }).catch(err => {
+        console.log(err);
+    })
+
+})
+// ==================== ooooooooooooooooooooo ========================

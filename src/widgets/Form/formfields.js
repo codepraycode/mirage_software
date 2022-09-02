@@ -1,5 +1,6 @@
 import React from 'react';
-import {capitalize,slugify,isArrayEmpty,parseFileUrl} from '../../backend/utils';
+import {capitalize,slugify,isArrayEmpty,parseFileUrl} from '../../constants/utils';
+import { image_placeholder } from '../../constants/assets';
 
 
 export const FormField = (props) => {
@@ -158,7 +159,7 @@ export const InputField = ({verbose,onChangeHandler,validation,...rest})=>{
 
 const handleImageUpload = (rst,onChangeHandler)=>{
     // console.log(rst);
-    window.api.request('file_upload',{
+    window.api.request('file:image_upload',{
         type:'image',
         category:rst.file_category,
         // file_name:
@@ -174,8 +175,7 @@ const handleImageUpload = (rst,onChangeHandler)=>{
         }
     });
 
-    window.api.response('file_uploaded', (res)=>{
-        // console.log(res)
+    window.api.response('file:image_uploaded', (res)=>{
         
         if(isArrayEmpty(res)) return;
 
@@ -212,12 +212,14 @@ export const ImageField = ({verbose,onChangeHandler,...rest})=>{
             >
                 <img 
                     src={parseFileUrl(rest.value)} 
-                    onError={
-                        ({ currentTarget }) => {
-                            currentTarget.onerror = null; // prevents looping
-                            currentTarget.src="./assets/images/img_placeholder.png";
-                        }
-                    }
+                    // src={rest.value || image_placeholder}
+                    // onError={
+                    //     ({ currentTarget }) => {
+                    //         currentTarget.onerror = null; // prevents looping
+                    //         currentTarget.src = { image_placeholder }
+                            
+                    //     }
+                    // }
                     alt="Preview" className="img-fluid" 
                     style={{height:"100%"}}
                 />
