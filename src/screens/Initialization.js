@@ -1,27 +1,31 @@
 import React,{useState} from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+
 import CreateAccount from '../pages/CreateAccount';
 import CreateUser from '../pages/CreateUser';
+
 import '../scss/auth_style.scss';
 
+import { getSettingsSchool } from '../app/settingsSlice';
+
 const Initialization = ()=>{
-    const [stageIndex, setStateIndex] = useState(1);
+    let stageIndex = 1;
+
+    const school = useSelector(getSettingsSchool)
 
 
     let headerText = "Setup App";
 
-    if(stageIndex === 1){
-        headerText = "Setup school"
-    }else if(stageIndex === 2){
-        headerText = "Add account"
-    }
-
     const renderFormSection = () => {
-        
-        if (stageIndex === 1) {
-            return <CreateAccount proceed={()=>setStateIndex(2)} />
+        if (!Boolean(school)) {
+            headerText = "Setup school";
+            stageIndex = 1;
+            return <CreateAccount />
         }
         else {
-            return <CreateUser goBack={() => setStateIndex(1)} />
+            headerText = "Add account";
+            stageIndex = 2;
+            return <CreateUser/>
         }
 
     }

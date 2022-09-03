@@ -180,7 +180,7 @@ const handleImageUpload = (rst,onChangeHandler)=>{
         if(isArrayEmpty(res)) return;
 
         let {filepath} = res[0];
-        console.log(filepath)
+        // console.log(filepath)
 
         let e = {
             preventDefault:()=>{},

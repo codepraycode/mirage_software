@@ -32,12 +32,12 @@ ipcMain.handle("settings:start", async () => {
 })
 
 
-ipcMain.handle("settings:initialize",async(_event,school_info)=>{
+ipcMain.handle("settings:update",async(_event,{section, data})=>{
     
 
     // add school data to settings
 
-    await settings.update('school', school_info)
+    await settings.update(section, data)
 
     return true
 

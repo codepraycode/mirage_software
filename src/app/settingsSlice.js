@@ -6,6 +6,9 @@ import { statuses } from '../constants/statuses';
 const initialState = {
     status: statuses.idle, // 'idle' | 'loading' | 'loaded' |'failed'
     error: null,
+
+    update_status: statuses.idle, // 'idle' | 'loading' | 'done' |'failed'
+    update_error: null,
     
     // Settings
     school:null,
@@ -22,10 +25,10 @@ export const loadSettings = createAsyncThunk('settings/loadSettings', async () =
     return app_settings;
 })
 
-// export const updateSettings = createAsyncThunk('settings/updateSettings', async (setting_data) => {
-//     await window.api.request(settings_channel.initialize, setting_data)
-//     return setting_data;
-// })
+export const updateSettings = createAsyncThunk('settings/updateSettings', async ({section,data}) => {
+    await window.api.request(settings_channel.update, {section, data});
+    return {section,data};
+})
 
 const settingsSlice = createSlice({
     name:'settings',
@@ -47,7 +50,7 @@ const settingsSlice = createSlice({
 
                 const settings = action.payload;
 
-                console.log(settings);
+                // console.log(settings);
 
                 state.software = settings.software || null;
                 state.school = settings.school || null;
@@ -57,21 +60,51 @@ const settingsSlice = createSlice({
 
             })
             .addCase(loadSettings.rejected, (state, action) => {
-                state.status = 'failed'
+                state.status = statuses.failed;
                 state.error = action.error.message;
             })
 
             // Update Instance
-            // .addCase(updateSettings.fulfilled, (state, action) => {
-            //     state.status = 'loaded'
+            .addCase(updateSettings.fulfilled, (state, action) => {
+                state.update_status = statuses.idle
 
-            //     state = {...state,...action.payload};
+                const {section, data} = action.payload;
 
-            // })
-            // .addCase(updateSettings.rejected, (state, action) => {
-            //     state.status = 'failed'
-            //     state.error = action.error.message;
-            // })
+                // console.log(section, data);
+
+                const setting_section = state[section];
+
+                state[section] = { ...setting_section, ...data };
+
+                // console.log("section ??? ",state.section)
+
+                // if (Boolean(setting_section)){
+
+                //     if (Array.isArray(setting_section)){
+                //         // update by Id
+                //         state[section] = setting_section.map((each)=>{
+                //             if(each._id === data._id){
+                //                 return{
+                //                     ...each,
+                //                     ...data
+                //                 }
+                //             }
+
+
+                //             return each;
+                //         })
+                //     }else{
+                //         state[section] = {...setting_section, ...data};
+                //     }
+                // }
+
+                // state = {...state,...action.payload};
+
+            })
+            .addCase(updateSettings.rejected, (state, action) => {
+                state.update_status = statuses.failed;
+                state.update_error = action.error.message;
+            })
     }
 });
 
@@ -89,5 +122,7 @@ export const getSettingsStaffs = (state) => state.settings.staffs;
 
 export const getSettingsError = (state) => state.settings.error;
 export const getSettingsStatus = (state) => state.settings.status;
+export const getSettingsUpdateError = (state) => state.settings.update_error;
+export const getSettingsUpdateStatus = (state) => state.settings.update_status;
 
 export default settingsSlice.reducer;

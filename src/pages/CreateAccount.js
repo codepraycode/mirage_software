@@ -1,9 +1,24 @@
 import React, { useState } from 'react';
+import {useSelector, useDispatch} from 'react-redux';
+
+
+// Slices
+import { getSettingsUpdateStatus, updateSettings } from '../app/settingsSlice';
+
+// Constants
 import { InitializeSchoolFormConfig } from '../constants/form_configs';
 import {createField, createFormDataFromSchema} from '../constants/utils';
+import {statuses} from '../constants/statuses';
 
 
 const CreateAccount = () => {
+
+    const status = useSelector(getSettingsUpdateStatus)
+    // const error = useSelector(getSettingsUpdateError)
+
+    const storeDispatch = useDispatch();
+
+    
     const [schoolProfile, setSchoolProfile] = useState(()=>{
         const form_ = createFormDataFromSchema(InitializeSchoolFormConfig);
         return form_
@@ -11,6 +26,9 @@ const CreateAccount = () => {
 
     const [loading, setLoading] = useState(false);
     const [canProceed, setCanProceed] = useState(false);
+
+
+    // const loading = status === statuses.loading;
 
 
     const handleInputChange = (e) => {
@@ -33,8 +51,28 @@ const CreateAccount = () => {
     }
 
 
+    const gatherData = () => {
+        let data = {}
+
+        for (let [field, config] of Object.entries(schoolProfile.form)) {
+            data[field] = config.config.value
+        }
+
+
+        return data;
+    }
+
+
     const handleSubmit = (e)=>{
         e.preventDefault();
+
+        let form_data = gatherData();
+
+        console.log(form_data);
+
+        storeDispatch(updateSettings({section:'school', data:form_data}))
+        setLoading(true)
+
     }
 
 
@@ -84,7 +122,11 @@ const CreateAccount = () => {
                         className="custom-control-input"
                         id={'accept_tc'}
 
-                        // onChange={(e) => { setState({ ...state, canProceed: !state.canProceed }) }}
+                        onChange={(e) => { 
+                            setCanProceed((prev)=>{
+                                return !prev;
+                            }) 
+                        }}
                         readOnly={true}
                     />
                     <label className="custom-control-label" htmlFor={'accept_tc'}>

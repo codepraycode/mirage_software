@@ -11,7 +11,7 @@ const academic_session = 'session';
 export const settings_channel = {    
     all:`${settings}:all`,
     start:`${settings}:start`,
-    initialize:`${settings}:initialize`,
+    update:`${settings}:update`,
 }
 
 
