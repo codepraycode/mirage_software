@@ -3,7 +3,7 @@ import {useDispatch} from 'react-redux';
 
 
 // Slices
-import { getSettingsUpdateStatus, updateSettings } from '../app/settingsSlice';
+import { updateSettings } from '../app/settingsSlice';
 
 // Constants
 import { InitializeSchoolFormConfig } from '../constants/form_configs';

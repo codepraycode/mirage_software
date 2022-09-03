@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { addUser } from '../app/userSlice';
 
 // Constants
 import { UserCreationFormConfig } from '../constants/form_configs';
@@ -8,6 +10,8 @@ import AuthLayout from '../layout/AuthLayout';
 
 
 const CreateUser = ({instant}) => {
+
+    const storeDispatch = useDispatch();
 
     const [userProfile, setUserProfile] = useState(() => {
         const form_ = createFormDataFromSchema(UserCreationFormConfig);
@@ -84,9 +88,8 @@ const CreateUser = ({instant}) => {
 
         if (validated_state.canProceed) {
             let form_data = gatherData();
-            // console.log(form_data);
 
-            console.log(form_data);
+            storeDispatch(addUser(form_data));
             setLoading(true);
         }
 

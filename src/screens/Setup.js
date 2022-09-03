@@ -4,6 +4,7 @@ import { getSettingsError, getSettingsSchool, getSettingsStatus, loadSettings } 
 import { initializeUrl, loginUrl } from '../constants/app_urls';
 import { statuses } from '../constants/statuses';
 import { useNavigate } from 'react-router-dom';
+import { loadUsers } from '../app/userSlice';
 
 const SetupScreen = () => {
     // This screen decides login, initialization or just directly to the home screen
@@ -25,7 +26,7 @@ const SetupScreen = () => {
         if (status === statuses.idle) {
             // Loading for the first time
             storeDispatch(loadSettings());
-            return
+            storeDispatch(loadUsers());
         }
         
         

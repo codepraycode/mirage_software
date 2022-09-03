@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useEffect, useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import CreateAccount from '../pages/CreateAccount';
@@ -7,14 +7,30 @@ import CreateUser from '../pages/CreateUser';
 import '../scss/auth_style.scss';
 
 import { getSettingsSchool } from '../app/settingsSlice';
+import { getUsers } from '../app/userSlice';
+import { useNavigate } from 'react-router-dom';
+import { loginUrl } from '../constants/app_urls';
 
 const Initialization = ()=>{
     let stageIndex = 1;
 
-    const school = useSelector(getSettingsSchool)
+    const navigate = useNavigate();
+
+    const school = useSelector(getSettingsSchool);
+    const any_user = useSelector(getUsers);
 
 
     let headerText = "Setup App";
+
+
+    if (!Boolean(school)) {
+        headerText = "Setup school";
+        stageIndex = 1;
+    }
+    else {
+        headerText = "Add account";
+        stageIndex = 2;
+    }
 
     const renderFormSection = () => {
         if (!Boolean(school)) {
@@ -29,6 +45,13 @@ const Initialization = ()=>{
         }
 
     }
+
+    useEffect(()=>{
+        if (Boolean(any_user) && any_user?.length >= 1) {
+            navigate(loginUrl);
+            return;
+        }
+    })
 
     return (
         <div className="auth_screen">
