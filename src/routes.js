@@ -1,6 +1,6 @@
 import React,{Suspense} from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
-import { authUrl, setupUrl, initializeUrl, dashboardUrl } from './constants/app_urls';
+import { authUrl, setupUrl, initializeUrl, dashboardUrl, settingsUrl } from './constants/app_urls';
 
 
 import Preloader from './widgets/Preloader';
@@ -8,9 +8,14 @@ import Preloader from './widgets/Preloader';
 import SetupScreen from './screens/Setup';
 import Authentication from './screens/Authentication';
 import DashboardLayout from './layout/DashboardLayout';
+import SettingsLayout from './layout/SettingsLayout';
+
 
 const Initialization = React.lazy(()=> import ('./screens/Initialization'));
 const Home = React.lazy(() => import('./screens/Home'));
+
+
+const Settings = React.lazy(() => import('./screens/settings'));
 
 
 const AppRoutes = ()=>{
@@ -68,6 +73,26 @@ const AppRoutes = ()=>{
                             <Home />
                         </Suspense>
                     } />
+                </Route>
+
+
+                <Route
+                    path={settingsUrl}
+                    element={<SettingsLayout />}
+                >
+
+                    <Route path={""} index element={
+                        <Suspense fallback={<Preloader type={"module_loader"} />}>
+                            <Settings />
+                        </Suspense>
+                    } />
+
+                    <Route path={":section"} index element={
+                        <Suspense fallback={<Preloader type={"module_loader"} />}>
+                            <Settings />
+                        </Suspense>
+                    } />
+
                 </Route>
                 
             </Routes>

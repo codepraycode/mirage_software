@@ -8,7 +8,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getAuthUser, logOut } from '../app/userSlice';
 import { getSettingsSchool } from '../app/settingsSlice';
 import { image_placeholder } from '../constants/assets';
-import { loginUrl } from '../constants/app_urls';
+import { loginUrl, profileSettingsUrl, settingsUrl } from '../constants/app_urls';
 
 
 const Navbar = () => {
@@ -58,13 +58,6 @@ const Navbar = () => {
             <ul className="navbar-nav navbar-right">
 
 
-
-
-
-                <li className="dropdown">
-                    {/* <Connection/> */}
-                </li>
-
                 <li className="help"
                 >
                     <a
@@ -79,27 +72,6 @@ const Navbar = () => {
                     </a>
                 </li>
 
-
-
-                {/* <li className="help">
-                    <a
-                        href="/"
-                        onClick={
-                            (e) => {
-                                e.preventDefault();
-                                window.location.reload(false)
-                            }
-                        }
-                        className="nav-link nav-link-lg"
-                    >
-
-                        <i className="fas fa-redo-alt"></i>
-                    </a>
-                </li> */}
-
-                {/* <li className="dropdown dropdown-list-toggle">
-                    <Notification />
-                </li> */}
 
                 <li className="dropdown">
                     <a
@@ -131,7 +103,7 @@ const Navbar = () => {
 
                         <Link
                             // onClick={(e)=>{e.preventDefault();}}  
-                            to={`/settings/profile?userId=${auth_details.user_id}`}
+                            to={profileSettingsUrl}
                             className="dropdown-item has-icon"
                             target="_blank"
                         >
@@ -140,17 +112,7 @@ const Navbar = () => {
                         </Link>
 
                         <Link
-                            // onClick={(e)=>{e.preventDefault();}} 
-                            to={`/settings/profile?userId=${auth_details.user_id}`}
-                            className="dropdown-item has-icon"
-                            target="_blank"
-                        >
-                            <i className="fas fa-bolt"></i>
-                            Activities
-                        </Link>
-
-                        <Link
-                            to={`/settings?userId=${auth_details.user_id}`}
+                            to={settingsUrl}
                             // onClick={(e)=>{e.preventDefault();}} 
                             target="_blank"
                             rel="noopener noreferrer"

@@ -3,11 +3,19 @@ const setupUrl = "/"
 const authUrl = "/auth"
 
 const dashboardUrl = "/dashboard";
+const settingsUrl = "/settings";
 
 const homeUrl = `${dashboardUrl}/home`;
 const admissionUrl = `${dashboardUrl}/admission`;
 const setsUrl = `${dashboardUrl}/sets`;//"/sets";
 const sessionUrl = `${dashboardUrl}/session`; // "/session";
+
+const schoolSettingsUrl = `${settingsUrl}/school`;
+const staffsSettingsUrl = `${settingsUrl}/staffs`;
+const profileSettingsUrl = `${settingsUrl}/profile`;
+const sessionsSettingsUrl = `${settingsUrl}/sessions`;
+const levelsSettingsUrl = `${settingsUrl}/levels`;
+const appSettingsUrl = `${settingsUrl}/app`;
 
 
 const initializeUrl = "/initialize"
@@ -42,10 +50,14 @@ const getPhaseName = (pathname)=>{
 }
 
 export {
-    authUrl, loginUrl, dashboardUrl,
-    newUserUrl, initializeUrl, 
-    setupUrl, getPhaseName,
-    homeUrl, admissionUrl,
-    setsUrl, sessionUrl
+    authUrl, loginUrl, 
+    dashboardUrl,newUserUrl, 
+    initializeUrl, setupUrl, 
+    getPhaseName, homeUrl, 
+    admissionUrl, setsUrl, 
+    sessionUrl, profileSettingsUrl,
+    settingsUrl, schoolSettingsUrl,
+    staffsSettingsUrl, sessionsSettingsUrl,
+    levelsSettingsUrl, appSettingsUrl,
 
 }
