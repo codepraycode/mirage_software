@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { addUser } from '../app/userSlice';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { addUser, getUserUpdateError, getUserUpdateStatus } from '../app/userSlice';
+import { loginUrl } from '../constants/app_urls';
 
 // Constants
 import { UserCreationFormConfig } from '../constants/form_configs';
+import { statuses } from '../constants/statuses';
 import { createField, createFormDataFromSchema } from '../constants/utils';
 
 import AuthLayout from '../layout/AuthLayout';
@@ -12,6 +15,11 @@ import AuthLayout from '../layout/AuthLayout';
 const CreateUser = ({instant}) => {
 
     const storeDispatch = useDispatch();
+    const navigate = useNavigate();
+
+
+    const userError = useSelector(getUserUpdateError);
+    const status = useSelector(getUserUpdateStatus);
 
     const [userProfile, setUserProfile] = useState(() => {
         const form_ = createFormDataFromSchema(UserCreationFormConfig);
@@ -97,7 +105,6 @@ const CreateUser = ({instant}) => {
         return;
     }
 
-
     const renderButton = () => {
         if (loading) {
             return (
@@ -120,9 +127,33 @@ const CreateUser = ({instant}) => {
         )
     }
 
+
+
+    const updateLoading = () => {
+        if(loading && status === statuses.idle){
+            navigate(loginUrl);
+
+            return
+        }
+        
+        if (Boolean(userError)) {
+            setLoading(false);
+        }
+    }
+
+
+    useEffect(() => {
+        updateLoading();
+    })
+
+
     const template = (
         <>
             <form onSubmit={handleSubmit}>
+                <span className="err_msg text-center text-danger">
+                    <b>{userError}</b>
+                </span>
+
                 <div className="text-center">
                     {
                         createField({ form: userProfile.form, groups: userProfile.groups }, handleInputChange)
@@ -158,7 +189,7 @@ const CreateUser = ({instant}) => {
                 <span>
                     Mirage Software
                 </span>
-                <span onClick={() => { }}>
+                <span onClick={() => { navigate (loginUrl)}}>
                     Log in
                 </span>
             </div>
@@ -174,7 +205,6 @@ const CreateUser = ({instant}) => {
 
 
     }
-
 
 
 

@@ -35,7 +35,11 @@ export const authenticate = createAsyncThunk('user/authenticate', async (auth_da
 
 export const addUser = createAsyncThunk('user/addUser', async (user_data) => {
     
-    await window.api.request(account_channel.new, user_data);
+    const [error] = await window.api.request(account_channel.new, user_data);
+
+    if(error){
+        throw(error);
+    }
 
     return user_data;
 });
@@ -44,8 +48,8 @@ const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
-        sampleSettings(state, action) {
-            console.log("Hello Redux!")
+        logOut(state, action) {
+            state.auth_user = null;
         },
     },
 
@@ -88,7 +92,13 @@ const userSlice = createSlice({
                 state.update_status = statuses.idle;
                 const user = action.payload;
 
-                state.users = [...state.users, user];
+
+                if(!Boolean(state.users)){
+                    state.users = [user];
+                }else{
+                    state.users = [...state.users, user];
+                }
+
             })
             .addCase(addUser.rejected, (state, action) => {
                 state.update_status = statuses.failed;
@@ -101,7 +111,7 @@ const userSlice = createSlice({
 
 
 // Actions
-// export const {} = instanceSlice.actions;
+export const { logOut} = userSlice.actions;
 
 
 // Selectors

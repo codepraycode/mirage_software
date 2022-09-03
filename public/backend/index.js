@@ -75,10 +75,14 @@ ipcMain.handle("account:new", async (_e, user_data) => {
 
     // delete user_data.school_key
 
-    await account.addUpdate(user_data)
-    // console.log(user_data)
+    try{
+        const dt = await account.addUpdate(user_data);
 
-    return 
+        return [null, dt];
+    }catch(err){
+        return [err.message, null];
+    }
+    
 })
 
 ipcMain.handle("account:authenticate", async (_e, auth_data) => {

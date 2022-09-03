@@ -11,9 +11,15 @@ class Account {
 
             const {confirm_password, ...user} = user_data;
 
-            const {username, ...rest} = user;
+            const {username, email,...rest} = user;
 
-            let doc = await accountsDb.update({ username }, {username, ...rest}, {upsert:true});
+            const anyuser = await this.query({ $or: [{ username: username }, { email: email }] }, false);
+
+            if (Boolean(anyuser)) {
+                throw Error("username or email already exists");
+            }
+
+            let doc = await accountsDb.update({ username }, {...user}, {upsert:true});
 
             return this.serialize(doc);
 

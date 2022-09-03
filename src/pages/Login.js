@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { authenticate, getUserUpdateError } from '../app/userSlice';
 import AuthLayout from '../layout/AuthLayout';
+import { newUserUrl } from '../constants/app_urls';
 
 
 
@@ -9,6 +11,8 @@ const Login = () => {
 
     const userError = useSelector(getUserUpdateError);
     const storeDispatch = useDispatch();
+
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         username: '',
@@ -37,7 +41,6 @@ const Login = () => {
                 username: formData.username.trim(),
                 password: formData.password.trim()
             }
-            console.log(data);
 
             storeDispatch(authenticate(data));
 
@@ -76,7 +79,7 @@ const Login = () => {
     let footer_template = (
         <div className="footer">
             <span 
-                onClick={() => { }
+                onClick={() => { navigate(newUserUrl)}
             }>
 
                 or create new user
@@ -85,7 +88,7 @@ const Login = () => {
 
 
             <span onClick={() => { }}>
-                Forgot credentials?
+                {/* Forgot credentials? */}
             </span>
         </div>
     )
