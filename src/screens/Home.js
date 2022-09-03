@@ -3,32 +3,21 @@ import { initializeUrl, loginUrl, newUserUrl } from '../constants/app_urls';
 import {Link, useNavigate} from 'react-router-dom';
 
 const Home = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
 
-  const navToInitializeScreen = ()=>{
-    navigate(initializeUrl);
-  }
+  // const navToInitializeScreen = ()=>{
+  //   navigate(initializeUrl);
+  // }
 
-  useEffect(()=>{
-    navToInitializeScreen();
-  });
+  // useEffect(()=>{
+  //   navToInitializeScreen();
+  // });
 
 
   return (
     <div>
         <h1>Home</h1>
-
-
-        <div>
-            <Link to={loginUrl}>
-                Login
-            </Link>
-
-              <Link to={newUserUrl}>
-                  Create Account
-              </Link>
-        </div>
     </div>
   )
 }

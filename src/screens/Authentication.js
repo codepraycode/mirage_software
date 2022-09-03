@@ -1,30 +1,42 @@
-import React from 'react';
-import {Outlet, useParams} from 'react-router-dom';
-import CreateAccount from '../pages/CreateAccount';
+import React,{useEffect} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
+import CreateUser from '../pages/CreateUser';
 import Login from '../pages/Login';
+
+
+import '../scss/auth_style.scss';
+import { getAuthUser } from '../app/userSlice';
+import { homeUrl } from '../constants/app_urls';
 
 
 
 const Authentication = ()=>{
     const {side} = useParams();
+    const navigate = useNavigate();
 
-    let template;
+    const authUser = useSelector(getAuthUser);
+
+
+    const handleAfterAuth = ()=>{
+        if(!Boolean(authUser)) return
+
+
+        navigate(homeUrl);
+    }
+
+
+    useEffect(()=>{
+        handleAfterAuth();
+    })
 
     if(side === 'new'){
-        template = <CreateAccount/>
-    }else{
-        template = <Login />
-    }    
-
-    return(
-        <div>
-            Authentication
-
-            <h1>{side}</h1>
-
-            {template}
-        </div>
-    )
+        return <CreateUser instant={true}/>
+    }
+    
+    return <Login />
+    
 }
 
 export default Authentication;

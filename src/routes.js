@@ -1,6 +1,6 @@
 import React,{Suspense} from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
-import { authUrl, setupUrl, initializeUrl } from './constants/app_urls';
+import { authUrl, setupUrl, initializeUrl, homeUrl } from './constants/app_urls';
 
 
 import Preloader from './widgets/Preloader';
@@ -30,6 +30,16 @@ const AppRoutes = ()=>{
                             <SetupScreen />
                         </Suspense>
                     } 
+                />
+
+
+                <Route
+                    path={homeUrl}
+                    element={
+                        <Suspense fallback={<Preloader type={"module_loader"} />}>
+                            <Home />
+                        </Suspense>
+                    }
                 />
                 
             </Routes>

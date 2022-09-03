@@ -68,8 +68,6 @@ const CreateAccount = () => {
 
         let form_data = gatherData();
 
-        console.log(form_data);
-
         storeDispatch(updateSettings({section:'school', data:form_data}))
         setLoading(true)
 
