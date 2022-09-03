@@ -23,7 +23,7 @@ const Authentication = ()=>{
         if(!Boolean(authUser)) return
 
 
-        navigate(homeUrl);
+        navigate(homeUrl, {replace:true});
     }
 
 
