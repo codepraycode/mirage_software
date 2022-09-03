@@ -105,7 +105,7 @@ const Navbar = () => {
                             // onClick={(e)=>{e.preventDefault();}}  
                             to={profileSettingsUrl}
                             className="dropdown-item has-icon"
-                            target="_blank"
+                            // target="_blank"
                         >
                             <i className="far fa-user"></i>
                             Profile
@@ -114,7 +114,7 @@ const Navbar = () => {
                         <Link
                             to={settingsUrl}
                             // onClick={(e)=>{e.preventDefault();}} 
-                            target="_blank"
+                            // target="_blank"
                             rel="noopener noreferrer"
                             className="dropdown-item has-icon"
                         >

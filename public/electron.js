@@ -1,5 +1,5 @@
 // Main App Module
-const { app, BrowserWindow, ipcMain, dialog, protocol } = require('electron');
+const { app, BrowserWindow, BrowserView,ipcMain, dialog, protocol } = require('electron');
 const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer');
 
 const path = require('path');
@@ -21,7 +21,7 @@ autoUpdater.autoDownload = false;
 
 // mainwindow and launcher window
 let mainWindow, launcher_win, updater;
-
+let childOpened = false;
 
 // ==================== Dev tools ==============================
 const installExtensions = async () => {
@@ -76,19 +76,36 @@ function createWindow() {
     mainWindow.maximize();
 
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-        return {
-            action: 'allow',
-            overrideBrowserWindowOptions: {
-                minWidth: 990,
-                minHeight: 550,
-                webPreferences: {
-                    nodeIntegration: true, // is default value after Electron v5
-                    contextIsolation: true, // protect against prototype pollution
-                    enableRemoteModule: false, // turn off remote
-                    preload: path.join(__dirname, "preload.js")
-                },
+
+        if (!childOpened){
+            const win = new BrowserWindow({
+                parent: mainWindow,
                 title: "Mirage Software"
-            }
+            })
+
+            win.show();
+            win.loadURL(url);
+            childOpened = true
+            
+
+            win.on('close', () => {
+                childOpened = false
+            });
+        }
+
+        return {
+            action: 'deny',
+            // overrideBrowserWindowOptions: {
+            //     minWidth: 990,
+            //     minHeight: 550,
+            //     webPreferences: {
+            //         nodeIntegration: true, // is default value after Electron v5
+            //         contextIsolation: true, // protect against prototype pollution
+            //         enableRemoteModule: false, // turn off remote
+            //         preload: path.join(__dirname, "preload.js")
+            //     },
+            //     title: "Mirage Software"
+            // }
         }
 
     });
@@ -196,6 +213,18 @@ app.on('activate', async function () {
 app.whenReady().then(async()=>{
     await launchApp() // launch application
 
+
+    // const view = new BrowserView();
+
+    // mainWindow.setBrowserView(view);
+    // view.setBounds({
+    //     x: 0, y: 0, 
+    //     width: 990, height: 550,        
+    // });
+    // view.webContents.loadURL()
+
+    
+
     autoUpdater.checkForUpdates()
         .then(res => {
             console.log("Update Response => ", res);
@@ -275,16 +304,16 @@ ipcMain.handle('app:version', (event) => {
     // event.sender.send('app:version', { version: app.getVersion() });
     return app.getVersion();
 });
- 
+
 
 // restart application
-ipcMain.on('restart_app', () => {
-    mainWindow.close();
+// ipcMain.on('restart_app', () => {
+//     mainWindow.close();
 
-    mainWindow = null;
+//     mainWindow = null;
 
-    createWindow();
-});
+//     createWindow();
+// });
 
 // ==================== ooooooooooooooooooooo ==============================
 

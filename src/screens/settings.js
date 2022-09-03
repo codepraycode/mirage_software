@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { appSettingsUrl, levelsSettingsUrl, profileSettingsUrl, schoolSettingsUrl, sessionsSettingsUrl, staffsSettingsUrl } from '../constants/app_urls';
 
 
@@ -11,13 +11,35 @@ const Settings = () => {
         body.classList.replace('layout-4', 'layout-3');
     }
 
+    const navigate = useNavigate();
+
     return (
         <div className="main-wrapper container-fluid">
 
             {/* Main Left Sidebar Menu */}
             <div className="main-content settings-content">
                 <div className='mx-3'>
-                    <h2 className="section-title">Settings</h2>
+                    <h2 className="section-title" style={{ display: 'flex', alignItems:'center' }}>
+                        
+                        <i 
+                            style={
+                                {
+                                    fontSize:'25px', 
+                                    marginRight:'15px', 
+                                    cursor:'pointer'
+                                }
+                            }
+
+                            onClick={()=>{
+                                navigate(-1);
+                            }}
+                            
+                            className="fa fa-arrow-left" 
+                            aria-hidden="true"
+                        ></i>
+
+                        Mirage Software Settings
+                    </h2>
                     {/* <p className="section-lead">Organize and adjust all hsettings.</p> */}
 
                     <div className="row">
