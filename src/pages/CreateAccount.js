@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {useSelector, useDispatch} from 'react-redux';
+import {useDispatch} from 'react-redux';
 
 
 // Slices
@@ -8,12 +8,12 @@ import { getSettingsUpdateStatus, updateSettings } from '../app/settingsSlice';
 // Constants
 import { InitializeSchoolFormConfig } from '../constants/form_configs';
 import {createField, createFormDataFromSchema} from '../constants/utils';
-import {statuses} from '../constants/statuses';
+
 
 
 const CreateAccount = () => {
 
-    const status = useSelector(getSettingsUpdateStatus)
+    // const status = useSelector(getSettingsUpdateStatus)
     // const error = useSelector(getSettingsUpdateError)
 
     const storeDispatch = useDispatch();

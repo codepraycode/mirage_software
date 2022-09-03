@@ -180,74 +180,63 @@ const LoginFormConfig = {
 
 const UserCreationFormConfig = {
 
-    avatar: {
-        type: "image",
-        name: "avatar",
-    },
+    form_data: {
+        avatar: {
+            data_type: 'image',
+            name: 'avatar',
+            required: true,
+            file_category: 'user'
+        },
+        first_name: {
+            data_type: 'text',
+            name: 'first_name',
+            placeholder: "",
+            required: true
+        },
+        last_name: {
+            data_type: 'text',
+            name: 'last_name',
+            placeholder: "",
+            required: true
+        },
+        contact: {
+            data_type: 'text',
+            name: 'contact',
+            placeholder: "",
+            required: true
+        },
+        email: {
+            data_type: 'email_text',
+            name: 'email',
+            placeholder: "",
+            required: true
+        },
+        username: {
+            data_type: 'text',
+            name: 'username',
+            placeholder: "",
+            required: true
+        },
 
-    prefix: {
-        required: false,
-        type: "text",
-        name: "prefix",
-        label: "Prefix",
-        placeholder: "Enter your prefix e.g Mr, Mrs, Dr, Prof",
+        password: {
+            data_type: 'password',
+            name: 'password',
+            placeholder: "",
+            required: true
+        },
+        confirm_password: {
+            data_type: 'password',
+            name: 'confirm_password',
+            placeholder: "",
+            required: true
+        },
     },
-
-    firstname: {
-        required: true,
-        type: "text",
-        name: "firstname",
-        label: "First name",
-        placeholder: "Enter your first name",
-    },
-
-    lastname: {
-        required: true,
-        type: "text",
-        name: "lastname",
-        label: "Last name",
-        placeholder: "Enter your last name",
-    },
-
-    contacts: {
-        required: true,
-        type: "text",
-        name: "contacts",
-        label: "Phone Number",
-        placeholder: "Enter your active phone number",
-    },
-
-
-    email: {
-        required: true,
-        type: "email",
-        name: "email",
-        label: "Email",
-        placeholder: "Enter your active email address",
-    },
-
-    username: {
-        required: true,
-        type: "text",
-        name: "username",
-        label: "Username",
-        placeholder: "Enter your username",
-    },
-    password: {
-        required: true,
-        type: "password",
-        name: "password",
-        label: "Password",
-        placeholder: "Enter your password",
-    },
-
-    confirm_password: {
-        required: true,
-        type: "password",
-        name: "confirm_password",
-        label: "Confirm password",
-        placeholder: "Confirm your password",
-    },
+    groups: [
+        [
+            ['avatar', 'first_name', 'last_name', 'contact'],
+            ['email', 'username', 'password', 'confirm_password']
+        ],
+    ],
 };
 
 
