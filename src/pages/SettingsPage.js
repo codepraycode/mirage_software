@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, Link} from 'react-router-dom';
+import { useParams, Link, useNavigate} from 'react-router-dom';
 
 import SchoolSettings from '../components/SchoolSetting';
 import AppUsers from '../components/AppUsers';
@@ -13,11 +13,13 @@ import LevelSettings from '../components/LevelSettings';
 
 
 import { capitalize } from '../constants/utils';
-import { appSettingsUrl, levelsSettingsUrl, profileSettingsUrl, schoolSettingsUrl, sessionsSettingsUrl, staffsSettingsUrl } from '../constants/app_urls';
+import { appSettingsUrl, levelsSettingsUrl, profileSettingsUrl, schoolSettingsUrl, sessionsSettingsUrl, settingsUrl, staffsSettingsUrl } from '../constants/app_urls';
 
 
 function Settings() {
     let { section } = useParams();
+    const navigate = useNavigate();
+
     let body = document.getElementsByTagName('body')[0];
     if (body.classList.contains('layout-4')) {
         body.classList.replace('layout-4', 'layout-3');
@@ -145,7 +147,29 @@ function Settings() {
                         <div className="col-4">
                             <div className="card">
                                 <div className="card-header text-center">
-                                    <h4 className="">Mirage Software Settings</h4>
+                                    <h4 
+                                        className=""
+                                        style={{ display: 'flex', alignItems: 'center' }}
+                                    >
+                                        <i
+                                            style={
+                                                {
+                                                    fontSize: '19px',
+                                                    marginRight: '15px',
+                                                    cursor: 'pointer'
+                                                }
+                                            }
+
+                                            onClick={() => {
+                                                navigate(settingsUrl,{replace:true});
+                                            }}
+
+                                            className="fa fa-arrow-left"
+                                            aria-hidden="true"
+                                        ></i>
+
+                                        Mirage Software Settings
+                                    </h4>
                                 </div>
                                 {renderNav()}
                             </div>
