@@ -70,35 +70,9 @@ const settingsSlice = createSlice({
 
                 const {section, data} = action.payload;
 
-                // console.log(section, data);
-
                 const setting_section = state[section];
 
                 state[section] = { ...setting_section, ...data };
-
-                // console.log("section ??? ",state.section)
-
-                // if (Boolean(setting_section)){
-
-                //     if (Array.isArray(setting_section)){
-                //         // update by Id
-                //         state[section] = setting_section.map((each)=>{
-                //             if(each._id === data._id){
-                //                 return{
-                //                     ...each,
-                //                     ...data
-                //                 }
-                //             }
-
-
-                //             return each;
-                //         })
-                //     }else{
-                //         state[section] = {...setting_section, ...data};
-                //     }
-                // }
-
-                // state = {...state,...action.payload};
 
             })
             .addCase(updateSettings.rejected, (state, action) => {

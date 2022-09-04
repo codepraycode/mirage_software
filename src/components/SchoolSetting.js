@@ -1,31 +1,78 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import {useSelector, useDispatch} from 'react-redux';
+
+
+import { getSettingsSchool, getSettingsUpdateStatus, updateSettings } from '../app/settingsSlice';
+
 
 import Loading from '../widgets/Preloader/loading';
 
 import { createField, createFormDataFromSchema } from '../constants/utils';
 import { InitializeSchoolFormConfig } from '../constants/form_configs';
+import { statuses } from '../constants/statuses';
 
 
 function SchoolSettings () {
 
 
+    const school = useSelector(getSettingsSchool);
+
 
     const [schoolProfile, setSchoolProfile] = useState(() => {
-        const form_ = createFormDataFromSchema(InitializeSchoolFormConfig);
+        let form_ = createFormDataFromSchema(InitializeSchoolFormConfig);
+        
+        if(!Boolean(school)) return form_;
+
+
+        for (let [field, config] of Object.entries(form_.form)) {
+
+            if (school[field]) {
+
+                config.config.value = school[field]
+            }
+        }
+
         return form_
     });
 
     
     const [loading, setLoading] = useState(false);
-    const [anyChanges, setAnyChanges] = useState(false);
+    const status = useSelector(getSettingsUpdateStatus);
+    const storeDispatch = useDispatch();    
+
+    const [noOfChanges, setNoOfChanges] = useState(0);
+
+
+    const anyChanges = noOfChanges > 0;
 
     const handleInputChange = (e) => {
         // console.log(e.target.name, "Changed");
         let field_name = e.target.name;
         let field_value = e.target.value;
 
+        let school_form = schoolProfile.form;
 
-        console.log(field_name,"changed to", field_value);
+
+        if (!Boolean(school_form[field_name])) return;
+
+
+        school_form[field_name].config.value = field_value;
+
+        setSchoolProfile((prev)=>{
+            return {
+                ...prev,
+                form: school_form
+            }
+        });
+
+        setNoOfChanges((pp) => {
+
+            if (Object.is(school[field_name], field_value)){
+                return pp-1;
+            }
+
+            return pp+1;
+        })
     }
 
     const gatherData = () => {
@@ -40,41 +87,30 @@ function SchoolSettings () {
     }
 
     const handleSave = () => {
-        // let form_data = gatherData();
+        const data = gatherData();
 
-        // // console.log(form_data)
-        // updateSettings({ id: state.setting_id, ...form_data })
-        //     .then((n_data) => {
-        //         // console.log(n_data);
-        //         setState({
-        //             ...state,
-        //             any_changes: false,
-        //             processing: false
-        //         })
-        //     })
+        storeDispatch(updateSettings(
+            {
+                section:'school',
+                data
+            }
+        ))
 
 
-        // setState({
-        //     ...state,
-        //     processing: true
-        // })
+        setLoading(true);
     }
 
 
-    if(loading){
-        return <Loading />
+    const checkLoadStatus = ()=>{
+        if (status === statuses.idle && loading){
+            setLoading(false);
+            setNoOfChanges(0);
+        }
     }
 
-    // if(loaded){
-    //     return (
-    //         <p className="text-muted text-center">
-    //             Unable to load school profile
-    //         </p>
-    //     )
-    // }
-
-
-
+    useEffect(()=>{
+        checkLoadStatus();
+    })
 
     return (
 
