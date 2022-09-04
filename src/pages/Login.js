@@ -79,7 +79,7 @@ const Login = () => {
     let footer_template = (
         <div className="footer">
             <span 
-                onClick={() => { navigate(newUserUrl)}
+                onClick={() => { navigate(newUserUrl, {replace:true})}
             }>
 
                 or create new user

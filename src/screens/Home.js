@@ -23,7 +23,7 @@ const Home = () => {
               onClick={(e)=>{
                 e.preventDefault();
                 storeDispatch(logOut())
-                navigate(loginUrl);
+                navigate(loginUrl, { replace: true });
               }}
             >
                 Logout

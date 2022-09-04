@@ -118,6 +118,7 @@ function Settings() {
                     <Link
                         to={item.link}
                         // onClick={(e)=>{e.preventDefault()}} 
+                        replace={true}
                         className={`nav-link ${section === item.tabId ? 'active' : ''}`}
                     >
                         <i className={`${item.icon} text-center mr-3`}></i>

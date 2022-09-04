@@ -32,11 +32,11 @@ const SetupScreen = () => {
         
         if (status === statuses.loaded) {
             if (!Boolean(school)) {
-                navigate(initializeUrl);
+                navigate(initializeUrl, { replace: true });
                 return
             }
 
-            navigate(loginUrl);
+            navigate(loginUrl, { replace: true });
         }
     }
 

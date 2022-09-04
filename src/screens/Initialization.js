@@ -48,7 +48,7 @@ const Initialization = ()=>{
 
     useEffect(()=>{
         if (Boolean(any_user) && any_user?.length >= 1) {
-            navigate(loginUrl);
+            navigate(loginUrl, { replace: true });
             return;
         }
     })
