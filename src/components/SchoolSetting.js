@@ -7,13 +7,7 @@ import { InitializeSchoolFormConfig } from '../constants/form_configs';
 
 
 function SchoolSettings () {
-    // const [state, setState] = useState({
-    //     form: {},
-    //     loading: true,
-    //     loaded: false,
-    //     processing: false,
-    //     any_changes: false
-    // });
+
 
 
     const [schoolProfile, setSchoolProfile] = useState(() => {
@@ -32,20 +26,6 @@ function SchoolSettings () {
 
 
         console.log(field_name,"changed to", field_value);
-
-        // let state_form = form;
-
-        // for (let [field, config] of Object.entries(state_form)) {
-        //     if (field === field_name) {
-        //         config.config.value = field_value
-        //         break;
-        //     }
-        // }
-
-        // setForm((prev)=>{
-        //     ...prev,
-        //     form: {...state_form},
-        // })
     }
 
     const gatherData = () => {
