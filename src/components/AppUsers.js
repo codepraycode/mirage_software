@@ -4,23 +4,12 @@ import Loading from '../widgets/Preloader/loading';
 
 import { isArrayEmpty, parseFileUrl } from '../constants/utils';
 import { avatar } from '../constants/assets';
+import { useSelector } from 'react-redux';
+import { getUsers } from '../app/userSlice';
 
 function AppUsers() {
-    // const [state, setState] = useState({
-    //     users: [],
-    //     loading: true,
-    //     loaded: false,
-    // })
 
-    const users = [];
-
-    const [loading, setLoading] = useState(false);
-
-
-    if (loading) {
-        return <Loading />
-    }
-
+    const users = useSelector(getUsers);
 
     if (isArrayEmpty(users)) {
         return (
@@ -77,11 +66,13 @@ function AppUsers() {
                                             {each.first_name} {each.last_name}
                                         </div>
                                         <div className="text-job text-muted">{each.email}</div>
-                                        {/* <small className="text-muted">
-                                            <i> 
-                                                <b>Last logged in: 2 minutes ago</b>
-                                            </i>
-                                        </small> */}
+                                        {/* {
+                                            <small className="text-muted">
+                                                <i> 
+                                                    <b>Last logged in: 2 minutes ago</b>
+                                                </i>
+                                            </small>
+                                        } */}
                                     </div>
 
                                 </li>)
