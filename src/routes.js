@@ -16,6 +16,7 @@ const Home = React.lazy(() => import('./screens/Home'));
 
 
 const Settings = React.lazy(() => import('./screens/settings'));
+const SettingPage = React.lazy(() => import('./pages/SettingsPage'));
 
 
 const AppRoutes = ()=>{
@@ -89,7 +90,7 @@ const AppRoutes = ()=>{
 
                     <Route path={":section"} index element={
                         <Suspense fallback={<Preloader type={"module_loader"} />}>
-                            <Settings />
+                            <SettingPage />
                         </Suspense>
                     } />
 

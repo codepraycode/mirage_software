@@ -240,6 +240,137 @@ const UserCreationFormConfig = {
 };
 
 
+const StaffsDataSchema = {
+    form_data: {
+        passport: {
+            data_type: 'image',
+            name: 'passport',
+            required: true,
+            file_category: 'staff_passport'
+        },
+        title: {
+            data_type: 'dropdown_selected_text',
+            name: 'title',
+            placeholder: "e.g Mr, Mrs, Prof, Dr",
+            options: ['Mr', 'Mrs', 'Miss', 'Prof', 'Dr', 'Chief'],
+            required: true
+        },
+        first_name: {
+            data_type: 'text',
+            name: 'first_name',
+            placeholder: "",
+            required: true
+        },
+        last_name: {
+            data_type: 'text',
+            name: 'last_name',
+            placeholder: "",
+            required: true
+        },
+        middle_name: {
+            data_type: 'text',
+            name: 'middle_name',
+            placeholder: "",
+            required: true
+        },
+        date_of_birth: {
+            data_type: 'date',
+            name: 'date_of_birth',
+            placeholder: "",
+            required: true
+        },
+        gender: {
+            data_type: 'radio_selected_text',
+            options: ['Male', 'Female'],
+            name: 'gender',
+            required: true
+        },
+        place_of_birth: {
+            data_type: 'text',
+            name: 'place_of_birth',
+            placeholder: "",
+            required: false
+        },
+        state_of_origin: {
+            data_type: 'text',
+            name: 'state_of_origin',
+            placeholder: "",
+            required: true
+        },
+        nationality: {
+            data_type: 'text',
+            name: 'nationality',
+            placeholder: "",
+            required: true
+        },
+        religion: {
+            data_type: 'text',
+            name: 'religion',
+            placeholder: "",
+            required: true
+        },
+        residential_address: {
+            data_type: 'long_text',
+            name: 'residential_address',
+            placeholder: "",
+            required: true
+        },
+        state_of_residence: {
+            data_type: 'text',
+            name: 'state_of_residence',
+            placeholder: "",
+            required: true
+        },
+        local_government: {
+            data_type: 'text',
+            name: 'local_government',
+            placeholder: "",
+            required: true
+        },
+        zip_code: {
+            data_type: 'text',
+            name: 'zip_code',
+            placeholder: ""
+        },
+        highest_qualification: {
+            data_type: 'text',
+            name: 'highest_qualification',
+            placeholder: "",
+        },
+
+        marital_status: {
+            data_type: 'dropdown_selected_text',
+            name: 'marital_status',
+            placeholder: "",
+            options: ['Single', 'Married', 'Divorced'],
+            required: true
+        },
+
+        contacts: {
+            data_type: 'text',
+            name: 'contacts',
+            placeholder: "",
+        },
+        email: {
+            data_type: 'email_text',
+            name: 'email',
+            placeholder: "",
+        },
+
+    },
+    groups: [
+        [
+            ['passport', 'title', 'first_name', 'middle_name', 'last_name'],
+            ['date_of_birth', 'gender', 'marital_status', 'religion', 'highest_qualification']
+        ],
+
+        [
+            ['residential_address', 'state_of_residence', 'local_government', 'zip_code'],
+            ['place_of_birth', 'state_of_origin', 'nationality', 'contacts', 'email']
+        ],
+
+    ]
+}
 
 // Set
 
@@ -283,4 +414,9 @@ const NewSessionFormConfig = {
 };
 
 
-export { InitializeSchoolFormConfig, LoginFormConfig, UserCreationFormConfig, NewSetFormConfig, NewSessionFormConfig, form_configs_options }
+export { 
+    InitializeSchoolFormConfig, LoginFormConfig, 
+    UserCreationFormConfig, NewSetFormConfig, 
+    NewSessionFormConfig, form_configs_options,
+    StaffsDataSchema,
+}
