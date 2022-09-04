@@ -145,7 +145,7 @@ function Settings() {
                         <div className="col-4">
                             <div className="card">
                                 <div className="card-header text-center">
-                                    <h2 className="">Mirage</h2>
+                                    <h4 className="">Mirage Software Settings</h4>
                                 </div>
                                 {renderNav()}
                             </div>
