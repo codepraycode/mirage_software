@@ -11,7 +11,7 @@ class Settings {
         sessions:'sessions',
         subjects: 'subjects',
         staffs: 'staffs', // array
-    }
+    } 
 
     /* 
         * School data
@@ -24,7 +24,7 @@ class Settings {
             - state: str,
             - city: str,
             - zipcode: str,
-            - country: str,
+            - country: str, 
             - contacts: str,
             - email: str,
             - website: str,
@@ -82,7 +82,7 @@ class Settings {
         this.update = async(setting_name, data) => { 
 
             // Update/Create Staff
-            if ([this.__settings_pattern.staffs].includes(setting_name)) {
+            if (setting_name === this.__settings_pattern.staffs) {
                 const { _id, ...rest_data } = data;
 
                 if (!_id) {
@@ -115,7 +115,19 @@ class Settings {
 
         }
 
+        this.delete = async(setting_name, _id) => { 
 
+            // Delete Staff
+            if (setting_name === this.__settings_pattern.staffs) {
+
+                await staffsDb.remove({_id});
+                return null;
+
+            }
+
+        }
+
+        
         this.all = async () => {
 
             const other_settings = await settingsDb.find({}, { multi: true });

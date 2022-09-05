@@ -43,6 +43,17 @@ ipcMain.handle("settings:update",async(_event,{section, data})=>{
 
 })
 
+ipcMain.handle("settings:delete",async(_event,{section, _id})=>{
+    
+
+    // add school data to settings
+
+    const res = await settings.delete(section, _id);
+
+    return res;
+
+})
+
 
 ipcMain.handle("settings:all",async()=>{
     // Get all settings collections

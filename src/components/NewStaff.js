@@ -1,26 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getSettingsUpdateStatus, updateStaffs } from '../app/settingsSlice';
+import { getSettingsUpdateStatus, updateStaffs, getSettingsStaffById } from '../app/settingsSlice';
 import { StaffsDataSchema } from '../constants/form_configs';
 import { statuses } from '../constants/statuses';
 
 import { createFormDataFromSchema, createField, } from '../constants/utils';
 
 
-const NewStaff = (props) => {
+const NewStaff = ({ goBack, staff_id }) => {
 
+    const staff = useSelector((state) => getSettingsStaffById(state,staff_id));
 
     const status = useSelector(getSettingsUpdateStatus);
     const storeDispatch = useDispatch();   
 
     const [staffProfile, setStaffProfile] = useState(() => {
         const form_ = createFormDataFromSchema(StaffsDataSchema);
+        if (!Boolean(staff)) return form_;
+
+
+        for (let [field, config] of Object.entries(form_.form)) {
+
+            if (staff[field]) {
+
+                config.config.value = staff[field]
+            }
+        }
+
         return form_
     });
 
 
     const [loading, setLoading] = useState(false);
-    const [anyChanges, setAnyChanges] = useState(false);
+
+    const [noOfChanges, setNoOfChanges] = useState(0);
+
+
+    const anyChanges = noOfChanges > 0;
 
 
     const gatherData = () => {
@@ -28,6 +44,10 @@ const NewStaff = (props) => {
         let phase_data = {};
         for (let [field, config] of Object.entries(staffProfile.form)) {
             phase_data[field] = config.config.value;
+        }
+
+        if(Boolean(staff)){
+            phase_data._id = staff._id;
         }
 
         return phase_data;
@@ -51,8 +71,9 @@ const NewStaff = (props) => {
 
         let state_form = staffProfile.form;
 
-        state_form[field_name].config.value = field_value;
+        if (!Boolean(state_form[field_name])) return;
 
+        state_form[field_name].config.value = field_value;
 
         setStaffProfile((prev) => {
             return {
@@ -60,6 +81,18 @@ const NewStaff = (props) => {
                 form: state_form
             }
         });
+
+        if (Boolean(staff)){
+            setNoOfChanges((pp) => {
+
+                if (Object.is(state_form[field_name], field_value)) {
+                    return pp - 1;
+                }
+
+                return pp + 1;
+            })
+        }
+        
 
     }
 
@@ -94,7 +127,7 @@ const NewStaff = (props) => {
             )
         }
 
-        if (anyChanges) {
+        if (!anyChanges) {
             return (
                 <button
                     className={`btn btn-outline-primary disabled`}
@@ -119,7 +152,7 @@ const NewStaff = (props) => {
         if (status === statuses.idle && loading) {
             // setLoading(false);
             // setNoOfChanges(0);
-            props.goBack()
+            goBack()
         }
     }
 
@@ -144,7 +177,7 @@ const NewStaff = (props) => {
                     onClick={() => {
                         if (loading) return
 
-                        props.goBack()
+                        goBack()
                     }}
                     style={{ fontSize: '19px', cursor: 'pointer' }}
                 ></i>
@@ -152,35 +185,6 @@ const NewStaff = (props) => {
                 <div
                     className='d-flex align-items-center justify-content-between'
                 >
-                    {
-                        props.staff_id ?
-
-                            <div className="form-group my-auto mr-3">
-
-                                <label className="custom-switch mt-2">
-
-                                    <input
-                                        type="checkbox"
-                                        name="custom-switch-checkbox"
-                                        className="custom-switch-input"
-                                        // checked={state.status.active}
-                                        checked={true}
-                                        onChange={() => { }}
-                                    />
-
-                                    <span className="custom-switch-indicator"></span>
-                                    <span className="custom-switch-description">
-
-                                        Active
-
-                                    </span>
-                                </label>
-                            </div>
-                            :
-                            null
-
-                    }
-
                     <div>
 
                         {renderButton()}

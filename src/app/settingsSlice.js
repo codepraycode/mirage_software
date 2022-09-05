@@ -36,6 +36,14 @@ export const updateStaffs = createAsyncThunk('settings/updateStaffs', async (dat
     
 })
 
+export const deleteStaff = createAsyncThunk('settings/deleteStaff', async (staff_id) => {
+    await window.api.request(settings_channel.delete, { section: 'staffs', _id:staff_id });
+
+    return staff_id;
+
+})
+
+
 export const updateSchool = createAsyncThunk('settings/updateSchool', async (data) => {
     const res = await window.api.request(settings_channel.update, { section: 'school', data });
 
@@ -124,6 +132,18 @@ const settingsSlice = createSlice({
                 state.update_status = statuses.failed;
                 state.update_error = action.error.message;
             })
+            .addCase(deleteStaff.fulfilled, (state, action) => {
+                state.update_status = statuses.idle
+
+                const staff_id = action.payload;
+                state.staffs = state.staffs.filter((each) => each._id !== staff_id);
+                
+
+            })
+            .addCase(deleteStaff.rejected, (state, action) => {
+                state.update_status = statuses.failed;
+                state.update_error = action.error.message;
+            })
     }
 });
 
@@ -137,6 +157,7 @@ export const getSettingsSchool = (state)=>state.settings.school;
 export const getSettingsSessions = (state) => state.settings.sessions;
 export const getSettingsSubjects = (state) => state.settings.subjects;
 export const getSettingsStaffs = (state) => state.settings.staffs;
+export const getSettingsStaffById = (state, staff_id) => state.settings.staffs.find((staff)=> staff._id === staff_id);
 
 
 export const getSettingsError = (state) => state.settings.error;

@@ -6,8 +6,8 @@ import { isArrayEmpty, capitalize, getDate, parseFileUrl, isObjectEmpty } from '
 import Loading from '../widgets/Preloader/loading';
 import Modal from '../widgets/Modal/modal';
 import { avatar } from '../constants/assets';
-import { useSelector } from 'react-redux';
-import { getSettingsStaffs } from '../app/settingsSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { deleteStaff, getSettingsStaffs } from '../app/settingsSlice';
 
 
 
@@ -17,6 +17,8 @@ const StaffListings = ({ toUpdate }) => {
 
 
     const staffs = useSelector(getSettingsStaffs);
+    const storeDispatch = useDispatch();
+
     const loading = false;
     const [deletingStaff, setDeletingStaff] = useState(null);
 
@@ -49,7 +51,11 @@ const StaffListings = ({ toUpdate }) => {
                 title={`Delete ${title} ${first_name} ${last_name}`}
                 onClose={() => { setDeletingStaff(null) }}
 
-                onSave={() => { console.log("Deleting staff with id", _id) }}
+                onSave={() => { 
+                    console.log("Deleting staff with id", _id);
+
+                    
+                }}
 
                 loading={loading}
                 
@@ -73,7 +79,11 @@ const StaffListings = ({ toUpdate }) => {
 
                     <button
                         className="btn btn-danger"
-                        onClick={() => { console.log("Deleting staff with id", _id) }}
+                        onClick={() => { 
+                            console.log("Deleting staff with id", _id);
+                            storeDispatch(deleteStaff(_id));
+                            setDeletingStaff(null);
+                        }}
                     >
                         Yes
                     </button>

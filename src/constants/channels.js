@@ -12,6 +12,7 @@ export const settings_channel = {
     all:`${settings}:all`,
     start:`${settings}:start`,
     update:`${settings}:update`,
+    delete: `${settings}:delete`,
 }
 
 
