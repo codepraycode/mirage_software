@@ -6,6 +6,8 @@ import { isArrayEmpty, capitalize, getDate, parseFileUrl, isObjectEmpty } from '
 import Loading from '../widgets/Preloader/loading';
 import Modal from '../widgets/Modal/modal';
 import { avatar } from '../constants/assets';
+import { useSelector } from 'react-redux';
+import { getSettingsStaffs } from '../app/settingsSlice';
 
 
 
@@ -14,7 +16,7 @@ import { avatar } from '../constants/assets';
 const StaffListings = ({ toUpdate }) => {
 
 
-    const staffs = [];
+    const staffs = useSelector(getSettingsStaffs);
     const loading = false;
     const [deletingStaff, setDeletingStaff] = useState(null);
 
@@ -25,16 +27,6 @@ const StaffListings = ({ toUpdate }) => {
             <Loading />
         )
     }
-
-
-
-    // if (!loaded) {
-    //     return (
-    //         <p className="text-muted text-center">
-    //             Unable to load staffs
-    //         </p>
-    //     )
-    // }
 
 
 
@@ -110,7 +102,7 @@ const StaffListings = ({ toUpdate }) => {
 
                 <tbody>
                     {
-                        staffs.slice(0, 9).map((each, i) => {
+                        staffs.map((each, i) => {
                             return (
                                 <tr key={i}>
                                     <td className="">

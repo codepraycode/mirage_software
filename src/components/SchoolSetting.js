@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 
 
-import { getSettingsSchool, getSettingsUpdateStatus, updateSettings } from '../app/settingsSlice';
+import { getSettingsSchool, getSettingsUpdateStatus, updateSchool } from '../app/settingsSlice';
 
 
 import Loading from '../widgets/Preloader/loading';
@@ -89,12 +89,7 @@ function SchoolSettings () {
     const handleSave = () => {
         const data = gatherData();
 
-        storeDispatch(updateSettings(
-            {
-                section:'school',
-                data
-            }
-        ))
+        storeDispatch(updateSchool(data));
 
 
         setLoading(true);

@@ -3,7 +3,7 @@ import {useDispatch} from 'react-redux';
 
 
 // Slices
-import { updateSettings } from '../app/settingsSlice';
+import { updateSchool } from '../app/settingsSlice';
 
 // Constants
 import { InitializeSchoolFormConfig } from '../constants/form_configs';
@@ -68,7 +68,8 @@ const CreateAccount = () => {
 
         let form_data = gatherData();
 
-        storeDispatch(updateSettings({section:'school', data:form_data}))
+        // storeDispatch(updateSettings({section:'school', data:form_data}))
+        storeDispatch(updateSchool(form_data));
         setLoading(true)
 
     }

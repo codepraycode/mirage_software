@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getSettingsUpdateStatus, updateStaffs } from '../app/settingsSlice';
 import { StaffsDataSchema } from '../constants/form_configs';
+import { statuses } from '../constants/statuses';
 
 import { createFormDataFromSchema, createField, } from '../constants/utils';
 
-import Loading from '../widgets/Preloader/loading';
-
 
 const NewStaff = (props) => {
+
+
+    const status = useSelector(getSettingsUpdateStatus);
+    const storeDispatch = useDispatch();   
 
     const [staffProfile, setStaffProfile] = useState(() => {
         const form_ = createFormDataFromSchema(StaffsDataSchema);
@@ -42,23 +47,19 @@ const NewStaff = (props) => {
         }
 
 
-        console.log(field_name, "changed to", field_value);
+        // console.log(field_name, "changed to", field_value);
 
-        // let state_form = staffProfile.form;
+        let state_form = staffProfile.form;
 
-        // let field = state_form[field_name]
-        // // console.log(field_name,`in phase${current_phase}`,field);
-        // if (!field) return;
+        state_form[field_name].config.value = field_value;
 
-        // field.config.value = field_value;
 
-        // state_form[field_name] = { ...field }
-
-        // setState({
-        //     ...state,
-        //     form: state_form,
-        //     any_actions: true
-        // })
+        setStaffProfile((prev) => {
+            return {
+                ...prev,
+                form: state_form
+            }
+        });
 
     }
 
@@ -66,8 +67,13 @@ const NewStaff = (props) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        let form_data = gatherData();
-        console.log(form_data);
+        let data = gatherData();
+        // console.log(data);
+
+        storeDispatch(updateStaffs(data));
+
+
+        setLoading(true);
 
        
     }
@@ -109,85 +115,91 @@ const NewStaff = (props) => {
         )
     }
 
-    // console.log(state);
+    const checkLoadStatus = () => {
+        if (status === statuses.idle && loading) {
+            // setLoading(false);
+            // setNoOfChanges(0);
+            props.goBack()
+        }
+    }
+
+    useEffect(() => {
+        checkLoadStatus();
+    })
 
     return (
 
-        <>
-            {
-                loading ?
-                    <Loading />
-                    :
+        <form
+            className="container"
+            onSubmit={handleSubmit}
+        >
 
-                    <form 
-                        className="container" 
-                        onSubmit={handleSubmit}
-                    >
+            <div
+                className="d-flex align-items-center justify-content-between my-3"
+            >
 
-                        <div 
-                            className="d-flex align-items-center justify-content-between my-3"
-                        >
+                <i
+                    className="fa fa-arrow-left text-primary"
+                    aria-hidden="true"
+                    onClick={() => {
+                        if (loading) return
 
-                            <i
-                                className="fa fa-arrow-left text-primary" 
-                                aria-hidden="true"
-                                onClick={() => props.goBack()}
-                                style={{ fontSize: '19px', cursor: 'pointer' }}
-                            ></i>
+                        props.goBack()
+                    }}
+                    style={{ fontSize: '19px', cursor: 'pointer' }}
+                ></i>
 
-                            <div 
-                                className='d-flex align-items-center justify-content-between'
-                            >
-                                {
-                                    props.staff_id ?
+                <div
+                    className='d-flex align-items-center justify-content-between'
+                >
+                    {
+                        props.staff_id ?
 
-                                        <div className="form-group my-auto mr-3">
-                                            
-                                            <label className="custom-switch mt-2">
+                            <div className="form-group my-auto mr-3">
 
-                                                <input
-                                                    type="checkbox"
-                                                    name="custom-switch-checkbox"
-                                                    className="custom-switch-input"
-                                                    // checked={state.status.active}
-                                                    checked={true}
-                                                    onChange={() => { }}
-                                                />
+                                <label className="custom-switch mt-2">
 
-                                                <span className="custom-switch-indicator"></span>
-                                                <span className="custom-switch-description">
+                                    <input
+                                        type="checkbox"
+                                        name="custom-switch-checkbox"
+                                        className="custom-switch-input"
+                                        // checked={state.status.active}
+                                        checked={true}
+                                        onChange={() => { }}
+                                    />
 
-                                                    Active
-                                                    
-                                                </span>
-                                            </label>
-                                        </div>
-                                        :
-                                        null
+                                    <span className="custom-switch-indicator"></span>
+                                    <span className="custom-switch-description">
 
-                                }
+                                        Active
 
-                                <div>
-
-                                    {renderButton()}
-                                </div>
-                                
+                                    </span>
+                                </label>
                             </div>
+                            :
+                            null
 
-                        </div>
+                    }
 
-                        <div className='text-center text-muted'>
-                            {createField({ form: staffProfile.form, groups: staffProfile.groups }, handleInputChange)}
+                    <div>
 
-                            <div className="d-flex justify-content-between my-2">
-                                <div className=""></div>
-                                {renderButton()}
-                            </div>
-                        </div>
+                        {renderButton()}
+                    </div>
 
-                    </form>
-            }
-        </>
+                </div>
+
+            </div>
+
+            <div className='text-center text-muted'>
+                {createField({ form: staffProfile.form, groups: staffProfile.groups }, handleInputChange)}
+
+                <div className="d-flex justify-content-between my-2">
+                    <div className=""></div>
+                    {renderButton()}
+                </div>
+            </div>
+
+        </form>
 
     );
 };

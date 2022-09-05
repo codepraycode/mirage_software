@@ -25,9 +25,26 @@ export const loadSettings = createAsyncThunk('settings/loadSettings', async () =
     return app_settings;
 })
 
-export const updateSettings = createAsyncThunk('settings/updateSettings', async ({section,data}) => {
-    await window.api.request(settings_channel.update, {section, data});
-    return {section,data};
+export const updateStaffs = createAsyncThunk('settings/updateStaffs', async (data) => {
+    const res = await window.api.request(settings_channel.update, { section:'staffs', data});
+
+    if(!res){
+        return data;
+    }
+
+    return res;
+    
+})
+
+export const updateSchool = createAsyncThunk('settings/updateSchool', async (data) => {
+    const res = await window.api.request(settings_channel.update, { section: 'school', data });
+
+    if (!res) {
+        return data;
+    }
+
+    return res;
+
 })
 
 const settingsSlice = createSlice({
@@ -64,18 +81,46 @@ const settingsSlice = createSlice({
                 state.error = action.error.message;
             })
 
-            // Update Instance
-            .addCase(updateSettings.fulfilled, (state, action) => {
+            // Update School
+            .addCase(updateSchool.fulfilled, (state, action) => {
                 state.update_status = statuses.idle
 
-                const {section, data} = action.payload;
+                state.school = {...state.school,...action.payload};
+            })
+            .addCase(updateSchool.rejected, (state, action) => {
+                state.update_status = statuses.failed;
+                state.update_error = action.error.message;
+            })
 
-                const setting_section = state[section];
+            // Update Staffs
+            .addCase(updateStaffs.fulfilled, (state, action) => {
+                state.update_status = statuses.idle
 
-                state[section] = { ...setting_section, ...data };
+                const data = action.payload;
+
+                const { _id } = data;
+
+
+                if(!Boolean(_id)){
+                    // New Staff
+                    state.staffs = [...state.staffs, data];
+                }else{
+                    state.staffs = state.staffs.map((each) => {
+
+                        if (each._id === _id) {
+                            return {
+                                ...each,
+                                ...data,
+                            }
+                        }
+
+                        return each;
+
+                    });
+                }
 
             })
-            .addCase(updateSettings.rejected, (state, action) => {
+            .addCase(updateStaffs.rejected, (state, action) => {
                 state.update_status = statuses.failed;
                 state.update_error = action.error.message;
             })

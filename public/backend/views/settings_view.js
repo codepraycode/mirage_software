@@ -1,15 +1,16 @@
 const { dbFactory } = require('../base');
 
 const settingsDb = dbFactory('settings.db')
+const staffsDb = dbFactory('staffs.db')
 
 
 class Settings {
 
     __settings_pattern = {
-        school:'school',
+        school:'school', // object
         sessions:'sessions',
         subjects: 'subjects',
-        staffs: 'staffs',
+        staffs: 'staffs', // array
     }
 
     /* 
@@ -44,6 +45,9 @@ class Settings {
 
 
             for (let field in this.__settings_pattern){
+
+                if (field === this.__settings_pattern.staffs) continue;
+
                 // exists return 
                 const exists = await this.__exists(field)
                 
@@ -64,25 +68,8 @@ class Settings {
             return 
 
         }
-
-        this.update = async(setting_name, data) => { 
-            // Find the setting
-            let prev_setting = await this.get(setting_name, true)
-
-            if (!prev_setting) return null // TODO: THROW ERROR
-
-            
-            // update the data
-            prev_setting.setting_data = data
-            await settingsDb.update({setting_name},{...prev_setting})
-
-            return prev_setting;
-
-        }
-
-        this.get = async (setting_name,raw=false) => {
-
-            // console.log(`get ${setting_name} settings`);
+        
+        this.get = async (setting_name, raw = false) => {
 
             let doc = await settingsDb.findOne({ setting_name });
 
@@ -92,9 +79,57 @@ class Settings {
 
         }
 
+        this.update = async(setting_name, data) => { 
+
+            // Update/Create Staff
+            if ([this.__settings_pattern.staffs].includes(setting_name)) {
+                const { _id, ...rest_data } = data;
+
+                if (!_id) {
+                    // Create staff
+                    const new_staff = await staffsDb.insert({ ...rest_data });
+
+                    return this.serializeNonSettings(new_staff);
+
+                } else {
+                    // update staff
+                    await staffsDb.update({ _id }, { ...rest_data });
+
+                    return null;
+                }
+
+            }
+
+
+
+            // Find the setting
+            let prev_setting = await this.get(setting_name, true)
+
+            if (!prev_setting) return null // TODO: THROW ERROR    
+            
+            // update normal settings
+            prev_setting.setting_data = data
+            await settingsDb.update({setting_name},{...prev_setting})
+
+            return null;
+
+        }
+
+
         this.all = async () => {
 
-            let docs = await settingsDb.find({}, { multi: true });
+            const other_settings = await settingsDb.find({}, { multi: true });
+            const staffs = await staffsDb.find({}, { multi: true });
+
+
+            const docs = [
+                ...other_settings,
+                {
+                    setting_name: this.__settings_pattern.staffs,
+                    setting_data: this.serializeNonSettings(staffs)
+                }
+            ]
+
 
             return this.serialize(docs);
 
@@ -103,8 +138,12 @@ class Settings {
 
         this.reset = async() => {
             // Set everything to null
+            await settingsDb.remove({}, { multi: true });
+            await staffsDb.remove({}, { multi: true });
+
             for (let field in this.__settings_pattern) {                
 
+                if (field === this.__settings_pattern.staffs) continue;
 
                 const st_dt = {
                     setting_name: field,
@@ -112,7 +151,6 @@ class Settings {
                 }
 
                 // add it to the settings
-                await settingsDb.remove({},{multi:true});
                 await settingsDb.insert(st_dt);
             }
 
@@ -120,6 +158,8 @@ class Settings {
         }
 
     }
+
+    
 
 
     serialize = (document) => {
@@ -151,6 +191,46 @@ class Settings {
         // otherwise, if single document
         return document.setting_data
     }
+
+
+    serializeNonSettings = (document) => {
+
+        if (!document) return null
+
+        if (!Array.isArray(document)) {
+            const { createdAt, updatedAt } = document;
+
+            if (Boolean(createdAt)) {
+                document.createdAt = createdAt.toISOString();
+            }
+
+            if (Boolean(updatedAt)) {
+                document.updatedAt = updatedAt.toISOString();
+            }
+
+            return document;
+        }
+
+        document = document.map((each) => {
+            const { createdAt, updatedAt } = each;
+
+            // each.createdAt = createdAt.toISOString();
+            // each.updatedAt = updatedAt.toISOString();
+
+            if (Boolean(createdAt)) {
+                each.createdAt = createdAt.toISOString();
+            }
+
+            if (Boolean(updatedAt)) {
+                each.updatedAt = updatedAt.toISOString();
+            }
+
+            return each;
+        })
+
+        return document
+    }
+
 
 
     __exists = async(setting_name)=>{
