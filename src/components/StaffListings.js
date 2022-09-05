@@ -105,7 +105,6 @@ const StaffListings = ({ toUpdate }) => {
                     <tr className="">
                         <th>Name</th>
                         <th>Date Added</th>
-                        <th>Status</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -141,14 +140,8 @@ const StaffListings = ({ toUpdate }) => {
 
                                     <td>
                                         <small>
-                                            {getDate(each.date_added)}
+                                            {getDate(each.createdAt)}
                                         </small>
-                                    </td>
-
-                                    <td>
-                                        <div className="badge badge-success">
-                                            Active
-                                        </div>
                                     </td>
 
                                     <td className='d-flex justify-content-around align-items-center'>
