@@ -7,10 +7,35 @@ const staffsDb = dbFactory('staffs.db')
 class Settings {
 
     __settings_pattern = {
-        school:'school', // object
-        sessions:'sessions',
-        subjects: 'subjects',
-        staffs: 'staffs', // array
+        school:{
+            name:'school',
+            default: null, // object
+        },
+
+        sessions:{
+            name:'sessions',
+            default:null,
+        },
+        subjects: {
+            name:'subjects',
+            default:null,
+        },
+
+        roles:{
+            name:'roles',
+            default:{
+                school_head:{
+                    label:"Head Master",
+                    staff_id:null
+                },
+                level_roles:[]
+            },
+        },
+
+        staffs: {
+            name:'staffs',
+            default:[]
+        }, // array
     } 
 
     /* 
@@ -44,22 +69,23 @@ class Settings {
             */
 
 
-            for (let field in this.__settings_pattern){
+            for (let [field_name, field_config] of Object.entries(this.__settings_pattern)){
+                
 
-                if (field === this.__settings_pattern.staffs) continue;
+                if (field_name === this.__settings_pattern.staffs.name) continue;
 
+                
                 // exists return 
-                const exists = await this.__exists(field)
+                const exists = await this.__exists(field_name)
                 
                 // if the setting exists
-                if (exists) return // continue to the next
+                if (exists) continue // continue to the next
 
                 // otherwise create the setting
                 const st_dt = {
-                    setting_name: field,
-                    setting_data: null
+                    setting_name: field_config.name,
+                    setting_data: field_config.default
                 }
-
 
                 // add it to the settings
                 await settingsDb.insert(st_dt)
@@ -82,7 +108,7 @@ class Settings {
         this.update = async(setting_name, data) => { 
 
             // Update/Create Staff
-            if (setting_name === this.__settings_pattern.staffs) {
+            if (setting_name === this.__settings_pattern.staffs.name) {
                 const { _id, ...rest_data } = data;
 
                 if (!_id) {
@@ -118,7 +144,7 @@ class Settings {
         this.delete = async(setting_name, _id) => { 
 
             // Delete Staff
-            if (setting_name === this.__settings_pattern.staffs) {
+            if (setting_name === this.__settings_pattern.staffs.name) {
 
                 await staffsDb.remove({_id});
                 return null;
@@ -133,11 +159,10 @@ class Settings {
             const other_settings = await settingsDb.find({}, { multi: true });
             const staffs = await staffsDb.find({}, { multi: true });
 
-
             const docs = [
                 ...other_settings,
                 {
-                    setting_name: this.__settings_pattern.staffs,
+                    setting_name: this.__settings_pattern.staffs.name,
                     setting_data: this.serializeNonSettings(staffs)
                 }
             ]
@@ -155,7 +180,7 @@ class Settings {
 
             for (let field in this.__settings_pattern) {                
 
-                if (field === this.__settings_pattern.staffs) continue;
+                if (field === this.__settings_pattern.staffs.name) continue;
 
                 const st_dt = {
                     setting_name: field,
@@ -166,17 +191,15 @@ class Settings {
                 await settingsDb.insert(st_dt);
             }
 
-            return 
+            return
         }
-
+ 
     }
 
     
 
-
     serialize = (document) => {
-        
-        // console.log("Serializing:> ", document)
+
 
         if (document === null) return
 
@@ -189,10 +212,7 @@ class Settings {
 
                 let { setting_name, setting_data } = each;
 
-                // return {
-                //     setting_name,
-                //     data: setting_data
-                // }
+                
                 settings_documents[setting_name] = setting_data;
 
             });

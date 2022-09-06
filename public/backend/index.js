@@ -37,9 +37,7 @@ ipcMain.handle("settings:update",async(_event,{section, data})=>{
 
     // add school data to settings
 
-    const res = await settings.update(section, data);
-
-    return res;
+    return await settings.update(section, data);
 
 })
 

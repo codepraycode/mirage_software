@@ -15,6 +15,7 @@ const initialState = {
     sessions: null,
     subjects: null,
     staffs: null,
+    roles:null,
 }
 
 
@@ -53,6 +54,20 @@ export const updateSchool = createAsyncThunk('settings/updateSchool', async (dat
 
     return res;
 
+});
+
+
+
+
+export const updateRoles = createAsyncThunk('settings/updateRoles', async (data) => {
+    const res = await window.api.request(settings_channel.update, { section: 'roles', data });
+
+    if (!res) {
+        return data;
+    }
+
+    return res;
+
 })
 
 const settingsSlice = createSlice({
@@ -76,12 +91,11 @@ const settingsSlice = createSlice({
                 const settings = action.payload;
 
                 // console.log(settings);
-
-                state.software = settings.software || null;
                 state.school = settings.school || null;
                 state.sessions = settings.sessions || null;
                 state.subjects = settings.subjects || null;
                 state.staffs = settings.staffs || null;
+                state.roles = settings.roles || null;
 
             })
             .addCase(loadSettings.rejected, (state, action) => {
@@ -96,6 +110,17 @@ const settingsSlice = createSlice({
                 state.school = {...state.school,...action.payload};
             })
             .addCase(updateSchool.rejected, (state, action) => {
+                state.update_status = statuses.failed;
+                state.update_error = action.error.message;
+            })
+
+            // Update Roles
+            .addCase(updateRoles.fulfilled, (state, action) => {
+                state.update_status = statuses.idle
+
+                state.roles = { ...state.roles,...action.payload};
+            })
+            .addCase(updateRoles.rejected, (state, action) => {
                 state.update_status = statuses.failed;
                 state.update_error = action.error.message;
             })
@@ -156,8 +181,11 @@ const settingsSlice = createSlice({
 export const getSettingsSchool = (state)=>state.settings.school;
 export const getSettingsSessions = (state) => state.settings.sessions;
 export const getSettingsSubjects = (state) => state.settings.subjects;
+
 export const getSettingsStaffs = (state) => state.settings.staffs;
 export const getSettingsStaffById = (state, staff_id) => state.settings.staffs.find((staff)=> staff._id === staff_id);
+
+export const getSettingsRoles = (state) => state.settings.roles;
 
 
 export const getSettingsError = (state) => state.settings.error;

@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { getSettingsStaffs, getSettingsRoles } from '../app/settingsSlice';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getSettingsStaffs, getSettingsRoles, getSettingsUpdateStatus, updateRoles } from '../app/settingsSlice';
+import { statuses } from '../constants/statuses';
 
 import { capitalize, isObjectEmpty } from '../constants/utils';
-import Loading from '../widgets/Preloader/loading';
 
 
-const RoleItem = ({role_name,role_data, staffs }) =>{
+const RoleItem = React.memo(({ role_name, role_data, staffs, onChange }) =>{
 
     const staff = staffs.find((a_staff) => a_staff._id === role_data.staff_id);
-    
+
+    const handleInputChange = (e)=>{
+        e.preventDefault();
+
+        let input_name = e.target.name;
+        let input_value = e.target.value;
+
+        onChange(role_name, {
+            ...role_data,
+            [input_name]:input_value
+        });
+    }
+
     return (
         <>
 
@@ -24,11 +36,9 @@ const RoleItem = ({role_name,role_data, staffs }) =>{
                     <input
                         className="form-control"
                         type="text"
-                        name={'role_label'}
-                        value={role_data?.label}
-                        onChange={(e) => {
-                            // handleInputChange(e, role_name)
-                        }}
+                        name={'label'}
+                        value={role_data?.label ?? ''}
+                        onChange={handleInputChange}
                     />
                 </div>
 
@@ -39,10 +49,7 @@ const RoleItem = ({role_name,role_data, staffs }) =>{
                         className="form-control"
                         name={'staff_id'}
                         value={staff?._id ?? ''}
-                        onChange={(e) => {
-                            handleInputChange(e, role_name)
-
-                        }}
+                        onChange={handleInputChange}
                     >
                         <option value="">Select Staff</option>
                         {
@@ -66,7 +73,7 @@ const RoleItem = ({role_name,role_data, staffs }) =>{
         </>
 
     )
-}
+});
 
 
 const RoleSettings = () => {
@@ -74,37 +81,75 @@ const RoleSettings = () => {
     const all_staffs = useSelector(getSettingsStaffs);
 
     const roles = useSelector(getSettingsRoles);
+    const status = useSelector(getSettingsUpdateStatus);
 
-    const [error, setError] = useState(null);
+    const storeDispatch = useDispatch();
+
+    const [roleData, setRoleData] = useState(()=>{
+        if(!Boolean(roles)) return {};
+
+
+        return {...roles}
+    });
+
+
     const [loading, setLoading] = useState(false);
-    const [processing, setProcessing] = useState(false);
-    const [anyChanges, setAnyChanges] = useState(false);
+    const [noOfChanges, setNoOfChanges] = useState(0);
 
 
-    const handleInputChange = (e, side) => {
-        let field_name = e.target.name;
-        let field_value = e.target.value;
+    const anyChanges = noOfChanges > 0;
 
 
-        console.log(field_name, "changed to", field_value);
+
+    const handleRoleChange = (name, data) => {
+        
+        console.log("changes in", name, ">>",data);
+
+        let role_setting = roles[name];
+
+        if (!Boolean(role_setting)) return;
+
+
+        if (Array.isArray(role_setting)){
+            // 
+        }else{
+            role_setting = {
+                ...role_setting,
+                ...data
+            }
+        }
+
+        setRoleData((prev) => {
+            return {
+                ...prev,
+                [name]: role_setting
+            }
+        });
+
+        if (Boolean(roles)) {
+            setNoOfChanges((pp) => {
+
+                if (Object.is(role_setting, data)) {
+                    if (pp === 0) return 0;
+
+                    return pp - 1;
+                }
+
+                return pp + 1;
+            })
+        }
 
     }
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // console.log(roles_settings);
+        // console.log(roleData);
+
+        storeDispatch(updateRoles(roleData));
+        setLoading(true);
     }
 
-
-    if (loading) return <Loading />;
-
-    if (error) {
-        return (
-            <p className="text-muted text-center">
-                {capitalize(error)}
-            </p>
-        )
-    }
 
     if (isObjectEmpty(roles)) {
         return (
@@ -116,7 +161,8 @@ const RoleSettings = () => {
 
 
     const renderButton = () => {
-        if (processing) {
+
+        if (loading) {
             return (
                 <button
                     className={`btn btn-outline-primary disabled`}
@@ -144,6 +190,20 @@ const RoleSettings = () => {
         return null;
     }
 
+
+
+    const checkLoadStatus = () => {
+        if (status === statuses.idle && loading) {
+            setLoading(false);
+            setNoOfChanges(0);
+            
+        }
+    }
+
+    useEffect(() => {
+        checkLoadStatus();
+    })
+
     return (
         <form onSubmit={handleSubmit}>
             <div className="card">
@@ -160,7 +220,7 @@ const RoleSettings = () => {
                 <div className="card-body p-0">
                     <div className="text-muted text-center">
                         {
-                            Object.entries(roles).map(([role_name, role_data], i) => {
+                            Object.entries(roleData).map(([role_name, role_data], i) => {
 
                                 if(Array.isArray(role_data)) return null;
 
@@ -169,6 +229,7 @@ const RoleSettings = () => {
                                     role_data={role_data} 
                                     key={i} 
                                     staffs={all_staffs}
+                                    onChange={handleRoleChange}
                                 />;
                             })
                         }

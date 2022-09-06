@@ -84,6 +84,7 @@ const NewStaff = ({ goBack, staff_id }) => {
 
         if (Boolean(staff)){
             setNoOfChanges((pp) => {
+                if (pp === 0) return 0;
 
                 if (Object.is(state_form[field_name], field_value)) {
                     return pp - 1;
