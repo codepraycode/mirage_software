@@ -44,12 +44,24 @@ export const addUser = createAsyncThunk('user/addUser', async (user_data) => {
     return user_data;
 });
 
+
+export const updateUser = createAsyncThunk('user/updateUser', async (user_data) => {
+    
+    await window.api.request(account_channel.update, user_data);
+
+
+    return user_data;
+});
+
 const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
         logOut(state, action) {
             state.auth_user = null;
+        },
+        updateAuth(state, action) {
+            state.auth_user = { ...state.auth_user,...action.payload};
         },
     },
 
@@ -105,13 +117,43 @@ const userSlice = createSlice({
                 state.update_error = action.error.message;
             })
 
+            // Update User
+            .addCase(updateUser.fulfilled, (state, action) => {
+                state.update_status = statuses.idle;
+                const user = action.payload;
+
+
+                if(!Array.isArray(state.users)){
+                    state.users = [user];
+                }else{
+
+                    state.users = state.users.map((suser)=>{
+                        if(suser._id === user._id){
+                            return {
+                                ...suser,
+                                ...user
+                            }
+                        }
+
+
+                        return suser;
+                    })
+
+                }
+
+            })
+            .addCase(updateUser.rejected, (state, action) => {
+                state.update_status = statuses.failed;
+                state.update_error = action.error.message;
+            })
+
             
     }
 });
 
 
 // Actions
-export const { logOut} = userSlice.actions;
+export const { logOut, updateAuth } = userSlice.actions;
 
 
 // Selectors

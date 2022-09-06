@@ -128,8 +128,15 @@ ipcMain.handle("account:all", async () => {
 
     return users;
 
-})
+}); 
 
+
+
+ipcMain.handle("account:update", async (_event, data) => {
+
+    return await account.update(data);
+
+})
 
 // ================= Set =======================
 ipcMain.handle("set:new", async (_e, set_data) => {

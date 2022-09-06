@@ -21,6 +21,7 @@ export const account_channel = {
     authenticate: `${account}:authenticate`,
     all: `${account}:all`,
     check_password: `${account}:check_password`,
+    update: `${account}:update`,
 }
 
 

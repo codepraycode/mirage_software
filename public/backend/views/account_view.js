@@ -11,7 +11,7 @@ class Account {
 
             const {confirm_password, ...user} = user_data;
 
-            const {username, email,...rest} = user;
+            const {_id, username, email,...rest} = user;
 
             const anyuser = await this.query({ $or: [{ username: username }, { email: email }] }, false);
 
@@ -60,6 +60,23 @@ class Account {
             let doc = await accountsDb.find({ ...query });
 
             return this.serialize(doc);
+
+        }
+
+        this.update = async (user_data) => {
+
+            // Find the setting
+            const {_id} = user_data;
+
+            let prev_user = await this.query({_id}, false);
+
+            if (!prev_user) return null // TODO: THROW ERROR    
+
+            // update normal settings
+            
+            await accountsDb.update({ _id }, { ...prev_user, ...user_data });
+
+            return null;
 
         }
     }

@@ -238,6 +238,60 @@ const UserCreationFormConfig = {
         ],
     ],
 };
+const UserUpdateFormConfig = {
+
+    form_data: {
+        avatar: {
+            data_type: 'image',
+            name: 'avatar',
+            required: true,
+            file_category: 'user'
+        },
+        first_name: {
+            data_type: 'text',
+            name: 'first_name',
+            placeholder: "",
+            required: true
+        },
+        last_name: {
+            data_type: 'text',
+            name: 'last_name',
+            placeholder: "",
+            required: true
+        },
+        contact: {
+            data_type: 'text',
+            name: 'contact',
+            placeholder: "",
+            required: true
+        },
+        email: {
+            data_type: 'email_text',
+            name: 'email',
+            placeholder: "",
+            required: true
+        },
+        username: {
+            data_type: 'text',
+            name: 'username',
+            placeholder: "",
+            required: true
+        },
+
+        password: {
+            data_type: 'password',
+            name: 'password',
+            placeholder: "",
+            required: true
+        },
+    },
+    groups: [
+        [
+            ['avatar', 'first_name', 'last_name', 'contact'],
+            ['email', 'username', 'password']
+        ],
+    ],
+};
 
 
 const StaffsDataSchema = {
@@ -418,5 +472,5 @@ export {
     InitializeSchoolFormConfig, LoginFormConfig, 
     UserCreationFormConfig, NewSetFormConfig, 
     NewSessionFormConfig, form_configs_options,
-    StaffsDataSchema,
+    StaffsDataSchema, UserUpdateFormConfig,
 }

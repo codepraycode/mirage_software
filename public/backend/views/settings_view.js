@@ -109,7 +109,7 @@ class Settings {
             },
         },
 
-        
+
         levels: {
             name:'levels',
             default: {
@@ -375,13 +375,10 @@ class Settings {
     }
 
 
-
     __exists = async(setting_name)=>{
         const count = await settingsDb.count({setting_name})
         return count > 0;
     }
-
-
 
 }
 
