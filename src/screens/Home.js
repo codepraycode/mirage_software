@@ -1,34 +1,21 @@
 import React from 'react'
-import { loginUrl } from '../constants/app_urls';
-import {Link, useNavigate} from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAuthUser, logOut } from '../app/userSlice';
 
 const Home = () => {
-  const navigate = useNavigate();
 
-  const auth_user = useSelector(getAuthUser);
-  const storeDispatch = useDispatch();
-
-
+  const it_style = {
+    width: '100%',
+    height: '400px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#797a7a44'
+  }
   return (
-    <div>
-        <h1>Home</h1>
-        <p>Logged in as: {auth_user?.username} {(new Date(auth_user?.last_logged_in).toDateString())}</p>
-
-
-        <div>
-            <Link 
-              to={loginUrl} 
-              onClick={(e)=>{
-                e.preventDefault();
-                storeDispatch(logOut())
-                navigate(loginUrl, { replace: true });
-              }}
-            >
-                Logout
-            </Link>
-        </div>
+    <div
+      // className="text-muted"
+      style={it_style}
+    >
+      <h1>Mirage Software</h1>
     </div>
   )
 }
