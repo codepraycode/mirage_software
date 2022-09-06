@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getSettingsStaffs, getSettingsRoles, getSettingsUpdateStatus, updateRoles } from '../app/settingsSlice';
+import { getSettingsStaffs, getSettingsRoles, getSettingsUpdateStatus, updateRoles, getSettingsLevels } from '../app/settingsSlice';
 import { statuses } from '../constants/statuses';
 
 import { capitalize, isObjectEmpty } from '../constants/utils';
@@ -79,6 +79,7 @@ const RoleItem = React.memo(({ role_name, role_data, staffs, onChange }) =>{
 const RoleSettings = () => {
 
     const all_staffs = useSelector(getSettingsStaffs);
+    const all_levels = useSelector(getSettingsLevels)
 
     const roles = useSelector(getSettingsRoles);
     const status = useSelector(getSettingsUpdateStatus);
@@ -107,23 +108,44 @@ const RoleSettings = () => {
 
         let role_setting = roles[name];
 
-        if (!Boolean(role_setting)) return;
-
-
-        if (Array.isArray(role_setting)){
-            // 
-        }else{
-            role_setting = {
-                ...role_setting,
-                ...data
-            }
-        }
-
+        console.log(role_setting);
+       
         setRoleData((prev) => {
-            return {
-                ...prev,
-                [name]: role_setting
+            if (Boolean(role_setting)){
+                return {
+                    ...prev,
+                    [name]: {
+                        ...role_setting,
+                        ...data,
+                    },
+                }
+            }else{
+                 // working on levels which is an array
+                 let updated = false;
+
+                let level_roles = prev.level_roles.map((each) => {
+
+                    if (each.level_id === data.level_id) {
+                        updated = true;
+                        return {
+                            ...each,
+                            ...data,
+                        }
+                    }
+
+                    return each;
+                })
+
+                if(!updated){
+                    level_roles.push(data);
+                }
+
+                return {
+                    ...prev,
+                    level_roles
+                }
             }
+            
         });
 
         if (Boolean(roles)) {
@@ -204,6 +226,10 @@ const RoleSettings = () => {
         checkLoadStatus();
     })
 
+
+    const { school_head, level_roles } = roleData;
+    console.log(level_roles);
+
     return (
         <form onSubmit={handleSubmit}>
             <div className="card">
@@ -218,19 +244,31 @@ const RoleSettings = () => {
                 </div>
 
                 <div className="card-body p-0">
+
                     <div className="text-muted text-center">
+                        <RoleItem
+                            role_name={'school_head'}
+                            role_data={school_head}
+                            staffs={all_staffs}
+                            onChange={handleRoleChange}
+                        />
+
                         {
-                            Object.entries(roleData).map(([role_name, role_data], i) => {
+                            Object.entries(all_levels).map(([_id, level_info], i) => {
 
-                                if(Array.isArray(role_data)) return null;
+                                const level__role = level_roles.find(lvl=>lvl?.level_id === _id) || null;
 
-                                return <RoleItem 
-                                    role_name={role_name} 
-                                    role_data={role_data} 
-                                    key={i} 
+                                return (<RoleItem
+                                    key={_id}
+                                    role_name={level_info.label}
+                                    role_data={{
+                                        level_id: _id,
+                                        label: level__role?.label || 'class teacher',
+                                        ...level__role,
+                                    }}
                                     staffs={all_staffs}
                                     onChange={handleRoleChange}
-                                />;
+                                />);
                             })
                         }
                     </div>

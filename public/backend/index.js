@@ -118,7 +118,7 @@ ipcMain.handle("account:check_password", async (_e, { user_id,password}) => {
 
     return user.password === password;
 
-}) 
+});
 
 ipcMain.handle("account:all", async () => {    
 

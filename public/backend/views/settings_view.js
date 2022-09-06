@@ -108,8 +108,6 @@ class Settings {
                 },
             },
         },
-
-
         levels: {
             name:'levels',
             default: {
@@ -129,7 +127,7 @@ class Settings {
                     label: 'Grade 3',
                     subjects: [],
                 },
-                
+
             },
         },
 
