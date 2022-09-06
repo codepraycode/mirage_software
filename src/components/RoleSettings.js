@@ -1,14 +1,79 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { getSettingsStaffs, getSettingsRoles } from '../app/settingsSlice';
 
-import { capitalize } from '../constants/utils';
+import { capitalize, isObjectEmpty } from '../constants/utils';
 import Loading from '../widgets/Preloader/loading';
+
+
+const RoleItem = ({role_name,role_data, staffs }) =>{
+
+    const staff = staffs.find((a_staff) => a_staff._id === role_data.staff_id);
+    
+    return (
+        <>
+
+            <div className='d-flex align-items-center justify-content-between px-3 py-3'>
+
+                <p className="lead lead-sm">
+                    <b>For {capitalize(role_name)}</b>
+                </p>
+
+                <div className="form-group">
+                    <label htmlFor="">This role is addressed as ?</label>
+                    <input
+                        className="form-control"
+                        type="text"
+                        name={'role_label'}
+                        value={role_data?.label}
+                        onChange={(e) => {
+                            // handleInputChange(e, role_name)
+                        }}
+                    />
+                </div>
+
+
+                <div className="form-group">
+
+                    <select
+                        className="form-control"
+                        name={'staff_id'}
+                        value={staff?._id ?? ''}
+                        onChange={(e) => {
+                            handleInputChange(e, role_name)
+
+                        }}
+                    >
+                        <option value="">Select Staff</option>
+                        {
+                            staffs.map((each, i) => {
+                                let name = `${each.title} ${each.first_name} ${each.last_name}`;
+
+                                return (
+                                    <option value={each._id} key={i}>
+                                        {name}
+                                    </option>
+                                )
+
+                            })
+                        }
+                    </select>
+
+                </div>
+            </div>
+        
+            <hr />
+        </>
+
+    )
+}
+
 
 const RoleSettings = () => {
 
-    const all_staffs = [];
+    const all_staffs = useSelector(getSettingsStaffs);
 
-    const roles_settings = [];
-
+    const roles = useSelector(getSettingsRoles);
 
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -27,70 +92,7 @@ const RoleSettings = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(roles_settings);
-    }
-
- 
-    const renderRole = (role_data) => {
-        let { role_name, ...rest } = role_data;
-
-        return (
-
-            <div className='d-flex align-items-center justify-content-between px-3 py-3'>
-
-                <p className="lead lead-sm">
-                    <b>For {capitalize(role_name)}</b>
-                </p>
-
-                <div className="form-group">
-                    <label htmlFor="">This role is addressed as ?</label>
-                    <input
-                        className="form-control"
-                        type="text"
-                        name={'role_label'}
-                        value={rest.role_label}
-                        onChange={(e) => {
-                            handleInputChange(e, role_name)
-
-                        }}
-                    />
-                </div>
-
-                {
-                    rest.staff_id || rest.staff_id === null ?
-                        <div className="form-group">
-
-                            <select
-                                className="form-control"
-                                name={'staff_id'}
-                                value={rest.staff_id ?? ''}
-                                onChange={(e) => {
-                                    handleInputChange(e, role_name)
-
-                                }}
-                            >
-                                <option value="">Select Staff</option>
-                                {
-                                    all_staffs.map((each, i) => {
-                                        let name = `${each.title} ${each.first_name} ${each.last_name}`;
-
-                                        return (
-                                            <option value={each._id} key={i}>
-                                                {name}
-                                            </option>
-                                        )
-
-                                    })
-                                }
-                            </select>
-
-                        </div>
-                        :
-                        null
-                }
-            </div>
-
-        )
+        // console.log(roles_settings);
     }
 
 
@@ -100,6 +102,14 @@ const RoleSettings = () => {
         return (
             <p className="text-muted text-center">
                 {capitalize(error)}
+            </p>
+        )
+    }
+
+    if (isObjectEmpty(roles)) {
+        return (
+            <p className="text-muted text-center">
+                Could not load roles
             </p>
         )
     }
@@ -150,18 +160,16 @@ const RoleSettings = () => {
                 <div className="card-body p-0">
                     <div className="text-muted text-center">
                         {
-                            Object.entries(roles_settings).map(([field, conf], i) => {
-                                let role_data = {
-                                    role_name: field,
-                                    ...conf
-                                }
+                            Object.entries(roles).map(([role_name, role_data], i) => {
 
-                                return (
-                                    <div key={i}>
-                                        {renderRole(role_data, i)}
-                                        <hr />
-                                    </div>
-                                )
+                                if(Array.isArray(role_data)) return null;
+
+                                return <RoleItem 
+                                    role_name={role_name} 
+                                    role_data={role_data} 
+                                    key={i} 
+                                    staffs={all_staffs}
+                                />;
                             })
                         }
                     </div>
