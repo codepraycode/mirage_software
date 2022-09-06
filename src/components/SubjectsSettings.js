@@ -1,29 +1,43 @@
 import React,{useState,useEffect} from 'react';
-import Loading from '../widgets/Preloader/loading';
+import { nanoid } from '@reduxjs/toolkit';
 import {isArrayEmpty, isObjectEmpty, parseFileUrl} from '../constants/utils';
 
 import Modal from '../widgets/Modal/modal';
 import { avatar } from '../constants/assets';
-import { useSelector } from 'react-redux';
-import { getSettingsStaffs, getSettingsSubjects } from '../app/settingsSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { getSettingsStaffs, getSettingsSubjects, getSettingsUpdateStatus, updateSubject } from '../app/settingsSlice';
+import { statuses } from '../constants/statuses';
+
 
 function SubjectsSettings() {
 
 
+    const status = useSelector(getSettingsUpdateStatus);
     const subjects = useSelector(getSettingsSubjects);
     const staffs = useSelector(getSettingsStaffs);
-    
+
+    const storeDispatch = useDispatch();
+
     const [loading, setLoading] = useState(false);
-    const [editingLevelFocus, setEditingLevelFocus] = useState(null);
+    const [editingSubjectFocus, setEditingSubjectFocus] = useState(null);
     const [editSubjectStaffs, setEditSubjectStaffs] = useState(false);
 
     const handleModalSave = ()=>{
-
-        console.log(editingLevelFocus);
-        setEditingLevelFocus(null)
-        if (editSubjectStaffs) {
-            setEditSubjectStaffs(false)
+        
+        if (isObjectEmpty(editingSubjectFocus)) {
+            return;
         }
+
+        const { _id, subject } = editingSubjectFocus;
+
+        const data = {
+            [_id || nanoid()]: subject
+        }
+
+        // console.log(data);
+
+        storeDispatch(updateSubject(data));
+
         setLoading(true);
     }
 
@@ -33,16 +47,52 @@ function SubjectsSettings() {
         let field_value = e.target.value;
         let field_type = e.target.type;
 
-
-        if (!Object.keys(edit_focus).includes(field_name)) return;
+        if (!Boolean(editingSubjectFocus)) return;
 
         if (['checkbox', 'radio'].includes(field_type)) {
 
             field_value = e.target.checked;
         }
 
-        console.log(field_name, "changed to", field_value);
-    }    
+        // console.log(field_name, "changed to", field_value);
+
+        setEditingSubjectFocus((prev) => {
+            return {
+                ...prev,
+                subject:{
+                    ...prev.subject,
+                    [field_name]: field_value,
+                }
+            }
+        });
+
+
+    }
+
+    const handleSubjectTeacherChange = (e,staff_id) => {
+
+        if (!Boolean(editingSubjectFocus)) return;
+
+        setEditingSubjectFocus((prev) => {
+            let updated_staffs = prev.subject.staffs || [];
+
+            if (updated_staffs.includes(staff_id)){
+                updated_staffs = updated_staffs.filter((stff)=>stff !== staff_id);
+            }else{
+                updated_staffs = [...updated_staffs, staff_id];
+            }
+
+            return {
+                ...prev,
+                subject: {
+                    ...prev.subject,
+                    staffs: updated_staffs,
+                }
+            }
+        });
+
+
+    }
 
 
     const renderContent = ()=>{
@@ -63,6 +113,7 @@ function SubjectsSettings() {
                     Object.entries(subjects).map(([_id, subject])=>{
                         return (
                             <div key={_id}>
+
                                 <span 
                                     className="list-group-item list-group-item-action flex-column align-items-start" 
                                 >
@@ -86,13 +137,14 @@ function SubjectsSettings() {
                                                 <i className="fas fa-pen ml-3" 
                                                     style={{cursor:"pointer"}}
                                                     onClick={()=>{
-                                                        setEditingLevelFocus(() => {
-                                                            return { _id: id, subject}
+                                                        setEditingSubjectFocus(() => {
+                                                            return { _id, subject}
                                                         });
                                                     }}
                                                 ></i>
                                             </span>
                                         </p>
+
                                     </div>
 
                                     <div className='my-2 d-flex align-items-center'>
@@ -122,7 +174,13 @@ function SubjectsSettings() {
                                             <span className='text-primary'>
                                                 <i className="fas fa-pen"
                                                     style={{cursor:'pointer'}}
-                                                    onClick={()=>{}}
+                                                    onClick={()=>{
+                                                        setEditingSubjectFocus(() => {
+                                                            return { _id, subject }
+                                                        });
+
+                                                        setEditSubjectStaffs(true);
+                                                    }}
                                                 ></i>
                                             </span>
                                         </p>
@@ -130,7 +188,8 @@ function SubjectsSettings() {
                                     
                                     
                                 </span>
-                            <br/>
+                                
+                                <br/>
                             </div>
                         )
                     })
@@ -157,7 +216,7 @@ function SubjectsSettings() {
             <div className="badges">
                                         
                 {
-                    teachers_id.map((teacher_id)=>{
+                    teachers_id.map((teacher_id,i)=>{
                         let details = staffs.find((staff)=>staff._id === teacher_id);
 
                         const isLast = i === teachers_id.length -1
@@ -167,7 +226,7 @@ function SubjectsSettings() {
 
                         const {title, first_name, last_name} = details;
 
-                        return <span className="badge" key={i}>
+                        return <span className="badge" key={teacher_id}>
                             {`${title} ${first_name} ${last_name}`.trim()}{!isLast ? ',':''}
                         </span>
                     })
@@ -180,7 +239,7 @@ function SubjectsSettings() {
 
     const renderStaffSelectModal = ()=>{
         
-        let selected_teachers = editingLevelFocus.staffs || [];
+        let selected_teachers = editingSubjectFocus.subject.staffs || [];
         return(
             <div className="table-responsive">
                 <table className="table table-striped v_center">
@@ -196,7 +255,7 @@ function SubjectsSettings() {
                     <tbody className='text-center'>
                         {
                             staffs.map((staff)=>{
-                                return (<tr key={i}>
+                                return (<tr key={staff._id}>
                                     <td className="p-0 text-center">
                                         <div className="custom-checkbox custom-control">
                                             <input 
@@ -204,7 +263,7 @@ function SubjectsSettings() {
                                                 data-checkboxes="mygroup" 
                                                 className="custom-control-input" 
                                                 id={staff._id}
-                                                onChange={handleInputChange}
+                                                onChange={(e) => handleSubjectTeacherChange(e, staff._id)}
                                                 checked={selected_teachers.includes(staff._id)}
                                             />
                                             <label htmlFor={staff._id} className="custom-control-label">&nbsp;</label>
@@ -255,7 +314,10 @@ function SubjectsSettings() {
             return renderStaffSelectModal()
         }
 
-        let { name, short, description, total_obtainable, required } = editingLevelFocus;
+        const { subject } = editingSubjectFocus;
+
+        const { name, short, description, total_obtainable, required } = subject;
+
         return (
             <>
                 <div className="form-group">
@@ -330,11 +392,11 @@ function SubjectsSettings() {
 
     const renderModal = ()=>{
 
-        if (!Boolean(editingLevelFocus)) return;
+        if (!Boolean(editingSubjectFocus)) return;
 
 
         const checkCanSave = ()=>{
-            let { name, short, total_obtainable } = editingLevelFocus;
+            let { name, short, total_obtainable } = editingSubjectFocus.subject;
 
             let res = true;
 
@@ -359,7 +421,7 @@ function SubjectsSettings() {
             <Modal
                 title={`Level Settings`}
                 onClose={()=>{
-                    setEditingLevelFocus(null)
+                    setEditingSubjectFocus(null)
                     if (editSubjectStaffs){
                         setEditSubjectStaffs(false)
                     }
@@ -379,6 +441,23 @@ function SubjectsSettings() {
         )
     }
 
+
+    const checkLoadStatus = () => {
+        if (status === statuses.idle && loading) {
+            setLoading(false);
+            setEditingSubjectFocus(null)
+            if (editSubjectStaffs) {
+                setEditSubjectStaffs(false)
+            }
+
+        }
+    }
+
+    useEffect(() => {
+        checkLoadStatus();
+    })
+
+
     
     return (
         <>
@@ -393,7 +472,7 @@ function SubjectsSettings() {
                             <i className="fa fa-plus" aria-hidden="true"
                                 style={{cursor:"pointer"}}
                                 onClick={()=>{
-                                    setEditingLevelFocus(() => {
+                                    setEditingSubjectFocus(() => {
                                         return { _id: null, subject: {} }
                                     });
                                 }}

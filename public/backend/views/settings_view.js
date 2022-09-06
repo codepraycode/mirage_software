@@ -106,9 +106,7 @@ class Settings {
                     total_obtainable: 100,
                     required: true,
                 },
-
             },
-        
         },
 
         
