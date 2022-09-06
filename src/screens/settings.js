@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { appSettingsUrl, levelsSettingsUrl, profileSettingsUrl, schoolSettingsUrl, sessionsSettingsUrl, staffsSettingsUrl } from '../constants/app_urls';
+import { levelsSettingsUrl, profileSettingsUrl, schoolSettingsUrl, sessionsSettingsUrl, staffsSettingsUrl } from '../constants/app_urls';
 
 
 const Settings = () => {
@@ -119,21 +119,6 @@ const Settings = () => {
                                     <h4>Profile and Activities</h4>
                                     <p>Logged in user Profile, activity logs</p>
                                     {/* <a href="/settings/details" className="card-cta">Change Setting <i className="fas fa-chevron-right"></i></a> */}
-                                </div>
-                            </Link>
-                        </div>
-
-                        <div className="col-md-6">
-                            <Link
-                                to={appSettingsUrl}
-                                className="card card-large-icons">
-                                <div className="card-icon bg-primary text-white">
-                                    <i className="fas fa-cog"></i>
-                                </div>
-                                <div className="card-body">
-                                    <h4>App</h4>
-                                    <p>Prefenrences, about the app, developer's contact</p>
-
                                 </div>
                             </Link>
                         </div>

@@ -15,7 +15,7 @@ const staffsSettingsUrl = `${settingsUrl}/staffs`;
 const profileSettingsUrl = `${settingsUrl}/profile`;
 const sessionsSettingsUrl = `${settingsUrl}/sessions`;
 const levelsSettingsUrl = `${settingsUrl}/levels`;
-const appSettingsUrl = `${settingsUrl}/app`;
+
 
 
 const initializeUrl = "/initialize"
@@ -58,6 +58,6 @@ export {
     sessionUrl, profileSettingsUrl,
     settingsUrl, schoolSettingsUrl,
     staffsSettingsUrl, sessionsSettingsUrl,
-    levelsSettingsUrl, appSettingsUrl,
+    levelsSettingsUrl,
 
 }

@@ -62,12 +62,6 @@ function Settings() {
             link: profileSettingsUrl,
         },
 
-        { 
-            tab: 'App', 
-            tabId: 'app', 
-            icon: 'fas fa-cog', 
-            link: appSettingsUrl,
-        }
     ]
 
     const renderContent = () => {

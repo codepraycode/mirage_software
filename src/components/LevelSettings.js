@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { nanoid } from '@reduxjs/toolkit';
+import { useDispatch, useSelector } from 'react-redux';
 
-import Loading from '../widgets/Preloader/loading';
 import Modal from '../widgets/Modal/modal';
 
 import { isArrayEmpty, isObjectEmpty } from '../constants/utils';
 
-import { useDispatch, useSelector } from 'react-redux';
-import { getSettingsLevels, getSettingsUpdateStatus, updateLevel } from '../app/settingsSlice';
+import { getSettingsLevels, getSettingsSubjects, getSettingsUpdateStatus, updateLevel } from '../app/settingsSlice';
 import { statuses } from '../constants/statuses';
-import { nanoid } from '@reduxjs/toolkit';
+
 
 function Levels() {
 
     const levels = useSelector(getSettingsLevels);
-    const all_subjects = [];
+    const all_subjects = useSelector(getSettingsSubjects);
     
     const [loading, setLoading] = useState(false);
     const [editingLevelFocus, setEditingLevelFocus] = useState(null);
@@ -32,6 +32,24 @@ function Levels() {
         if(!Boolean(editingLevelFocus)) return;
 
         setEditingLevelFocus((prev) => {
+            if (['subjects'].includes(field_name)){
+                let subjects = []
+
+                if (prev.level.subjects.includes(field_value)){
+                    subjects = prev.level.subjects.filter((subj)=> subj !== field_value);
+                }else{
+                    subjects = [...prev.level.subjects, field_value];
+                }
+
+                return {
+                    ...prev,
+                    level: {
+                        ...prev.level,
+                        subjects,
+                    }
+                }
+            }
+
             return {
                 ...prev,
                 level:{
@@ -61,12 +79,11 @@ function Levels() {
         setLoading(true);
     }
 
-
-    const renderSubjects = (subjects_id) => {
+    const renderLevelSubjects = (subjects_id) => {
         if (isArrayEmpty(subjects_id)) {
             return (
                 <p className="text-muted text-center">
-                    No Subject Added To This Level
+                    No subject added to this level
                 </p>
             )
         }
@@ -74,13 +91,13 @@ function Levels() {
         return (
             <div className="badges">
                 {
-                    subjects_id.map((echs, i) => {
-                        let name = all_subjects[echs]
+                    subjects_id.map((id) => {
+                        const {name} = all_subjects[id]
 
                         if (!name) return null;
 
                         return (
-                            <span className="badge badge-primary" key={i}>
+                            <span className="badge badge-primary" key={id}>
                                 {name}
                             </span>
                         )
@@ -131,7 +148,7 @@ function Levels() {
                                 <p>Subjects Offered</p>
 
 
-                                {renderSubjects(each_level.subjects)}
+                                {renderLevelSubjects(each_level.subjects)}
                             </div>
                         </div>
                     </div>
@@ -150,11 +167,9 @@ function Levels() {
         </>;
     }
 
-
     const renderAvailableSubjects = (level_subjects) => {
-        let subjects = all_subjects ?? {};
 
-        if (isObjectEmpty(subjects)) {
+        if (isObjectEmpty(all_subjects)) {
             return (
                 <p className="text-center text-muted">
                     No Available Subjects
@@ -169,25 +184,25 @@ function Levels() {
 
                 <div className="selectgroup selectgroup-pills">
                     {
-                        Object.entries(subjects).map(([id, name], i) => {
+                        Object.entries(all_subjects).map(([_id, subject]) => {
                             return (
                                 <label
                                     className="selectgroup-item"
-                                    key={i}
+                                    key={_id}
                                 >
                                     <input
                                         type="checkbox"
                                         name="subjects"
-                                        value={id}
+                                        value={_id ?? ''}
                                         className="selectgroup-input"
-                                        checked={level_subjects.includes(id)}
+                                        checked={level_subjects.includes(_id)}
                                         onChange={handleInputChange}
                                     />
 
                                     <span
                                         className="selectgroup-button"
                                     >
-                                        {name}
+                                        {subject.name}
                                     </span>
                                 </label>
                             )
@@ -198,7 +213,6 @@ function Levels() {
             </div>
         )
     }
-
 
     const renderModal = () => {
 
