@@ -16,6 +16,9 @@ const initialState = {
     subjects: null,
     staffs: null,
     roles:null,
+
+    grades:null,
+    attrs:null,
 }
 
 
@@ -107,6 +110,9 @@ const settingsSlice = createSlice({
                 state.subjects = settings.subjects || null;
                 state.staffs = settings.staffs || null;
                 state.roles = settings.roles || null;
+
+                state.grades = settings.grades || null;
+                state.attrs = settings.attrs || null;
 
             })
             .addCase(loadSettings.rejected, (state, action) => {
@@ -210,6 +216,9 @@ export const getSettingsStaffById = (state, staff_id) => state.settings.staffs.f
 
 export const getSettingsRoles = (state) => state.settings.roles;
 
+
+export const getSettingsGrades = (state) => state.settings.grades;
+export const getSettingsAttrs = (state) => state.settings.attrs;
 
 export const getSettingsError = (state) => state.settings.error;
 export const getSettingsStatus = (state) => state.settings.status;
