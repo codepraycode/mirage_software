@@ -80,9 +80,38 @@ class Settings {
 
         subjects: {
             name:'subjects',
-            default:null,
+            default: {
+                [nanoid.nanoid()]: {
+                    name: 'Mathematics',
+                    short: 'MTH',
+                    description: 'An abstract science',
+                    staffs: [], // list of staffs teaching this subject
+                    total_obtainable: 100,
+                    required: true,
+                },
+                [nanoid.nanoid()]: {
+                    name: 'English',
+                    short: 'ENG',
+                    description: 'English studies',
+                    staffs: [], // list of staffs teaching this subject
+                    total_obtainable: 100,
+                    required: true,
+                    
+                },
+                [nanoid.nanoid()]: {
+                    name: 'Computer',
+                    short: 'COMP',
+                    description: 'Study of computer',
+                    staffs: [], // list of staffs teaching this subject
+                    total_obtainable: 100,
+                    required: true,
+                },
+
+            },
+        
         },
 
+        
         levels: {
             name:'levels',
             default: {

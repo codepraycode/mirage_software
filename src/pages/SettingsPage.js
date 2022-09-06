@@ -14,6 +14,7 @@ import LevelSettings from '../components/LevelSettings';
 
 import { capitalize } from '../constants/utils';
 import { appSettingsUrl, levelsSettingsUrl, profileSettingsUrl, schoolSettingsUrl, sessionsSettingsUrl, settingsUrl, staffsSettingsUrl } from '../constants/app_urls';
+import SubjectsSettings from '../components/SubjectsSettings';
 
 
 function Settings() {
@@ -98,7 +99,12 @@ function Settings() {
         }
 
         if (section === 'levels') {
-            return <LevelSettings />
+            return (
+                <>
+                    <LevelSettings />
+                    <SubjectsSettings/>
+                </>
+            )
         }
 
         if (section === 'profile') {

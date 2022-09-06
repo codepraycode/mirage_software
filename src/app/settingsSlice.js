@@ -74,19 +74,17 @@ export const updateRoles = createAsyncThunk('settings/updateRoles', async (data)
 })
 
 
-// export const addLevel = createAsyncThunk('settings/addLevel', async (data) => {
-
-//     // data._id = nanoid();
-
-//     await window.api.request(settings_channel.update, { section: 'levels', data });
-
-//     return data;
-
-// })
-
 export const updateLevel = createAsyncThunk('settings/updateLevel', async (data) => {
 
     await window.api.request(settings_channel.update, { section: 'levels', data });
+
+    return data;
+
+})
+
+export const updateSubject = createAsyncThunk('settings/updateSubject', async (data) => {
+
+    await window.api.request(settings_channel.update, { section: 'subjects', data });
 
     return data;
 
@@ -183,6 +181,17 @@ const settingsSlice = createSlice({
                 state.levels = { ...state.levels, ...action.payload};
             })
             .addCase(updateLevel.rejected, (state, action) => {
+                state.update_status = statuses.failed;
+                state.update_error = action.error.message;
+            })
+
+            // Update subjects
+            .addCase(updateSubject.fulfilled, (state, action) => {
+                state.update_status = statuses.idle
+
+                state.subjects = { ...state.subjects, ...action.payload};
+            })
+            .addCase(updateSubject.rejected, (state, action) => {
                 state.update_status = statuses.failed;
                 state.update_error = action.error.message;
             })
