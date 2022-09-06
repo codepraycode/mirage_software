@@ -55,6 +55,8 @@ const NewStaff = ({ goBack, staff_id }) => {
 
     const handleInputChange = (e) => {
 
+        e.preventDefault();
+
         let field_name = e.target.name;
         let field_type = e.target.type;
         let field_value = e.target.value;
@@ -84,9 +86,9 @@ const NewStaff = ({ goBack, staff_id }) => {
 
         if (Boolean(staff)){
             setNoOfChanges((pp) => {
-                if (pp === 0) return 0;
-
+                
                 if (Object.is(state_form[field_name], field_value)) {
+                    if (pp === 0) return 0;
                     return pp - 1;
                 }
 
@@ -101,10 +103,16 @@ const NewStaff = ({ goBack, staff_id }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        let data = gatherData();
+        const data = gatherData();
         // console.log(data);
 
-        storeDispatch(updateStaffs(data));
+        // if(Boolean(staff)){
+        //     data._id = staff._id;
+        // }
+
+        const staff_data = {...staff, ...data};
+
+        storeDispatch(updateStaffs(staff_data));
 
 
         setLoading(true);
@@ -128,7 +136,7 @@ const NewStaff = ({ goBack, staff_id }) => {
             )
         }
 
-        if (!anyChanges) {
+        if (!anyChanges && Boolean(staff)) {
             return (
                 <button
                     className={`btn btn-outline-primary disabled`}

@@ -204,23 +204,25 @@ const settingsSlice = createSlice({
 
                 const { _id } = data;
 
+                let updated = false;
 
-                if(!Boolean(_id)){
-                    // New Staff
-                    state.staffs = [...state.staffs, data];
-                }else{
-                    state.staffs = state.staffs.map((each) => {
+                state.staffs = state.staffs.map((each) => {
 
-                        if (each._id === _id) {
-                            return {
-                                ...each,
-                                ...data,
-                            }
+                    if (each._id === _id) {
+                        updated = true;
+
+                        return {
+                            ...each,
+                            ...data,
                         }
+                    }
 
-                        return each;
+                    return each;
 
-                    });
+                });
+
+                if(!updated){
+                    state.staffs = [...state.staffs, data];
                 }
 
             })
@@ -228,6 +230,7 @@ const settingsSlice = createSlice({
                 state.update_status = statuses.failed;
                 state.update_error = action.error.message;
             })
+            // Delete Staff
             .addCase(deleteStaff.fulfilled, (state, action) => {
                 state.update_status = statuses.idle
 

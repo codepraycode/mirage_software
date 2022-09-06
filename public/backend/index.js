@@ -114,12 +114,11 @@ ipcMain.handle("account:check_password", async (_e, { user_id,password}) => {
 
     if (!Boolean(user_query) || user_query?.length < 1) return false;
     
-
     const user = user_query[0];
 
     return user.password === password;
 
-})
+}) 
 
 ipcMain.handle("account:all", async () => {    
 
