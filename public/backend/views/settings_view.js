@@ -83,6 +83,29 @@ class Settings {
             default:null,
         },
 
+        levels: {
+            name:'levels',
+            default: {
+                [nanoid.nanoid()]: {
+                    label: 'Preparatory',
+                    subjects: [],
+                },
+                [nanoid.nanoid()]: {
+                    label: 'Grade 1',
+                    subjects: [],
+                },
+                [nanoid.nanoid()]: {
+                    label: 'Grade 2',
+                    subjects: [],
+                },
+                [nanoid.nanoid()]: {
+                    label: 'Grade 3',
+                    subjects: [],
+                },
+                
+            },
+        },
+
         roles:{
             name:'roles',
             default:{
@@ -98,8 +121,7 @@ class Settings {
             name:'staffs',
             default:[]
         }, // array
-    } 
-
+    }
 
     /* 
         * School data
@@ -196,7 +218,7 @@ class Settings {
             if (!prev_setting) return null // TODO: THROW ERROR    
             
             // update normal settings
-            prev_setting.setting_data = data
+            prev_setting.setting_data = { ...prev_setting.setting_data,...data}
             await settingsDb.update({setting_name},{...prev_setting})
 
             return null;

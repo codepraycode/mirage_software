@@ -97,11 +97,12 @@ function Settings() {
             )
         }
 
-        if (section === 'profile') {
-            return <ProfileSettings />
-        }
         if (section === 'levels') {
             return <LevelSettings />
+        }
+
+        if (section === 'profile') {
+            return <ProfileSettings />
         }
 
         return (

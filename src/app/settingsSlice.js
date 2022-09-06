@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, nanoid } from "@reduxjs/toolkit";
 import { settings_channel } from '../constants/channels';
 import { statuses } from '../constants/statuses';
 
@@ -15,7 +15,9 @@ const initialState = {
     sessions: null,
     subjects: null,
     staffs: null,
+    
     roles:null,
+    levels:null,
 
     grades:null,
     attrs:null,
@@ -72,6 +74,25 @@ export const updateRoles = createAsyncThunk('settings/updateRoles', async (data)
 })
 
 
+// export const addLevel = createAsyncThunk('settings/addLevel', async (data) => {
+
+//     // data._id = nanoid();
+
+//     await window.api.request(settings_channel.update, { section: 'levels', data });
+
+//     return data;
+
+// })
+
+export const updateLevel = createAsyncThunk('settings/updateLevel', async (data) => {
+
+    await window.api.request(settings_channel.update, { section: 'levels', data });
+
+    return data;
+
+})
+
+
 
 export const updateSessionSetting = createAsyncThunk('settings/updateSessionSetting', async (data) => {
     const res = await window.api.request(settings_channel.update, { section: 'sessions', data });
@@ -110,6 +131,7 @@ const settingsSlice = createSlice({
                 state.subjects = settings.subjects || null;
                 state.staffs = settings.staffs || null;
                 state.roles = settings.roles || null;
+                state.levels = settings.levels || null;
 
                 state.grades = settings.grades || null;
                 state.attrs = settings.attrs || null;
@@ -150,6 +172,17 @@ const settingsSlice = createSlice({
                 state.sessions = { ...state.sessions,...action.payload};
             })
             .addCase(updateSessionSetting.rejected, (state, action) => {
+                state.update_status = statuses.failed;
+                state.update_error = action.error.message;
+            })
+
+            // Update Levels
+            .addCase(updateLevel.fulfilled, (state, action) => {
+                state.update_status = statuses.idle
+
+                state.levels = { ...state.levels, ...action.payload};
+            })
+            .addCase(updateLevel.rejected, (state, action) => {
                 state.update_status = statuses.failed;
                 state.update_error = action.error.message;
             })
@@ -215,6 +248,7 @@ export const getSettingsStaffs = (state) => state.settings.staffs;
 export const getSettingsStaffById = (state, staff_id) => state.settings.staffs.find((staff)=> staff._id === staff_id);
 
 export const getSettingsRoles = (state) => state.settings.roles;
+export const getSettingsLevels = (state) => state.settings.levels;
 
 
 export const getSettingsGrades = (state) => state.settings.grades;

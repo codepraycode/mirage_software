@@ -4,61 +4,62 @@ import Loading from '../widgets/Preloader/loading';
 import Modal from '../widgets/Modal/modal';
 
 import { isArrayEmpty, isObjectEmpty } from '../constants/utils';
-import LevelCategories from './LevelCategories';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { getSettingsLevels, getSettingsUpdateStatus, updateLevel } from '../app/settingsSlice';
+import { statuses } from '../constants/statuses';
+import { nanoid } from '@reduxjs/toolkit';
 
 function Levels() {
-    const [state, setState] = useState({
-        // settings:null
-        // all_subjects:null
-        loaded: false,
-        loading: true,
-        processing: false,
-        showModal: false,
-        edit_focus: ''
-    });
 
-    const settings = null;
+    const levels = useSelector(getSettingsLevels);
     const all_subjects = [];
-    const loading = false;
-    const proccessing = false;
-    const showModal = false;
-    const edit_focus = null;
+    
+    const [loading, setLoading] = useState(false);
+    const [editingLevelFocus, setEditingLevelFocus] = useState(null);
 
-    let level_manifest = {
-        level_label: '',
-        categories: [],
-        have_categories: false,
-        subjects: [],
-    }
 
+    const status = useSelector(getSettingsUpdateStatus);
+    const storeDispatch = useDispatch();
 
     const handleInputChange = (e) => {
+        e.preventDefault();
         let field_name = e.target.name;
         let field_value = e.target.value;
 
-        console.log(field_name, "changed to", field_value);
+        // console.log(field_name, "changed to", field_value);
+
+        if(!Boolean(editingLevelFocus)) return;
+
+        setEditingLevelFocus((prev) => {
+            return {
+                ...prev,
+                level:{
+                    ...prev.level,
+                    [field_name]: field_value,
+                }
+            }
+        });
+
     }
 
 
-    // const processModalSave = () => {
-    //     return new Promise((resolved, rejected) => {
-    //         if (isObjectEmpty(edit_focus)) {
-    //             resolved({})
-    //             return;
-    //         }
-            
-    //         // let edit_focus = { ...edit_focus }
-
-    //         if (!edit_focus.level_label) {
-    //             resolved(edit_focus);
-    //             return;
-    //         }
+    const processModalSave = () => {
+        if (isObjectEmpty(editingLevelFocus)) {
+            return;
+        }
 
 
-    //         let { categories } = edit_focus;
-    //         edit_focus.have_categories = !isArrayEmpty(categories);
-    //     });
-    // }
+        const {_id, level} = editingLevelFocus;
+
+        const data = {
+            [_id || nanoid()]:level
+        }
+
+        storeDispatch(updateLevel(data));
+
+        setLoading(true);
+    }
 
 
     const renderSubjects = (subjects_id) => {
@@ -89,201 +90,64 @@ function Levels() {
         )
     }
 
-    const renderCategories = (categories) => {
-        if (isArrayEmpty(categories)) {
-            return (
-                <p className="text-muted text-center">
-                    No Categories
-                </p>
-            )
-        }
-        let cat_temp = []
-
-        for (let eah of categories) {
-            let name = all_categories[eah]
-            if (!name) {
-                continue
-            }
-
-            cat_temp.push(name)
-        }
-
-        if (isArrayEmpty(cat_temp)) {
-            return (
-                <p className="text-muted text-center">
-                    No Categories
-                </p>
-            )
-        }
-
-        return (
-            <p className="text-balls text-primary">
-                {
-                    cat_temp.map((echl, i) => {
-
-
-                        return (
-                            <span key={i}>
-                                <b>{echl}</b>
-                            </span>
-                        )
-                    })
-                }
-            </p>
-        )
-    }
-
-
     const renderContent = () => {
-        if (loading) {
-            return (
-                <Loading />
-            )
-        }
 
-        if (isObjectEmpty(settings)) {
+        if (isObjectEmpty(levels)) {
             return (
                 <p className="text-muted text-center">
-                    No Level Settings
+                    No Levels
                 </p>
             )
         }
 
-        let template = [];
+        let template =  Object.entries(levels).map(([id, each_level], ) => {
+            return (
+                <div className="col-12 col-md-6 col-lg-4" key={id}>
+                    <div className="card card-primary">
+                        <div className="card-header">
+                            <h4>{each_level.label}</h4>
 
-        if (isArrayEmpty(settings?.levels)) {
-            template.push(
-                <p className="text-center text-muted" key={0}>
-                    No Level Settings
-                </p>
-            )
+                            <div className="card-header-action">
+                                <span 
+                                    className='text-primary'
+                                    style={{ cursor: "pointer" }}
+                                >
+                                    <i 
+                                        className="fas fa-pen"
+                                        onClick={() => {
+                                            setEditingLevelFocus(() => {
+                                                return { _id: id, level: each_level }
+                                            });
 
-        } else {
-            template.push(
-                <div className="row" key={1}>
-                    {
-                        settings.levels.map((each_level, i) => {
-                            return (
-                                <div className="col-12 col-md-6 col-lg-4" key={i}>
-                                    <div className="card card-primary">
-                                        <div className="card-header">
-                                            <h4>{each_level.level_label}</h4>
+                                        }}
+                                    ></i>
+                                </span>
+                            </div>
+                        </div>
 
-                                            <div className="card-header-action">
-                                                <span className='text-primary'>
-                                                    <i className="fas fa-pen"
-                                                        style={{ cursor: "pointer" }}
-                                                        onClick={() => {}}></i>
-                                                </span>
-                                            </div>
-                                        </div>
+                        <div className="card-body">
 
-                                        <div className="card-body">
-                                            <div className='my-2'>
-                                                <p>Level Categories</p>
-
-                                                {renderCategories(each_level.categories)}
-                                                
-                                            </div>
-
-                                            <div className='my-2'>
-                                                <p>Subjects Offered</p>
+                            <div className='my-2'>
+                                <p>Subjects Offered</p>
 
 
-                                                {renderSubjects(each_level.subjects)}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )
-                        })
-                    }
+                                {renderSubjects(each_level.subjects)}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )
-        }
+        });
+
+        
 
 
         return <>
-            {/* {renderCategories(state.settings.categories, true)} */}
-            <LevelCategories />
-            <hr />
-            {template}
-        </>;
-    }
 
-
-    const renderAvailableLevelCategories = (level_categories) => {
-        if (isObjectEmpty(settings)) {
-            return (
-                <p className="text-center text-muted">
-                    No Categories
-                </p>
-            )
-        }
-        let categories = settings?.categories ?? [];
-
-        if (isArrayEmpty(categories)) {
-            return (
-                <p className="text-center text-muted">
-                    No Available Categories
-                </p>
-            )
-        }
-
-        let cat_temp = []
-
-        for (let eah of categories) {
-            // let name = state.all_categories[eah]
-            if (!eah.label) {
-                continue
-            }
-
-            cat_temp.push(eah)
-        }
-
-        if (isArrayEmpty(cat_temp)) {
-            return (
-                <p className="text-center text-muted">
-                    No Available Categories
-                </p>
-            )
-        }
-
-        // console.log(categories);
-
-        return (
-            <div className="form-group" style={{ width: '350px' }}>
-                <label className="form-label">Level Categories</label>
-                <div className="selectgroup selectgroup-pills">
-                    {
-                        cat_temp.map((each, i) => {
-                            return (
-                                <label
-                                    className="selectgroup-item"
-                                    key={i}
-                                >
-                                    <input
-                                        type="checkbox"
-                                        name={"categories"}
-                                        value={each._id}
-                                        className="selectgroup-input"
-                                        checked={level_categories.includes(each._id)}
-                                        onChange={handleInputChange}
-                                    />
-
-                                    <span
-                                        className="selectgroup-button"
-                                    >
-                                        {each.label}
-                                    </span>
-                                </label>
-                            )
-                        })
-                    }
-
-                </div>
+            <div className="row">
+                {template}
             </div>
-        )
+        </>;
     }
 
 
@@ -337,42 +201,50 @@ function Levels() {
 
 
     const renderModal = () => {
-        if (loading) return;
 
-        if (!showModal) return;
-
-        if (isObjectEmpty(edit_focus)) return;
+        if (isObjectEmpty(editingLevelFocus)) return;
         
-        let { level_label, categories, subjects } = edit_focus
+        let { level } = editingLevelFocus;
+
+        // let { label, subjects } = level;
         
         return (
             <Modal
                 title={`Level Settings`}
-                onClose={() => { }}
-                onSave={() => { }}
+                onClose={() => setEditingLevelFocus(null)}
+                onSave={() => processModalSave()}
                 affirmTxt={"Save"}
-                loading={proccessing}
+                loading={loading}
             >
                 <div className="form-group">
                     <label>Level Name</label>
                     <input
                         type="text"
                         className="form-control"
-                        name="level_label"
-                        value={level_label}
+                        name="label"
+                        value={level?.label || ''}
                         onChange={handleInputChange}
                     />
                 </div>
 
                 <hr />
-                {renderAvailableLevelCategories(categories)}
-                <hr />
-                {renderAvailableSubjects(subjects)}
+                {renderAvailableSubjects(level?.subjects)}
             </Modal>
         )
     }
 
-    // console.log(state);
+    const checkLoadStatus = () => {
+        if (status === statuses.idle && loading) {
+            setLoading(false);
+            setEditingLevelFocus(null);
+            
+        }
+    }
+
+    useEffect(() => {
+        checkLoadStatus();
+    })
+
 
     return (
         <>
@@ -385,7 +257,12 @@ function Levels() {
                         <span className="text-primary">
                             <i className="fa fa-plus" aria-hidden="true"
                                 style={{ cursor: "pointer" }}
-                                onClick={() => { }}
+                                onClick={() => {
+                                    setEditingLevelFocus(() => {
+                                        return { _id:null, level:{}}
+                                    });
+
+                                }}
 
                             ></i>
                         </span>
