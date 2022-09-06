@@ -13,6 +13,7 @@ import SettingsLayout from './layout/SettingsLayout';
 
 const Initialization = React.lazy(()=> import ('./screens/Initialization'));
 const Home = React.lazy(() => import('./screens/Home'));
+const Admission = React.lazy(() => import('./screens/Admission'));
 
 
 const Settings = React.lazy(() => import('./screens/settings'));
@@ -59,7 +60,7 @@ const AppRoutes = ()=>{
 
                     <Route path={"admission"} exact element={
                         <Suspense fallback={<Preloader type={"module_loader"} />}>
-                            <Home />
+                            <Admission />
                         </Suspense>
                     } />
 

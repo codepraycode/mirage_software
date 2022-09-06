@@ -10,6 +10,7 @@ const admissionUrl = `${dashboardUrl}/admission`;
 const setsUrl = `${dashboardUrl}/sets`;//"/sets";
 const sessionUrl = `${dashboardUrl}/session`; // "/session";
 
+// Settings url
 const schoolSettingsUrl = `${settingsUrl}/school`;
 const staffsSettingsUrl = `${settingsUrl}/staffs`;
 const profileSettingsUrl = `${settingsUrl}/profile`;

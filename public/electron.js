@@ -12,6 +12,7 @@ const {app_files_dir} = require('./backend');
 // File manager
 const { ImageManager } = require('./backend/file_managers');
 
+
 // Autoupdater Debug Setup
 autoUpdater.logger = log
 autoUpdater.logger.transports.file.level = "info"

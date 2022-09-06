@@ -433,19 +433,21 @@ const yr = dt.getFullYear();
 
 
 const NewSetFormConfig = {
-    label: {
-        required: true,
-        type: "text",
-        name: "label",
-        label: "Set's Label",
-        placeholder: `for example: Set ${yr}/${yr+1}`,
-    },
-    name: {
-        required: false,
-        type: "text",
-        name: "name",
-        label: "Set's name",
-        placeholder: "Enter a name to identify this class set",
+    form_data:{
+        label: {
+            required: true,
+            data_type: "text",
+            name: "label",
+            label: "Set's Label",
+            placeholder: `for example: Set ${yr}/${yr + 1}`,
+        },
+        name: {
+            required: false,
+            data_type: "text",
+            name: "name",
+            label: "Set's name",
+            placeholder: "Enter a name to identify this class set",
+        },
     },
 };
 
