@@ -5,7 +5,7 @@ import SchoolSettings from '../components/SchoolSetting';
 import AppUsers from '../components/AppUsers';
 import StaffSettings from '../components/StaffSettings';
 import RoleSettings from '../components/RoleSettings';
-import GeneralSettings from '../components/GeneralSettings';
+import SessionSettings from '../components/SessionSettings';
 import GradesSettings from '../components/GradesSettings';
 import AttrSettings from '../components/AttrSettings';
 import ProfileSettings from '../components/ProfileSettings';
@@ -90,7 +90,7 @@ function Settings() {
         if (section === 'sessions') {
             return (
                 <>
-                    <GeneralSettings/>
+                    <SessionSettings/>
                     <GradesSettings/>
                     <AttrSettings/>
                 </>

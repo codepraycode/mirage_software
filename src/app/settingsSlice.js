@@ -57,10 +57,21 @@ export const updateSchool = createAsyncThunk('settings/updateSchool', async (dat
 });
 
 
-
-
 export const updateRoles = createAsyncThunk('settings/updateRoles', async (data) => {
     const res = await window.api.request(settings_channel.update, { section: 'roles', data });
+
+    if (!res) {
+        return data;
+    }
+
+    return res;
+
+})
+
+
+
+export const updateSessionSetting = createAsyncThunk('settings/updateSessionSetting', async (data) => {
+    const res = await window.api.request(settings_channel.update, { section: 'sessions', data });
 
     if (!res) {
         return data;
@@ -121,6 +132,18 @@ const settingsSlice = createSlice({
                 state.roles = { ...state.roles,...action.payload};
             })
             .addCase(updateRoles.rejected, (state, action) => {
+                state.update_status = statuses.failed;
+                state.update_error = action.error.message;
+            })
+
+
+            // Update Sessions
+            .addCase(updateSessionSetting.fulfilled, (state, action) => {
+                state.update_status = statuses.idle
+
+                state.sessions = { ...state.sessions,...action.payload};
+            })
+            .addCase(updateSessionSetting.rejected, (state, action) => {
                 state.update_status = statuses.failed;
                 state.update_error = action.error.message;
             })

@@ -14,8 +14,14 @@ class Settings {
 
         sessions:{
             name:'sessions',
-            default:null,
+            default:{
+                no_of_terms:3, // session categories
+                verbose:"Term", // session category name
+                pass_mark:0.4, // 40% to promote
+                auto_promote:true, // auto promote students
+            },
         },
+
         subjects: {
             name:'subjects',
             default:null,
@@ -53,7 +59,7 @@ class Settings {
             - contacts: str,
             - email: str,
             - website: str,
-        }
+        } 
     */
 
 
@@ -63,7 +69,7 @@ class Settings {
 
             console.log(`Setting up backend...`);
 
-            /* 
+            /*
                 Check the settings pattern, check through the settings,
                 if a particular setting can't be found, create it
             */
@@ -125,7 +131,6 @@ class Settings {
                 }
 
             }
-
 
 
             // Find the setting
@@ -196,7 +201,7 @@ class Settings {
  
     }
 
-    
+
 
     serialize = (document) => {
 
