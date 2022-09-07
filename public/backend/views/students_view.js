@@ -12,13 +12,13 @@ class SchoolSet {
 
             const {name, label} = set_data;
 
-            const any_set_name = setsDb.findOne({name});
+            const any_set_name = await setsDb.findOne({name});
 
             if(Boolean(any_set_name)){
                 throw Error("Set name already exists");
             }
 
-            const any_set_label = setsDb.findOne({ label });
+            const any_set_label = await setsDb.findOne({ label });
 
             if (Boolean(any_set_label)) {
                 throw Error("Set label already exists");

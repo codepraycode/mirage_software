@@ -129,13 +129,12 @@ ipcMain.handle("account:all", async () => {
 
 }); 
 
-
-
 ipcMain.handle("account:update", async (_event, data) => {
 
     return await account.update(data);
 
 })
+
 
 // ================= Set =======================
 ipcMain.handle("set:new", async (_e, set_data) => {
@@ -154,7 +153,7 @@ ipcMain.handle("set:new", async (_e, set_data) => {
             last_updated: "2022-08-01T06:30:00.854026Z"
             name: "Set'27"
         }
-    */
+    */ 
 
     try{
         const data = await schoolset.create(set_data)
@@ -238,7 +237,6 @@ ipcMain.handle("session:all", async () => {
 
     return docs;
 });
-
 
 // ============================================
 

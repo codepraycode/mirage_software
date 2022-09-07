@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { createSet, getOpenedSet, getSetUpdateError } from '../app/setSlice';
 import { NewSetFormConfig } from '../constants/form_configs';
 
 import { createField, createFormDataFromSchema, useQuery } from '../constants/utils';
@@ -9,7 +11,8 @@ import Modal from '../widgets/Modal/modal';
 const CreateSet = ({ closeModal }) => {
 
 
-    const error = null
+    const error = useSelector(getSetUpdateError);
+    const storeDispatch = useDispatch();
 
     const [loading, setLoading] = useState(false);
 
@@ -69,7 +72,8 @@ const CreateSet = ({ closeModal }) => {
             isOpened: true
         });
 
-        console.log(new_set_data);
+        // console.log(new_set_data);
+        storeDispatch(createSet(new_set_data))
 
         setLoading(true);
     }
@@ -85,6 +89,16 @@ const CreateSet = ({ closeModal }) => {
         )
     }
 
+
+    const changeLoadingStatus = ()=>{
+        if(Boolean(error) && loading){
+            setLoading(false);
+        }
+    }
+
+    useEffect(()=>{
+        changeLoadingStatus();
+    })
     // console.log(state)
     return (
         <>
@@ -124,7 +138,7 @@ const CreateSet = ({ closeModal }) => {
                             </button>
                     }
 
-
+                    &nbsp;
                     {
                         loading ?
                         <button type="button" className="btn btn-primary mr-4 disabled" disabled>
@@ -152,7 +166,7 @@ const Admission = () => {
 
     const navigate = useNavigate();
 
-    const openedSet = null;
+    const openedSet = useSelector(getOpenedSet);
 
     const [hosting, setHosting] = useState(()=>{
         return query.get('autohost') === 'true' ? true : false;
@@ -161,7 +175,7 @@ const Admission = () => {
 
     const checkOpenedSet = ()=>{
         if (Boolean(openedSet)){
-            navigate(`/admission/${openedSet._id}`);
+            navigate(`/admission/${openedSet._id}`, {replace:true});
         }
     }
 

@@ -1,16 +1,17 @@
 import React, { useEffect } from 'react';
 import {useSelector,useDispatch} from 'react-redux';
-import { getSettingsError, getSettingsSchool, getSettingsStatus, loadSettings } from '../app/settingsSlice';
+import { getSettingsSchool, getSettingsStatus, loadSettings } from '../app/settingsSlice';
 import { initializeUrl, loginUrl } from '../constants/app_urls';
 import { statuses } from '../constants/statuses';
 import { useNavigate } from 'react-router-dom';
 import { loadUsers } from '../app/userSlice';
+import { loadSets } from '../app/setSlice';
 
 const SetupScreen = () => {
     // This screen decides login, initialization or just directly to the home screen
 
     const status = useSelector(getSettingsStatus);
-    const error = useSelector(getSettingsError);
+    // const error = useSelector(getSettingsError);
     const school = useSelector(getSettingsSchool);
 
     const storeDispatch = useDispatch();
@@ -27,6 +28,7 @@ const SetupScreen = () => {
             // Loading for the first time
             storeDispatch(loadSettings());
             storeDispatch(loadUsers());
+            storeDispatch(loadSets())
         }
         
         
