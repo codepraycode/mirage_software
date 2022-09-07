@@ -34,6 +34,7 @@ export const schoolset_channel = {
 
 
     save_student: `${schoolset}:save_student`,
+    delete_student: `${schoolset}:delete_student`,
     save_sponsor: `${schoolset}:save_sponsor`,
     load_students: `${schoolset}:load_students`,
     load_admitted_students: `${schoolset}:load_admitted_students`,

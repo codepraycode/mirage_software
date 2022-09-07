@@ -196,6 +196,13 @@ ipcMain.handle("set:save_student", async (_e,data) => {
     
     return doc
 });
+
+ipcMain.handle("set:delete_student", async (_e,_id) => {
+    
+    await schoolset.delete_student(_id);
+    
+    return null;
+});
 ipcMain.handle("set:save_sponsor", async (_e, { student_id, data }) => {
     // fetch school tha is_opened
 

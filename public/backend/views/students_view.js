@@ -120,6 +120,14 @@ class SchoolSet {
 
         }
 
+        this.delete_student = async(_id)=>{
+            // student_data.set_id = set_id;
+            await studentsDb.remove({ _id });
+
+            return null;
+
+        }
+
         this.load_students = async (set_id) => {
             let docs = await studentsDb.find({ set_id });
             

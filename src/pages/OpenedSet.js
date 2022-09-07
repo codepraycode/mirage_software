@@ -9,6 +9,7 @@ import { getOpenedSetStudents, getSetById, loadSetStudents } from '../app/setSli
 import { avatar } from '../constants/assets';
 import { admissionUrl } from '../constants/app_urls';
 import Modal from '../widgets/Modal/modal';
+import { schoolset_channel } from '../constants/channels';
 
 
 
@@ -213,7 +214,10 @@ const OpenedSetStudents = ({ setId, setInfo})=>{
     const [studentToApprove, setStudentToApprove] = useState(null); // object of student and sponsor
 
 
-    const handleDelete = (_id)=>{}
+    const handleDelete = async (_id)=>{
+        await window.api.request(schoolset_channel.delete_student, _id);
+        storeDispatch(loadSetStudents(setId));
+    }
 
 
     const loadStudents = async ()=>{
