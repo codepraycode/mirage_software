@@ -7,6 +7,7 @@ import { capitalize, isArrayEmpty, useQuery } from '../constants/utils';
 import { useSelector } from 'react-redux';
 import { getSetById } from '../app/setSlice';
 import { avatar } from '../constants/assets';
+import { admissionUrl } from '../constants/app_urls';
 
 
 
@@ -40,15 +41,6 @@ const OpenedSetStudents = ({setId, onApprove, onConclude})=>{
 
         const getActionButtons = (item) => {
 
-            const printBtn = (
-                <button 
-                    className="btn btn-success outline-success disabled d-block" 
-                    disabled={true} key={1}
-                >
-                    <i className="fa fa-print mx-0" aria-hidden="true"></i>
-                </button>
-            )
-
             const approveBtn = (
                 <button
                     className="btn btn-primary text-center d-block"
@@ -61,7 +53,7 @@ const OpenedSetStudents = ({setId, onApprove, onConclude})=>{
 
             const reviewBtn = (
                 <Link
-                    to={`/admission/${setId}/new?n=false&&adNo=${item.id}`}
+                    to={`${admissionUrl}/${setId}/new?student=${item.id}`}
                     className="btn btn-warning outline-warning text-center d-block"
                     onClick={(e)=>{e.preventDefault()}}
                     target="_blank"
@@ -87,7 +79,7 @@ const OpenedSetStudents = ({setId, onApprove, onConclude})=>{
                 btn_templates.push(approveBtn, reviewBtn, deleteBtn);
             }
             else {
-                btn_templates.push(printBtn, reviewBtn, deleteBtn);
+                btn_templates.push(reviewBtn, deleteBtn);
             }
 
 
@@ -160,8 +152,8 @@ const OpenedSetStudents = ({setId, onApprove, onConclude})=>{
                 <div className="card-header-action">
 
                     <Link
-                        to={`/admission/${setId}/new`}
-                        onClick={(e)=>e.preventDefault()}
+                        to={`${admissionUrl}/${setId}/new`}
+                        // onClick={(e)=>e.preventDefault()}
                         target="_blank"
                         className="btn btn-primary mr-4"
                     >

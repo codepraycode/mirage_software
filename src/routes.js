@@ -15,6 +15,7 @@ const Initialization = React.lazy(()=> import ('./screens/Initialization'));
 const Home = React.lazy(() => import('./screens/Home'));
 const Admission = React.lazy(() => import('./screens/Admission'));
 const OpenedSet = React.lazy(() => import('./pages/OpenedSet'));
+const AdmissionForm = React.lazy(() => import('./pages/AdmissionForm'));
 
 
 const Settings = React.lazy(() => import('./screens/settings'));
@@ -82,6 +83,12 @@ const AppRoutes = ()=>{
                         </Suspense>
                     } />
                 </Route>
+
+                <Route path={`${dashboardUrl}/admission/:setId/new`} exact element={
+                    <Suspense fallback={<Preloader type={"module_loader"} />}>
+                        <AdmissionForm />
+                    </Suspense>
+                } />
 
 
                 <Route

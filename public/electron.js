@@ -81,7 +81,14 @@ function createWindow() {
         if (!childOpened){
             const win = new BrowserWindow({
                 parent: mainWindow,
-                title: "Mirage Software"
+                title: "Mirage Software",
+                webPreferences: {
+                    nodeIntegration: true, // is default value after Electron v5
+                    contextIsolation: true, // protect against prototype pollution
+                    enableRemoteModule: false, // turn off remote
+                    nativeWindowOpen: true,
+                    preload: path.join(__dirname, "preload.js"), // use a preload script,
+                },
             })
 
             win.show();

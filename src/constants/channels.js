@@ -12,6 +12,7 @@ export const settings_channel = {
     all:`${settings}:all`,
     start:`${settings}:start`,
     update:`${settings}:update`,
+    get:`${settings}:get`,
     delete: `${settings}:delete`,
 }
 
@@ -28,6 +29,7 @@ export const account_channel = {
 export const schoolset_channel = {
     new: `${schoolset}:new`,
     all: `${schoolset}:all`,
+    get: `${schoolset}:get`,
     update: `${schoolset}:update`,
 
 

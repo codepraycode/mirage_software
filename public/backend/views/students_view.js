@@ -73,7 +73,7 @@ class SchoolSet {
 
             if(!doc) return null;
 
-            const stats = get_stats(doc);
+            const stats = await this.get_stats(doc);
 
             return {
                 ...doc,
@@ -122,7 +122,7 @@ class SchoolSet {
 
         this.load_admitted_students = async (set_id) => {
 
-            let docs = await studentsDb.find({ set_id, admission_no: { $ne: null } });
+            let docs = await studentsDb.find({ set_id, admission_no: { $ne: null } }, {multi:true});
 
             return this.serialize(docs, true);
 
@@ -132,7 +132,7 @@ class SchoolSet {
         // Sponsors
         this.save_sponsor = async (student_id, data) => {
 
-            return await studentsDb.update({ _id: student_id }, { sponsor:data }, { upsert: true });
+            return await studentsDb.update({ _id: student_id }, { sponsor:data });
 
         }
 
@@ -178,12 +178,12 @@ class SchoolSet {
         return document
     }
 
-    get_stats = (set_data) => {
+    get_stats = async(set_data) => {
         if (!set_data) return null;
 
         const { _id: set_id } = set_data;
 
-        const students = this.load_admitted_students(set_id);
+        const students = await this.load_admitted_students(set_id);
         let male = 0;
         let female = 0;
 

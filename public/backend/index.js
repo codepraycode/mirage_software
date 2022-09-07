@@ -62,6 +62,14 @@ ipcMain.handle("settings:all",async()=>{
 })
 
 
+ipcMain.handle("settings:get", async (_e, section) => {
+    // Get all settings collections
+
+    const data = await settings.get(section)
+
+    return data;
+})
+
 
 // ================= Account =======================
 ipcMain.handle("account:new", async (_e, user_data) => {
@@ -168,6 +176,11 @@ ipcMain.handle("set:new", async (_e, set_data) => {
 ipcMain.handle("set:all", async () => {
 
     return await schoolset.all();
+})
+
+ipcMain.handle("set:get", async (_e, set_id) => {
+
+    return await schoolset.get(set_id);
 })
 
 ipcMain.handle("set:update", async (_e, set_data) => {

@@ -426,6 +426,109 @@ const StaffsDataSchema = {
     ]
 }
 
+const StudentDataSchema = {
+    form_data: {
+        passport: {
+            data_type: 'image',
+            name: 'passport',
+            required: true,
+            file_category: 'student_passport'
+        },
+        admission_no: {
+            data_type: 'text',
+            name: 'admission_no',
+            readOnly: true
+        },
+        first_name: {
+            data_type: 'text',
+            name: 'first_name',
+            placeholder: "Student's First Name",
+            required: true
+        },
+        last_name: {
+            data_type: 'text',
+            name: 'last_name',
+            placeholder: "Student's Last Name",
+            required: true
+        },
+        other_name: {
+            data_type: 'text',
+            name: 'other_name',
+            placeholder: "Student's Other Name",
+            required: true
+        },
+        date_of_birth: {
+            data_type: 'date',
+            name: 'date_of_birth',
+            placeholder: "Student's Date Of Birth",
+            required: true
+        },
+        gender: {
+            data_type: 'radio_selected_text',
+            options: ['male', 'female'],
+            name: 'gender',
+            required: true
+        },
+
+        place_of_birth: {
+            data_type: 'text',
+            name: 'place_of_birth',
+            placeholder: "Student's Place Of Birth",
+            required: false
+        },
+
+        state_of_origin: {
+            data_type: 'text',
+            name: 'state_of_origin',
+            placeholder: "Student's State Of Origin",
+            required: true
+        },
+        nationality: {
+            data_type: 'text',
+            name: 'nationality',
+            placeholder: "Student's nationality",
+            required: true
+        },
+        religion: {
+            data_type: 'text',
+            name: 'religion',
+            placeholder: "Student's religion",
+            required: false
+        },
+        residential_address: {
+            data_type: 'long_text',
+            name: 'residential_address',
+            placeholder: "Student's residential address",
+            required: false
+        },
+        state_of_residence: {
+            data_type: 'text',
+            name: 'state_of_residence',
+            placeholder: "Student's state of residence",
+            required: false
+        },
+        local_government: {
+            data_type: 'text',
+            name: 'local_government',
+            placeholder: "Student's local government",
+            required: false
+        },
+        zip_code: {
+            data_type: 'text',
+            name: 'zip_code',
+            placeholder: ""
+        },
+        
+
+    },
+    groups: [
+        [
+            ['passport', 'admission_no', 'first_name', 'last_name', 'other_name', 'gender', 'date_of_birth',],
+            ['place_of_birth', 'state_of_origin', 'nationality', 'religion','residential_address', 'state_of_residence', 'local_government', 'zip_code'],  
+        ],
+    ]
+}
+
 // Set
 
 const dt = new Date()
@@ -475,4 +578,5 @@ export {
     UserCreationFormConfig, NewSetFormConfig, 
     NewSessionFormConfig, form_configs_options,
     StaffsDataSchema, UserUpdateFormConfig,
+    StudentDataSchema, 
 }

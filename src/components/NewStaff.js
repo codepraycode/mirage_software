@@ -55,8 +55,6 @@ const NewStaff = ({ goBack, staff_id }) => {
 
     const handleInputChange = (e) => {
 
-        e.preventDefault();
-
         let field_name = e.target.name;
         let field_type = e.target.type;
         let field_value = e.target.value;
