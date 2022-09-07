@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom';
 
-import { useQuery, parseFileUrl, isArrayEmpty, isObjectEmpty, capitalize } from '../constants/utils';
+import { parseFileUrl } from '../constants/utils';
 
 
 import { avatar, school_logo_placeholder } from '../constants/assets';

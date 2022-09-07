@@ -83,7 +83,7 @@ const StudentForm = ({setId, proceed}) => {
             console.log(res);
 
             await window.api.request("students:modified");
-            proceed(res._id);
+            proceed(res);
         })
         .catch((err)=>{
             console.error(err);
@@ -93,87 +93,6 @@ const StudentForm = ({setId, proceed}) => {
         setLoading(true);
 
     }
-
-
-    // useEffect(() => {
-    //     if (!state.loaded) {
-    //         loadState();
-    //     }
-    //     if (!state.loadedExistingData) {
-    //         runStateFill()
-    //     }
-
-    // })
-
-
-    // const createSummary = () => {
-    //     let template = Object.entries(studentData.form).map((ecf, i) => {
-    //         let [field, config] = ecf;
-
-    //         if (config.elem === 'image') {
-    //             return (
-    //                 <li
-    //                     className="list-group-item d-flex justify-content-between align-items-center"
-    //                     key={i}
-    //                 >
-    //                     <b>{capitalize(field)}</b>
-
-
-    //                     <p style={{ height: "80px" }}>
-    //                         <img
-    //                             src={parseFileUrl(config.config.value)}//{profile.logo}
-    //                             onError={
-    //                                 ({ currentTarget }) => {
-    //                                     currentTarget.onerror = null; // prevents looping
-    //                                     currentTarget.src = './assets/images/fake_passport.png';
-    //                                 }
-    //                             }
-    //                             alt="Student's Passport" className="img-fluid"
-    //                             style={{ height: "100%" }}
-    //                         />
-    //                     </p>
-
-    //                 </li>
-    //             )
-    //         }
-
-    //         return (
-    //             <li
-    //                 className="list-group-item d-flex justify-content-between align-items-center"
-    //                 key={i}
-    //             >
-    //                 <b>{capitalize(field)}</b>
-
-
-    //                 <b>
-    //                     {
-    //                         config.config.value ?
-    //                             config.config.value
-    //                             :
-    //                             'Not Provided'
-    //                     }
-    //                 </b>
-
-    //             </li>
-    //         )
-    //     });
-
-    //     return (
-    //         <ul className="list-group">
-    //             {template}
-    //         </ul>
-    //     );
-    // }
-
-
-    // const renderPhaseContent = () => {
-
-    //     if (summarize === true) {
-    //         return <>
-    //             {createSummary(studentData.form)}
-    //         </>;
-    //     }
-    // }
 
 
     const renderButton = () => {
