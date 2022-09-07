@@ -529,6 +529,100 @@ const StudentDataSchema = {
     ]
 }
 
+const SponsorDataSchema = {
+    form_data: {
+        passport: {
+            data_type: 'image',
+            name: 'passport',
+            placeholder: "",
+            required: true,
+            file_category: 'sponsor_passport'
+        },
+        title: {
+            data_type: 'dropdown_selected_text',
+            name: 'title',
+            placeholder: "e.g Mr, Mrs, Prof, Dr",
+            options: ['Mr', 'Mrs', 'Miss', 'Prof', 'Dr', 'Chief'],
+            required: true
+        },
+        surname: {
+            data_type: 'text',
+            name: 'surname',
+            placeholder: "Surname",
+            required: true
+        },
+        first_name: {
+            data_type: 'text',
+            name: 'first_name',
+            placeholder: "First Name",
+            required: true
+        },
+        relationship: {
+            data_type: 'radio_selected_text',
+            options: [
+                'Father',
+                'Mother',
+                'Guardian'
+            ],
+            name: 'relationship'
+        },
+        occupation: {
+            data_type: 'text',
+            name: 'occupation',
+            placeholder: "occupation",
+        },
+        residential_address: {
+            data_type: 'long_text',
+            name: 'residential_address',
+            placeholder: "",
+            required: true
+        },
+        state_of_residence: {
+            data_type: 'text',
+            name: 'state_of_residence',
+            placeholder: "",
+            required: true
+        },
+        local_government: {
+            data_type: 'text',
+            name: 'local_government',
+            placeholder: "",
+            required: true
+        },
+        zip_code: {
+            data_type: 'text',
+            name: 'zip_code',
+            placeholder: ""
+        },
+
+        main_contact: {
+            data_type: 'text',
+            name: 'main_contact',
+            placeholder: "Main Contact Number",
+            required: true
+        },
+
+        other_contact: {
+            data_type: 'text',
+            name: 'other_contact',
+            placeholder: "Alternative contact",
+        },
+
+        email: {
+            data_type: 'email_text',
+            name: 'email',
+            placeholder: "Email Address",
+            required: true
+        },
+
+    },
+    groups: [
+        [
+            ['passport', 'title', 'surname', 'first_name'],
+            ['relationship', 'occupation', 'main_contact', 'other_contact', 'email']
+        ],
+    ],
+}
 // Set
 
 const dt = new Date()
@@ -578,5 +672,5 @@ export {
     UserCreationFormConfig, NewSetFormConfig, 
     NewSessionFormConfig, form_configs_options,
     StaffsDataSchema, UserUpdateFormConfig,
-    StudentDataSchema, 
+    StudentDataSchema, SponsorDataSchema,
 }

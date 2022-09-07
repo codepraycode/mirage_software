@@ -188,7 +188,6 @@ ipcMain.handle("set:update", async (_e, set_data) => {
 })
 
 
-
 // ================= Student =======================
 ipcMain.handle("set:save_student", async (_e,data) => {
     // fetch school tha is_opened

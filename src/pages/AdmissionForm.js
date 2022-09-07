@@ -1,14 +1,75 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom';
 
-import { useQuery, parseFileUrl, isArrayEmpty, isObjectEmpty } from '../constants/utils';
+import { useQuery, parseFileUrl, isArrayEmpty, isObjectEmpty, capitalize } from '../constants/utils';
 
 
-import { school_logo_placeholder } from '../constants/assets';
+import { avatar, school_logo_placeholder } from '../constants/assets';
 
 import { settings_channel } from '../constants/channels';
 import Loading from '../widgets/Preloader/loading';
 import StudentForm from '../components/StudentForm';
+import SponsorForm from '../components/SponsorForm';
+
+
+
+
+const Summary = ({data}) => {
+
+    let template = Object.entries(data).map(([field, value], i) => {
+
+        if (['image', 'passport', 'avatar', 'logo'].includes(field)) {
+            // Image
+            return (
+                <li
+                    className="list-group-item d-flex justify-content-between align-items-center"
+                    key={i}
+                >
+                    <b>{capitalize(field)}</b>
+
+
+                    <p style={{ height: "80px" }}>
+                        <img
+                            src={parseFileUrl(value) || avatar}//{profile.logo}
+                            onError={
+                                ({ currentTarget }) => {
+                                    currentTarget.onerror = null; // prevents looping
+                                    currentTarget.src = avatar;
+                                }
+                            }
+                            alt="Student's Passport" className="img-fluid"
+                            style={{ height: "100%" }}
+                        />
+                    </p>
+
+                </li>
+            )
+        }
+
+        return (
+            <li
+                className="list-group-item d-flex justify-content-between align-items-center"
+                key={i}
+            >
+                <b>{capitalize(field)}</b>
+
+
+                <b>
+                    {
+                        value || 'Not Provided'
+                    }
+                </b>
+
+            </li>
+        )
+    });
+
+    return (
+        <ul className="list-group">
+            {template}
+        </ul>
+    );
+}
 
 const AdmissionForm = () => {
     // Admission Form Component
@@ -42,19 +103,12 @@ const AdmissionForm = () => {
 
     const [phase, setPahse] = useState(1);
     
-    const [studentId, setStudentId] = useState(null);
-    const [sponsorId, setSponsorId] = useState(null);
+    const [student, setStudentId] = useState(null);
+    const [sponsor, setSponsor] = useState(null);
     
 
     const loadUp = async () => {
         if(!loading) return;
-
-        // if (!Boolean(schoolSet)){
-        //     const {stats,...rest} = await window.api.request(schoolset_channel.get, setId);
-
-        //     console.log(rest);
-        //     setSchoolSet(() => rest);
-        // }
 
         if (!Boolean(school)){
             const data = await window.api.request(settings_channel.get, "school");
@@ -122,7 +176,7 @@ const AdmissionForm = () => {
         /* 
             {student_id,phase_id, proceed, summarize,button_templates}
         */
-        if (phase === default_phase.length) {
+        if (Boolean(student) && Boolean(sponsor)) {
             template = (<>
                 {/* <StudentForm
                     student_id={state.student_id}
@@ -131,7 +185,9 @@ const AdmissionForm = () => {
                     summarize={true}
                     set_id={admissionId}
                 /> */}
+                <Summary data={student} />
                 <hr />
+                <Summary data={sponsor} />
                 {/* <SponsorForm
                     student_id={state.student_id}
                     sponsor_id={state.sponsor_id}
@@ -145,27 +201,24 @@ const AdmissionForm = () => {
         }
 
         else {
-            if (!Boolean(studentId)) {
+            if (!Boolean(student)) {
                 template = (
                     <StudentForm
                         setId={setId}
-                        proceed={(id) => setStudentId(()=>id)}
+                        proceed={(data) => setStudentId(() => data)}
                     />
                 )
             }
-            else if (!Boolean(sponsorId)) {
+            else if (!Boolean(sponsor)) {
                 template = (<>
-                    <p>Sponsor Form</p>
-                    {/* <SponsorForm
-                        student_id={state.student_id}
-                        sponsor_id={state.sponsor_id}
-                        // sponsor_data={state.sponsor_data}
-                        phase_id={"Sponsor"}
-                        proceed={(d_id = null, proceed = true) => updateIdAndProceed(d_id, 'sponsor_id', proceed)}
-                        summarize={false}
-                        set_id={admissionId}
-                        updating={state.modifying}
-                    /> */}
+                    
+                    <SponsorForm
+                        
+                        student_id={student._id}
+                        
+                        proceed={(data) => setSponsor(()=>data)}
+                        
+                    />
                 </>)
             }
         }
@@ -188,7 +241,7 @@ const AdmissionForm = () => {
 
     useEffect(()=>{
         loadUp();
-    }, [school, loading, studentId, sponsorId])
+    }, [school, loading, student, sponsor])
     
     return (
         <div className="container">

@@ -139,7 +139,9 @@ class SchoolSet {
         // Sponsors
         this.save_sponsor = async (student_id, data) => {
 
-            return await studentsDb.update({ _id: student_id }, { sponsor:data });
+            await studentsDb.update({ _id: student_id }, { sponsor:data });
+
+            return data;
 
         }
 
