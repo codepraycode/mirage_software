@@ -12,6 +12,7 @@ const initialState = {
 
     // Settings
     sets: null,
+    openSetStudents:[]
 }
 
 
@@ -20,6 +21,11 @@ export const loadSets = createAsyncThunk('set/loadSets', async () => {
     const all_sets = await window.api.request(schoolset_channel.all);
 
     return all_sets;
+});
+export const loadSetStudents = createAsyncThunk('set/loadSetStudents', async (set_id) => {
+    const students = await window.api.request(schoolset_channel.load_students, set_id);
+
+    return students;
 });
 
 export const createSet = createAsyncThunk('set/createSet', async (set_data) => {
@@ -38,6 +44,7 @@ export const updateSet = createAsyncThunk('set/updateSet', async (set_data) => {
 
     return set_data;
 });
+
 
 
 const setSlice = createSlice({
@@ -108,6 +115,13 @@ const setSlice = createSlice({
                 state.update_status = statuses.failed;
                 state.update_error = action.error.message;
             })
+
+            // Load students
+            .addCase(loadSetStudents.fulfilled, (state, action) => {
+
+                state.openSetStudents = action.payload
+
+            })
     }
 });
 
@@ -119,6 +133,7 @@ const setSlice = createSlice({
 // Selectors
 export const getAllSets = (state) => state.set.sets;
 export const getOpenedSet = (state) => state.set.sets?.find((st) => st.isOpened === true);
+export const getOpenedSetStudents = (state) => state.set.openSetStudents;
 export const getSetById = (state,setId) => state.set.sets?.find((st) => st._id === setId);
 
 export const getSetError = (state) => state.set.error;

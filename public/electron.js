@@ -103,17 +103,6 @@ function createWindow() {
 
         return {
             action: 'deny',
-            // overrideBrowserWindowOptions: {
-            //     minWidth: 990,
-            //     minHeight: 550,
-            //     webPreferences: {
-            //         nodeIntegration: true, // is default value after Electron v5
-            //         contextIsolation: true, // protect against prototype pollution
-            //         enableRemoteModule: false, // turn off remote
-            //         preload: path.join(__dirname, "preload.js")
-            //     },
-            //     title: "Mirage Software"
-            // }
         }
 
     });
@@ -406,5 +395,13 @@ ipcMain.handle('file:image_upload', (event, args = {}) => {
         console.log(err);
     })
 
+})
+
+
+ipcMain.handle('students:modified', (event, args = {}) => {
+    
+    mainWindow.webContents.send('students:reload');
+
+    return null;
 })
 // ==================== ooooooooooooooooooooo ========================

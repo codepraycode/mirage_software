@@ -190,10 +190,10 @@ ipcMain.handle("set:update", async (_e, set_data) => {
 
 
 // ================= Student =======================
-ipcMain.handle("set:save_student", async (_e,{set_id, data}) => {
+ipcMain.handle("set:save_student", async (_e,data) => {
     // fetch school tha is_opened
 
-    const doc = await schoolset.save_student(set_id,data);
+    const doc = await schoolset.save_student(data);
     
     return doc
 });

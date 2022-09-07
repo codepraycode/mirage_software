@@ -101,21 +101,28 @@ class SchoolSet {
 
         // Students
 
-        this.save_student = async(set_id, data)=>{
+        this.save_student = async(data)=>{
             // student_data.set_id = set_id;
             
             const { _id } = data;
 
-            await studentsDb.update({ _id }, { ...data, set_id}, {upsert:true});
+            const std = await studentsDb.findOne({ _id });
 
-            return { ...data, set_id }
+            if(!Boolean(std)){
+                const doc = await studentsDb.insert({ ...data });
+                
+                return doc;
+            }
+
+            await studentsDb.update({ _id }, { ...data}, {upsert:true});
+
+            return data;
 
         }
 
         this.load_students = async (set_id) => {
-
             let docs = await studentsDb.find({ set_id });
-
+            
             return this.serialize(docs, true);
 
         }

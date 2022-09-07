@@ -3,9 +3,9 @@ import Loading from '../widgets/Preloader/loading';
 
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { capitalize, isArrayEmpty, useQuery } from '../constants/utils';
-import { useSelector } from 'react-redux';
-import { getSetById } from '../app/setSlice';
+import { capitalize, isArrayEmpty, parseFileUrl, useQuery } from '../constants/utils';
+import { useDispatch, useSelector } from 'react-redux';
+import { getOpenedSetStudents, getSetById, loadSetStudents } from '../app/setSlice';
 import { avatar } from '../constants/assets';
 import { admissionUrl } from '../constants/app_urls';
 
@@ -13,12 +13,30 @@ import { admissionUrl } from '../constants/app_urls';
 
 const OpenedSetStudents = ({setId, onApprove, onConclude})=>{
 
-    const students = [];
-    const loading = false;
+    const students = useSelector(getOpenedSetStudents);
+    const storeDispatch = useDispatch();
+
+    const [loading, setLoading] = useState(true);
 
 
     const handleDelete = (_id)=>{}
 
+
+    const loadStudents = async ()=>{
+        if(loading){
+            storeDispatch(loadSetStudents(setId));
+
+            setLoading(false);
+        }
+    }
+
+    window.api.response("students:reload", () => {
+        storeDispatch(loadSetStudents(setId));
+    })
+
+    useEffect(()=>{
+        loadStudents();
+    },[])
 
     const display_students = () => {
         // console.log(data);
@@ -33,7 +51,7 @@ const OpenedSetStudents = ({setId, onApprove, onConclude})=>{
 
             if (!tar.admission_no) {
                 row_props.className = 'undone'
-                row_props["data-missing"] = `${tar.fullName.split(' ')[0]}'s Admission number not set`;
+                row_props["data-missing"] = `${tar.first_name}'s Admission number not set`;
             }
 
             return row_props;
@@ -143,6 +161,7 @@ const OpenedSetStudents = ({setId, onApprove, onConclude})=>{
             </>
         )
     }
+
 
     return(
         <div className="card">

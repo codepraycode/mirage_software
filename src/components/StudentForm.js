@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Loading from '../widgets/Preloader/loading';
 import { createFormDataFromSchema, isObjectEmpty, capitalize, parseFileUrl, createField } from '../constants/utils';
 import { StudentDataSchema } from '../constants/form_configs';
+import { schoolset_channel } from '../constants/channels';
 
 
 const StudentForm = ({setId, proceed}) => {
@@ -14,7 +15,7 @@ const StudentForm = ({setId, proceed}) => {
         return form_
     });
 
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     const loadState = () => {}
 
@@ -34,7 +35,7 @@ const StudentForm = ({setId, proceed}) => {
         }
 
 
-        console.log(field_name, "changed to", field_value);
+        // console.log(field_name, "changed to", field_value);
 
         let _form = studentData.form;
 
@@ -69,8 +70,25 @@ const StudentForm = ({setId, proceed}) => {
         if (!response['admission_no']) {
             response['admission_no'] = null;
         }
+
+
+        response['set_id'] = setId;
         
         console.log(response);
+
+        window.api.request(schoolset_channel.save_student, response)
+        .then(async(res)=>{
+
+            // setLoading(false);
+            console.log(res);
+
+            await window.api.request("students:modified");
+            proceed(res._id);
+        })
+        .catch((err)=>{
+            console.error(err);
+            setLoading(false);
+        })
 
         setLoading(true);
 
@@ -88,74 +106,74 @@ const StudentForm = ({setId, proceed}) => {
     // })
 
 
-    const createSummary = () => {
-        let template = Object.entries(studentData.form).map((ecf, i) => {
-            let [field, config] = ecf;
+    // const createSummary = () => {
+    //     let template = Object.entries(studentData.form).map((ecf, i) => {
+    //         let [field, config] = ecf;
 
-            if (config.elem === 'image') {
-                return (
-                    <li
-                        className="list-group-item d-flex justify-content-between align-items-center"
-                        key={i}
-                    >
-                        <b>{capitalize(field)}</b>
-
-
-                        <p style={{ height: "80px" }}>
-                            <img
-                                src={parseFileUrl(config.config.value)}//{profile.logo}
-                                onError={
-                                    ({ currentTarget }) => {
-                                        currentTarget.onerror = null; // prevents looping
-                                        currentTarget.src = './assets/images/fake_passport.png';
-                                    }
-                                }
-                                alt="Student's Passport" className="img-fluid"
-                                style={{ height: "100%" }}
-                            />
-                        </p>
-
-                    </li>
-                )
-            }
-
-            return (
-                <li
-                    className="list-group-item d-flex justify-content-between align-items-center"
-                    key={i}
-                >
-                    <b>{capitalize(field)}</b>
+    //         if (config.elem === 'image') {
+    //             return (
+    //                 <li
+    //                     className="list-group-item d-flex justify-content-between align-items-center"
+    //                     key={i}
+    //                 >
+    //                     <b>{capitalize(field)}</b>
 
 
-                    <b>
-                        {
-                            config.config.value ?
-                                config.config.value
-                                :
-                                'Not Provided'
-                        }
-                    </b>
+    //                     <p style={{ height: "80px" }}>
+    //                         <img
+    //                             src={parseFileUrl(config.config.value)}//{profile.logo}
+    //                             onError={
+    //                                 ({ currentTarget }) => {
+    //                                     currentTarget.onerror = null; // prevents looping
+    //                                     currentTarget.src = './assets/images/fake_passport.png';
+    //                                 }
+    //                             }
+    //                             alt="Student's Passport" className="img-fluid"
+    //                             style={{ height: "100%" }}
+    //                         />
+    //                     </p>
 
-                </li>
-            )
-        });
+    //                 </li>
+    //             )
+    //         }
 
-        return (
-            <ul className="list-group">
-                {template}
-            </ul>
-        );
-    }
+    //         return (
+    //             <li
+    //                 className="list-group-item d-flex justify-content-between align-items-center"
+    //                 key={i}
+    //             >
+    //                 <b>{capitalize(field)}</b>
 
 
-    const renderPhaseContent = () => {
+    //                 <b>
+    //                     {
+    //                         config.config.value ?
+    //                             config.config.value
+    //                             :
+    //                             'Not Provided'
+    //                     }
+    //                 </b>
 
-        if (summarize === true) {
-            return <>
-                {createSummary(studentData.form)}
-            </>;
-        }
-    }
+    //             </li>
+    //         )
+    //     });
+
+    //     return (
+    //         <ul className="list-group">
+    //             {template}
+    //         </ul>
+    //     );
+    // }
+
+
+    // const renderPhaseContent = () => {
+
+    //     if (summarize === true) {
+    //         return <>
+    //             {createSummary(studentData.form)}
+    //         </>;
+    //     }
+    // }
 
 
     const renderButton = () => {

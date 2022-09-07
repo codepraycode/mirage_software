@@ -42,7 +42,9 @@ const AdmissionForm = () => {
 
     const [phase, setPahse] = useState(1);
     
-    const [sponsorData, setSponsorData] = useState(null);
+    const [studentId, setStudentId] = useState(null);
+    const [sponsorId, setSponsorId] = useState(null);
+    
 
     const loadUp = async () => {
         if(!loading) return;
@@ -143,16 +145,17 @@ const AdmissionForm = () => {
         }
 
         else {
-            if (phase === 1) {
+            if (!Boolean(studentId)) {
                 template = (
                     <StudentForm
                         setId={setId}
-                        proceed={() => {}}
+                        proceed={(id) => setStudentId(()=>id)}
                     />
                 )
             }
-            else if (phase === 2) {
+            else if (!Boolean(sponsorId)) {
                 template = (<>
+                    <p>Sponsor Form</p>
                     {/* <SponsorForm
                         student_id={state.student_id}
                         sponsor_id={state.sponsor_id}
@@ -185,7 +188,7 @@ const AdmissionForm = () => {
 
     useEffect(()=>{
         loadUp();
-    }, [school, loading])
+    }, [school, loading, studentId, sponsorId])
     
     return (
         <div className="container">

@@ -33,7 +33,7 @@ export const schoolset_channel = {
     update: `${schoolset}:update`,
 
 
-    save_students: `${schoolset}:save_student`,
+    save_student: `${schoolset}:save_student`,
     save_sponsor: `${schoolset}:save_sponsor`,
     load_students: `${schoolset}:load_students`,
     load_admitted_students: `${schoolset}:load_admitted_students`,
