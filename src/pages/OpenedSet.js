@@ -3,20 +3,214 @@ import Loading from '../widgets/Preloader/loading';
 
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { capitalize, isArrayEmpty, parseFileUrl, useQuery } from '../constants/utils';
+import { capitalize, isArrayEmpty, isObjectEmpty, parseFileUrl, useQuery } from '../constants/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { getOpenedSetStudents, getSetById, loadSetStudents } from '../app/setSlice';
 import { avatar } from '../constants/assets';
 import { admissionUrl } from '../constants/app_urls';
+import Modal from '../widgets/Modal/modal';
 
 
 
-const OpenedSetStudents = ({setId, onApprove, onConclude})=>{
+const ApproveStudent = ({student, setInfo, closeApproval}) => {
+    const { sponsor } = student;
+
+    const [admissionNo, setAdmissionNo] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [agree, setAgreed] = useState(false);
+    const err = null
+
+    const handleApprove = () => {
+
+        if(!agree) return
+        if (admissionNo.length < 1) return
+
+
+        let data = {
+            ...student,
+            sponsor,
+            admission_no: admissionNo.toLocaleUpperCase()
+        }
+
+        console.log(data);
+        setLoading(true);
+
+    }
+
+    const checkApproval = () => {
+        if (admissionNo.length > 0) {
+            return false
+        }
+
+        if (!agree) {
+            return false
+        }
+
+        return true;
+    }
+    
+    const renderSponsorDetails = () => {
+        if (isObjectEmpty(sponsor)) {
+            return 'No Sponsor'
+        }
+
+        return `${sponsor.title} ${sponsor.surname} ${sponsor.first_name}`.trim();
+    }
+
+
+    const renderContent = () => {
+        if (isObjectEmpty(sponsor)) {
+            return (
+                <div className="empty-state" data-height="400">
+                    <div className="empty-state-icon bg-danger">
+                        <i className="fas fa-times"></i>
+
+                    </div>
+
+                    <h2>
+                        No sponsor registered for "{student.first_name.toUpperCase()}"
+                    </h2>
+
+                    <p className="lead">
+                        A sponsor must be registered with a student before such student can be approved
+                    </p>
+                </div>
+            )
+        }
+
+
+        const fullName = `${student.first_name} ${student.last_name}`;
+
+        return (
+            <>
+                <p>Approval of "{student.first_name}"</p>
+
+                <div className="row align-items-center ">
+                    <div className="col-4 text-center">
+                        <img
+                            src={parseFileUrl(student.passport) || avatar}//{profile.logo}
+                            onError={
+                                ({ currentTarget }) => {
+                                    currentTarget.onerror = null; // prevents looping
+                                    currentTarget.src = avatar;
+                                }
+                            }
+                            width={150}
+                            alt={details.fullName}
+                            className='img-responsive img-fluid mx-auto'
+                        />
+
+                    </div>
+
+                    <div className="col-8">
+                        <ul className="list-group" style={{ maxWidth: '100%' }}>
+                            <li className="list-group-item d-flex justify-content-between align-item-center">
+                                <b>Full Name</b>
+
+                                <span>{capitalize(fullName)}.</span>
+                            </li>
+
+
+                            <li className="list-group-item d-flex justify-content-between align-item-center">
+                                <b>Gender</b>
+
+
+
+                                <span>{student.gender}</span>
+                            </li>
+
+
+                            <li className="list-group-item d-flex justify-content-between align-item-center">
+
+                                <b>Age</b>
+
+
+
+                                <span>{getDateAge(student.date_of_birth)}</span>
+                            </li>
+
+
+
+                            <li className="list-group-item d-flex justify-content-between align-item-center">
+
+                                <b>Sponsor</b>
+
+
+
+                                <span>{renderSponsorDetails()}</span>
+                            </li>
+
+
+                            <li className="list-group-item d-flex justify-content-between align-item-center">
+
+                                <b>className Set</b>
+
+
+
+                                <span>{setInfo.label} ({setInfo.name})</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <hr />
+
+                <form onSubmit={(e) => { e.preventDefault(); console.log("Submitting Approval") }}>
+                    <p className="err-msg text-danger">
+                        {err}
+                    </p>
+                    <InputField
+                        verbose={"Enter Admission Number"}
+                        onChangeHandler={(e)=>{
+                            e.preventDefault(); 
+                            setAdmissionNo(()=>e.target.value)
+                        }}
+
+                        name={"admission_no"}
+                        value={admissionNo.toLocaleUpperCase()}
+                    />
+
+
+                    <CheckBox
+                        verbose={"I approve the above student into enrollment into the school"}
+                        onChangeHandler={()=>setAgreed((prev)=>!prev)}
+                        Id={"agree"}
+                        name={"agree"}
+                        checked={agree}
+                    />
+
+                </form>
+            </>
+        )
+    }
+
+    return (
+        <Modal
+            title={"Approve Student"}
+            onClose={() => { closeApproval() }}
+            onSave={() => { handleApprove() }}
+            affirmTxt={"Approve"}
+            disableAffirm={!checkApproval()}
+            cancelTxt={"Cancel"}
+            loading={loading}
+        >
+            {
+                renderContent()
+            }
+        </Modal>
+    )
+}
+
+
+
+const OpenedSetStudents = ({ setId, setInfo})=>{
 
     const students = useSelector(getOpenedSetStudents);
     const storeDispatch = useDispatch();
 
     const [loading, setLoading] = useState(true);
+    const [studentToApprove, setStudentToApprove] = useState(null); // object of student and sponsor
 
 
     const handleDelete = (_id)=>{}
@@ -28,6 +222,16 @@ const OpenedSetStudents = ({setId, onApprove, onConclude})=>{
 
             setLoading(false);
         }
+    }
+
+    const renderApproval = () => {
+        if (!Boolean(studentToApprove)) return
+
+        return <ApproveStudent
+            student={studentToApprove}
+            setInfo={setInfo}
+            closeApproval={() => setStudentToApprove(()=>null)}
+        />
     }
 
     window.api.response("students:reload", () => {
@@ -63,7 +267,7 @@ const OpenedSetStudents = ({setId, onApprove, onConclude})=>{
                 <button
                     className="btn btn-primary text-center d-block"
                     key={2}
-                    onClick={() => {}}
+                    onClick={() => setStudentToApprove(()=>item)}
                 >
                     <i className="far fa-money-check-edit mx-0"></i>
                 </button>
@@ -164,58 +368,62 @@ const OpenedSetStudents = ({setId, onApprove, onConclude})=>{
 
 
     return(
-        <div className="card">
+        <>
+            {renderApproval()}
 
-            <div className="card-header">
-                <h4>Students</h4>
-                <div className="card-header-action">
+            <div className="card">
 
-                    <Link
-                        to={`${admissionUrl}/${setId}/new`}
-                        // onClick={(e)=>e.preventDefault()}
-                        target="_blank"
-                        className="btn btn-primary mr-4"
-                    >
-                        <i className="fa fa-plus" aria-hidden="true"></i> Register
-                    </Link>
+                <div className="card-header">
+                    <h4>Students</h4>
+                    <div className="card-header-action">
 
-                    <button
-                        className="btn btn-secondary"
-                        onClick={() => {}}
-                    >
-                        Conclude
-                    </button>
+                        <Link
+                            to={`${admissionUrl}/${setId}/new`}
+                            // onClick={(e)=>e.preventDefault()}
+                            target="_blank"
+                            className="btn btn-primary mr-4"
+                        >
+                            <i className="fa fa-plus" aria-hidden="true"></i> Register
+                        </Link>
 
-                </div>
-            </div>
+                        <button
+                            className="btn btn-secondary"
+                            onClick={() => {}}
+                        >
+                            Conclude
+                        </button>
 
-            <div className="card-body p-0 text-center">
-
-                <div className="table-responsive">
-                    <table className="table table-striped v_center">
-                        <thead>
-                            <tr>
-                                <th>
-                                    S/N
-                                </th>
-                                <th>Admission No</th>
-                                <th>Candidate</th>
-                                <th>Date</th>
-                                <th>Actions</th>
-
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {display_students()}
-                        </tbody>
-                    </table>
+                    </div>
                 </div>
 
+                <div className="card-body p-0 text-center">
+
+                    <div className="table-responsive">
+                        <table className="table table-striped v_center">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        S/N
+                                    </th>
+                                    <th>Admission No</th>
+                                    <th>Candidate</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {display_students()}
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                </div>
 
             </div>
-
-        </div>
+        </>
     )
 
 }
@@ -227,11 +435,8 @@ const AdmissionProcess = () => {
     const navigate = useNavigate();
 
 
-    const setInfo = useSelector((state) => getSetById(state, setId));
-
-    const [loading, setLoading] = useState(false);
-    const students = [];
-    const studentToApprove = null;
+    const setInfo = useSelector((state) => getSetById(state, setId));    
+    
     const conclude = false;
 
 
@@ -260,16 +465,6 @@ const AdmissionProcess = () => {
 
     const handleApproval = (id = null) => {}
 
-
-    const renderApproval = (details) => {
-
-        // return <Approval
-        //     setId={setId}
-        //     details={details}
-        //     callback={handleApproval}
-        //     set_data={state.admission_meta}
-        // />
-    }
 
 
 
@@ -317,6 +512,7 @@ const AdmissionProcess = () => {
                         setId={setId}
                         onApprove={handleApproval}
                         onConclude={handleConclusion}
+                        setInfo={setInfo}
                     />
 
 
