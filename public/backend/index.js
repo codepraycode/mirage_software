@@ -170,10 +170,11 @@ ipcMain.handle("set:all", async () => {
     return await schoolset.all();
 })
 
-ipcMain.handle("set:update", async (_e, {set_id, set_data}) => {
-
-    return await schoolset.update(set_id, set_data);
+ipcMain.handle("set:update", async (_e, set_data) => {
+    return await schoolset.update(set_data);
 })
+
+
 
 // ================= Student =======================
 ipcMain.handle("set:save_student", async (_e,{set_id, data}) => {
@@ -187,7 +188,6 @@ ipcMain.handle("set:save_sponsor", async (_e, { student_id, data }) => {
     // fetch school tha is_opened
 
     const doc = await schoolset.save_sponsor(student_id, data);
-
     return doc
 });
 

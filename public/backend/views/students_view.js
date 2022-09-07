@@ -31,7 +31,7 @@ class SchoolSet {
 
         }
 
-        this.update = async (_id, data) => {
+        this.update = async ({_id, ...data}) => {
 
             // Find the setting
             let prev_set_data = await this.get(_id)

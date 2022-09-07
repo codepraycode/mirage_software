@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { createSet, getOpenedSet, getSetUpdateError } from '../app/setSlice';
+import { admissionUrl } from '../constants/app_urls';
 import { NewSetFormConfig } from '../constants/form_configs';
 
 import { createField, createFormDataFromSchema, useQuery } from '../constants/utils';
@@ -175,7 +176,7 @@ const Admission = () => {
 
     const checkOpenedSet = ()=>{
         if (Boolean(openedSet)){
-            navigate(`/admission/${openedSet._id}`, {replace:true});
+            navigate(`${admissionUrl}/${openedSet._id}`, {replace:true});
         }
     }
 

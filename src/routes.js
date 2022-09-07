@@ -14,6 +14,7 @@ import SettingsLayout from './layout/SettingsLayout';
 const Initialization = React.lazy(()=> import ('./screens/Initialization'));
 const Home = React.lazy(() => import('./screens/Home'));
 const Admission = React.lazy(() => import('./screens/Admission'));
+const OpenedSet = React.lazy(() => import('./pages/OpenedSet'));
 
 
 const Settings = React.lazy(() => import('./screens/settings'));
@@ -52,7 +53,7 @@ const AppRoutes = ()=>{
                         </Suspense>
                     } />
 
-                    <Route path={"home"} index element={
+                    <Route path={"home"} exact element={
                         <Suspense fallback={<Preloader type={"module_loader"} />}>
                             <Home />
                         </Suspense>
@@ -61,6 +62,11 @@ const AppRoutes = ()=>{
                     <Route path={"admission"} exact element={
                         <Suspense fallback={<Preloader type={"module_loader"} />}>
                             <Admission />
+                        </Suspense>
+                    } />
+                    <Route path={"admission/:setId"} exact element={
+                        <Suspense fallback={<Preloader type={"module_loader"} />}>
+                            <OpenedSet />
                         </Suspense>
                     } />
 

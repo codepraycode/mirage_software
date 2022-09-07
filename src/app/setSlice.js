@@ -32,6 +32,13 @@ export const createSet = createAsyncThunk('set/createSet', async (set_data) => {
     return data;
 });
 
+export const updateSet = createAsyncThunk('set/updateSet', async (set_data) => {
+    await window.api.request(schoolset_channel.update, set_data);
+
+
+    return set_data;
+});
+
 
 const setSlice = createSlice({
     name: 'set',
@@ -78,6 +85,29 @@ const setSlice = createSlice({
                 state.update_status = statuses.failed;
                 state.update_error = action.error.message;
             })
+
+            // Update Set
+            .addCase(updateSet.fulfilled, (state, action) => {
+                state.update_status = statuses.idle;
+
+                const {_id} = action.payload;
+
+                state.sets = state.sets.map((st)=>{
+                    if(st._id === _id){
+                        return {
+                            ...st,
+                            ...action.payload
+                        }
+                    }
+
+                    return st;
+                })
+
+            })
+            .addCase(updateSet.rejected, (state, action) => {
+                state.update_status = statuses.failed;
+                state.update_error = action.error.message;
+            })
     }
 });
 
@@ -89,6 +119,7 @@ const setSlice = createSlice({
 // Selectors
 export const getAllSets = (state) => state.set.sets;
 export const getOpenedSet = (state) => state.set.sets?.find((st) => st.isOpened === true);
+export const getSetById = (state,setId) => state.set.sets?.find((st) => st._id === setId);
 
 export const getSetError = (state) => state.set.error;
 export const getSetStatus = (state) => state.set.status;
