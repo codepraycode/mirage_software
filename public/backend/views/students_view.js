@@ -135,22 +135,29 @@ class SchoolSet {
 
         }
 
+        this.load_student = async (_id) => {
+            let docs = await studentsDb.findOne({ _id });
+            
+            return this.serialize(docs, true);
+
+        }
+
         this.load_admitted_students = async (set_id) => {
 
             let docs = await studentsDb.find({ set_id, admission_no: { $ne: null } }, {multi:true});
 
             return this.serialize(docs, true);
-
         }
 
-
         // Sponsors
-        this.save_sponsor = async (student_id, data) => {
+        this.save_sponsor = async (_id, sponsor) => {
+            let student = await studentsDb.findOne({ _id });
 
-            await studentsDb.update({ _id: student_id }, { sponsor:data });
+            if(!Boolean(student)) return null // Error
 
-            return data;
+            await studentsDb.update({ _id }, { ...student, sponsor });
 
+            return sponsor;
         }
 
         this.reset = () => { }

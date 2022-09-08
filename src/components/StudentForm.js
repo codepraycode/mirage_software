@@ -5,12 +5,23 @@ import { StudentDataSchema } from '../constants/form_configs';
 import { schoolset_channel } from '../constants/channels';
 
 
-const StudentForm = ({setId, proceed}) => {
+const StudentForm = ({setId, proceed, predata}) => {
     // Admission Form Component
+    console.log(predata);
 
 
     const [studentData, setStudentData] = useState(() => {
         const form_ = createFormDataFromSchema(StudentDataSchema);
+        if (!Boolean(predata)) return form_;
+
+
+        for (let [field, config] of Object.entries(form_.form)) {
+
+            if (predata[field]) {
+
+                config.config.value = predata[field]
+            }
+        }
 
         return form_
     });

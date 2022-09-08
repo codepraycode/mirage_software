@@ -86,24 +86,27 @@ export function getFirstify(num) {
 
 export const capitalize = (raw_text) => {
     // Parse Seperator
-    if(!raw_text) return '';
+    if(typeof(raw_text) !== 'string') return '';
 
     let text = raw_text.trim();
+
+    if(text.length <1) return text;
 
     let parsed_text;
     if (text.includes(' ')) {
         parsed_text = text.split(' ');
     }
-    if (text.includes('_')) {
+    else if (text.includes('_')) {
         parsed_text = text.split('_');
     }
 
     if (isArrayEmpty(parsed_text)) {
-        return text[0].toUpperCase() + text.slice(1);
+        return text.at(0).toUpperCase() + text.slice(1,);
     }
 
     let _ = parsed_text.map((each) => {
-        return each[0].toUpperCase() + each.slice(1);
+        // console.log(each);
+        return each.at(0).toLocaleUpperCase() + each.slice(1,)
     })
 
     return _.join(' ')

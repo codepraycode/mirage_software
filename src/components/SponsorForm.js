@@ -5,12 +5,22 @@ import { SponsorDataSchema } from '../constants/form_configs';
 import { schoolset_channel } from '../constants/channels';
 
 
-const SponsorForm = ({ student_id, proceed}) => {
+const SponsorForm = ({ student_id, proceed, predata}) => {
     // Admission Form Component
 
 
     const [sponsorData, setSponsorData] = useState(() => {
         const form_ = createFormDataFromSchema(SponsorDataSchema);
+        if (!Boolean(predata)) return form_;
+
+
+        for (let [field, config] of Object.entries(form_.form)) {
+
+            if (predata[field]) {
+
+                config.config.value = predata[field]
+            }
+        }
 
         return form_
     });

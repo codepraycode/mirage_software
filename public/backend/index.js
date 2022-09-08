@@ -189,6 +189,7 @@ ipcMain.handle("set:update", async (_e, set_data) => {
 
 
 // ================= Student =======================
+
 ipcMain.handle("set:save_student", async (_e,data) => {
     // fetch school tha is_opened
 
@@ -203,6 +204,7 @@ ipcMain.handle("set:delete_student", async (_e,_id) => {
     
     return null;
 });
+
 ipcMain.handle("set:save_sponsor", async (_e, { student_id, data }) => {
     // fetch school tha is_opened
 
@@ -213,6 +215,14 @@ ipcMain.handle("set:save_sponsor", async (_e, { student_id, data }) => {
 ipcMain.handle("set:load_students", async (_e, set_id) => {
 
     const docs = await schoolset.load_students(set_id)
+
+    return docs;
+    
+});
+
+ipcMain.handle("set:load_student", async (_e, student_id) => {
+
+    const docs = await schoolset.load_student(student_id)
 
     return docs;
 });

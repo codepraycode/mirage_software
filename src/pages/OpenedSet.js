@@ -3,13 +3,14 @@ import Loading from '../widgets/Preloader/loading';
 
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { capitalize, isArrayEmpty, isObjectEmpty, parseFileUrl, useQuery } from '../constants/utils';
+import { capitalize, getDateAge, isArrayEmpty, isObjectEmpty, parseFileUrl, useQuery } from '../constants/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { getOpenedSetStudents, getSetById, loadSetStudents } from '../app/setSlice';
 import { avatar } from '../constants/assets';
 import { admissionUrl } from '../constants/app_urls';
 import Modal from '../widgets/Modal/modal';
 import { schoolset_channel } from '../constants/channels';
+import { CheckBox, InputField } from '../widgets/Form/formfields';
 
 
 
@@ -39,7 +40,7 @@ const ApproveStudent = ({student, setInfo, closeApproval}) => {
     }
 
     const checkApproval = () => {
-        if (admissionNo.length > 0) {
+        if (admissionNo.length < 1) {
             return false
         }
 
@@ -57,7 +58,6 @@ const ApproveStudent = ({student, setInfo, closeApproval}) => {
 
         return `${sponsor.title} ${sponsor.surname} ${sponsor.first_name}`.trim();
     }
-
 
     const renderContent = () => {
         if (isObjectEmpty(sponsor)) {
@@ -84,7 +84,7 @@ const ApproveStudent = ({student, setInfo, closeApproval}) => {
 
         return (
             <>
-                <p>Approval of "{student.first_name}"</p>
+                {/* <p>Approval of "{student.first_name}"</p> */}
 
                 <div className="row align-items-center ">
                     <div className="col-4 text-center">
@@ -97,7 +97,7 @@ const ApproveStudent = ({student, setInfo, closeApproval}) => {
                                 }
                             }
                             width={150}
-                            alt={details.fullName}
+                            alt={fullName}
                             className='img-responsive img-fluid mx-auto'
                         />
 
@@ -272,6 +272,7 @@ const OpenedSetStudents = ({ setId, setInfo})=>{
                     className="btn btn-primary text-center d-block"
                     key={2}
                     onClick={() => setStudentToApprove(()=>item)}
+                    title="Admit student"
                 >
                     <i className="far fa-money-check-edit mx-0"></i>
                 </button>
@@ -279,11 +280,12 @@ const OpenedSetStudents = ({ setId, setInfo})=>{
 
             const reviewBtn = (
                 <Link
-                    to={`${admissionUrl}/${setId}/new?student=${item.id}`}
+                    to={`${admissionUrl}/${setId}/new?student=${item._id}`}
                     className="btn btn-warning outline-warning text-center d-block"
-                    onClick={(e)=>{e.preventDefault()}}
+                    // onClick={(e)=>{e.preventDefault()}}
                     target="_blank"
                     key={3}
+                    title="Edit student data"
                 >
                     <i className="fa fa-pencil mx-0" aria-hidden="true"></i>
                 </Link>
@@ -294,6 +296,7 @@ const OpenedSetStudents = ({ setId, setInfo})=>{
                     className="btn btn-danger outline-danger text-center d-block"
                     onClick={() => handleDelete(item._id)}
                     key={4}
+                    title="Delete student data"
                 >
                     <i className="fas fa-trash mx-0"></i>
                 </button>

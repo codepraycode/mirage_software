@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom';
 
-import { parseFileUrl } from '../constants/utils';
+import { capitalize, parseFileUrl, useQuery } from '../constants/utils';
 
 
 import { avatar, school_logo_placeholder } from '../constants/assets';
 
-import { settings_channel } from '../constants/channels';
+import { schoolset_channel, settings_channel } from '../constants/channels';
 import Loading from '../widgets/Preloader/loading';
 import StudentForm from '../components/StudentForm';
 import SponsorForm from '../components/SponsorForm';
@@ -14,7 +14,7 @@ import SponsorForm from '../components/SponsorForm';
 
 
 
-const Summary = ({data}) => {
+const Summary = React.memo(({data}) => {
 
     let template = Object.entries(data).map(([field, value], i) => {
 
@@ -69,13 +69,15 @@ const Summary = ({data}) => {
             {template}
         </ul>
     );
-}
+});
+
 
 const AdmissionForm = () => {
     // Admission Form Component
 
     let { setId } = useParams();
-    console.log(setId);
+    const query = useQuery();
+    const student_id = query.get('student');
 
     const default_phase = [
         {
@@ -103,20 +105,31 @@ const AdmissionForm = () => {
 
     const [phase, setPahse] = useState(1);
     
-    const [student, setStudentId] = useState(null);
+    const [student, setStudent] = useState(null);
     const [sponsor, setSponsor] = useState(null);
     
 
     const loadUp = async () => {
         if(!loading) return;
 
+        setLoading(false);
+
         if (!Boolean(school)){
             const data = await window.api.request(settings_channel.get, "school");
             setSchool(() => data);
         }
-        
 
-        setLoading(false);
+        if (Boolean(student_id)){
+            const student_data = await window.api.request(schoolset_channel.load_student, student_id);
+
+            if (Boolean(student_data)){
+                const { sponsor:ssponsor, ...rest } = student_data;
+
+                setStudent(()=>rest)
+                setSponsor(()=>ssponsor);
+            }
+        }
+        
     }
 
 
@@ -177,26 +190,14 @@ const AdmissionForm = () => {
             {student_id,phase_id, proceed, summarize,button_templates}
         */
         if (Boolean(student) && Boolean(sponsor)) {
+
+            const { _id, set_id, CreatedAt, UpdatedAt, ...rest_student_data} = student;
             template = (<>
-                {/* <StudentForm
-                    student_id={state.student_id}
-                    phase_id={"Student"}
-                    // proceed={handlePhase}
-                    summarize={true}
-                    set_id={admissionId}
-                /> */}
-                <Summary data={student} />
+                
+                <Summary data={rest_student_data} />
                 <hr />
                 <Summary data={sponsor} />
-                {/* <SponsorForm
-                    student_id={state.student_id}
-                    sponsor_id={state.sponsor_id}
-                    // sponsor_data={state.sponsor_data}
-                    phase_id={"Sponsor"}
-                    // proceed={handlePhase}
-                    summarize={true}
-                    set_id={admissionId}
-                /> */}
+                
             </>);
         }
 
@@ -205,7 +206,8 @@ const AdmissionForm = () => {
                 template = (
                     <StudentForm
                         setId={setId}
-                        proceed={(data) => setStudentId(() => data)}
+                        proceed={(data) => setStudent(() => data)}
+                        predata = {student}
                     />
                 )
             }
@@ -217,6 +219,7 @@ const AdmissionForm = () => {
                         student_id={student._id}
                         
                         proceed={(data) => setSponsor(()=>data)}
+                        predata={sponsor}
                         
                     />
                 </>)
