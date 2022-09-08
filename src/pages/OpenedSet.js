@@ -20,7 +20,7 @@ const ApproveStudent = ({student, setInfo, closeApproval}) => {
     const [admissionNo, setAdmissionNo] = useState('');
     const [loading, setLoading] = useState(false);
     const [agree, setAgreed] = useState(false);
-    const err = null
+    const [err, setErr] = useState(null)
 
     const handleApprove = () => {
 
@@ -29,12 +29,33 @@ const ApproveStudent = ({student, setInfo, closeApproval}) => {
 
 
         let data = {
-            ...student,
-            sponsor,
+            student_id: student._id,
             admission_no: admissionNo.toLocaleUpperCase()
         }
 
-        console.log(data);
+        window.api.request(schoolset_channel.admit_student, data)
+        .then(([err])=>{
+
+            if(Boolean(err)){
+                setErr(err);
+                setLoading(false);
+                setAgreed(false);
+                return
+            }
+
+
+            closeApproval();
+        })
+        .catch((err)=>{
+            setErr(err);
+            setLoading(false);
+            setAgreed(false);
+        })
+
+        if(Boolean(err)){
+            setErr(null);
+        }
+
         setLoading(true);
 
     }
@@ -234,7 +255,10 @@ const OpenedSetStudents = ({ setId, setInfo})=>{
         return <ApproveStudent
             student={studentToApprove}
             setInfo={setInfo}
-            closeApproval={() => setStudentToApprove(()=>null)}
+            closeApproval={() => {
+                setStudentToApprove(()=>null);
+                storeDispatch(loadSetStudents(setId));
+            }}
         />
     }
 

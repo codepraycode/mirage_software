@@ -56,7 +56,7 @@ const Summary = React.memo(({data}) => {
 
                 <b>
                     {
-                        value || 'Not Provided'
+                        String(value) || 'Not Provided'
                     }
                 </b>
 
@@ -235,7 +235,7 @@ const AdmissionForm = () => {
         */
         if (phase === default_phase.length && (Boolean(student) && Boolean(sponsor))) {
 
-            const { _id, set_id, CreatedAt, UpdatedAt, ...rest_student_data} = student;
+            const { _id, set_id, createdAt, updatedAt, ...rest_student_data} = student;
             template = (<>
                 
                 <Summary data={rest_student_data} />

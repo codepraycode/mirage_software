@@ -119,6 +119,26 @@ class SchoolSet {
             return data;
         }
 
+        this.admit_student = async ({student_id, admission_no}) => {
+        
+            // Verify admission number had not been used
+            const alreadyUsed = await studentsDb.findOne({ admission_no: String(admission_no).toLowerCase() });
+
+            if (Boolean(alreadyUsed)) {
+                throw Error(`Admission number already assigned to "${alreadyUsed.first_name} ${alreadyUsed.last_name}"`);
+            }
+
+            const std = await studentsDb.findOne({ _id: student_id });
+
+            if (!Boolean(std)) {
+                throw Error("Could not resolve student");
+            }
+
+            await studentsDb.update({ _id: student_id }, { ...std, admission_no });
+
+            return null;
+        }
+
         this.delete_student = async(_id)=>{
             // student_data.set_id = set_id;
             await studentsDb.remove({ _id });
@@ -130,8 +150,8 @@ class SchoolSet {
             let docs = await studentsDb.find({ set_id });
             
             return this.serialize(docs, true);
-
         }
+
 
         this.load_student = async (_id) => {
             let docs = await studentsDb.findOne({ _id });
