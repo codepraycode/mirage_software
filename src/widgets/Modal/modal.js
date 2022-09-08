@@ -38,7 +38,7 @@ function Modal(props) {
                     
                 </div>
                 
-                <div className="card-body">
+                <div className="card-body" style={{overflowX:'hidden'}}>
                     {props.children}
                 </div>
 

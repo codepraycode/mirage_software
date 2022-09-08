@@ -3,14 +3,15 @@ import Loading from '../widgets/Preloader/loading';
 
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { capitalize, getDateAge, isArrayEmpty, isObjectEmpty, parseFileUrl, useQuery } from '../constants/utils';
+import { capitalize, getDate, getDateAge, isArrayEmpty, isObjectEmpty, parseFileUrl, useQuery } from '../constants/utils';
 import { useDispatch, useSelector } from 'react-redux';
-import { getOpenedSetStudents, getSetById, loadSetStudents } from '../app/setSlice';
+import { closeOpenedSet, getOpenedSetStudents, getSetById, getSetStatus, loadSetStudents } from '../app/setSlice';
 import { avatar } from '../constants/assets';
 import { admissionUrl } from '../constants/app_urls';
 import Modal from '../widgets/Modal/modal';
 import { schoolset_channel } from '../constants/channels';
 import { CheckBox, InputField } from '../widgets/Form/formfields';
+import { statuses } from '../constants/statuses';
 
 
 
@@ -224,7 +225,247 @@ const ApproveStudent = ({student, setInfo, closeApproval}) => {
     )
 }
 
+const CloseSet = ({ setId, closeConclusionModal })=>{
 
+    const storeDispatch = useDispatch();
+
+    const [setInfo, setSetInfo] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+
+    const firstTimeLoading = loading && isObjectEmpty(setInfo);
+
+    const handleClose = ()=>{
+        
+        storeDispatch(closeOpenedSet(setId));
+
+        // closeConclusionModal()
+    }
+
+
+    const loadUp = async ()=>{
+
+        setLoading(false);
+
+
+        try{
+            const set_data = await window.api.request(schoolset_channel.get, setId);
+
+            if(isObjectEmpty(set_data)){
+                setSetInfo({});
+            }else{
+                setSetInfo(()=>set_data);
+            }
+
+        }catch(err){
+            setSetInfo({})
+        }
+        
+    }
+
+    useEffect(()=>{
+        loadUp()
+    },[setInfo, loading,])
+
+
+    const renderSetInfo = ()=>{
+        if (firstTimeLoading){
+            return <Loading/>
+        }
+
+        if (isObjectEmpty(setInfo)) {
+            return <p className='text-center text-muted'>Could not load set info</p>
+        }
+
+
+        return (
+            <ul className="list-group list-group-flush">
+                <li className="list-group-item d-flex justify-content-between align-item-center p-1">
+                    <b>Set Name</b>
+
+                    <span>{setInfo.name}</span>
+                </li>
+
+
+                <li className="list-group-item d-flex justify-content-between align-item-center p-1">
+
+                    <b>Set Label</b>
+
+                    <span>'{setInfo.label}'</span>
+
+                </li>
+
+                <li className="list-group-item d-flex justify-content-between align-item-center p-1">
+
+                    <b>Date created</b>
+
+                    <span>{getDate(setInfo.createdAt)}</span>
+
+                </li>
+
+                <li className="list-group-item d-flex justify-content-between align-item-center p-1">
+
+                    <b>Last modified</b>
+
+                    <span>{getDate(setInfo.updatedAt)}</span>
+
+                </li>
+            </ul>
+        )
+    }
+
+
+    const renderSetStats = ()=>{
+
+        if (isObjectEmpty(setInfo)){
+            return null;
+        }
+        const {stats} = setInfo;
+
+
+        let issues = null;
+        const total_applied = stats.total;
+        const total_admitted = stats.admitted_male + stats.admitted_female;
+
+        const unadmitted_male = stats.total_male - stats.admitted_male;
+        const unadmitted_female = stats.total_female - stats.admitted_female;
+
+        if (stats.total < 1){
+
+            issues = (
+                <>
+                    <p className="msg">
+                        <i className="fad fa-info-circle text-danger"></i>
+                        No students in set
+                    </p>
+
+                    <p className="p-small">
+                        Set record will be deleted
+                    </p>
+                </>
+            )
+        } else if (total_applied !== total_admitted){
+
+            issues = (
+                <>
+                    <p className="msg">
+                        <i className="fad fa-info-circle text-danger"></i>
+
+                        <>
+                            {
+                            unadmitted_male !== 0 ?
+                                `${unadmitted_male} male student${unadmitted_male > 1 ? 's' : ''} `
+                            :
+                                null
+                            }
+                        </>
+
+                        <>
+                            {
+                                unadmitted_female !== 0 ?
+                                    `and ${unadmitted_female} female student${unadmitted_female > 1 ? 's' : ''}`
+                                    :
+                                    null
+                            }
+                        </>
+                        
+                        wasn't assigned admission number
+                    </p>
+
+                    <p className="p-small">
+                        they won't appear alongside admitted students in app
+                    </p>
+                </>
+            )
+            
+        }
+
+
+        return(
+            <>
+                <ul className="list-group">
+                    <li className="list-group-item d-flex justify-content-between align-items-center">
+
+                        <b>Number of students registered</b>
+                        <span className="badge badge-primary badge-pill">
+                            {stats.total}
+                        </span>
+                    </li>
+
+
+                    <li className="list-group-item d-flex justify-content-between align-items-center">
+
+                        <b>Number of male students</b>
+
+                        <span className="badge badge-primary badge-pill">
+                            {stats.total_male}
+                        </span>
+
+
+                    </li>
+
+                    <li className="list-group-item d-flex justify-content-between align-items-center">
+
+                        <b>Number of female students</b>
+
+                        <span className="badge badge-primary badge-pill">
+                            {stats.total_female}
+                        </span>
+
+                    </li>
+
+                    <li className="list-group-item d-flex justify-content-between align-items-center">
+
+                        <b>Total unattended to</b>
+
+                        <span className="badge badge-primary badge-pill">
+                            {unadmitted_male + unadmitted_female}
+                        </span>
+
+                    </li>
+
+
+                </ul>
+
+                <div className="warning_preview" style={{ marginTop: "5px", marginBottom: '-25px' }}>
+                    {issues}
+                </div> 
+            </>
+        )
+    }
+
+    return(
+        <Modal
+            title={"Close class set"}
+            onClose={() => { closeConclusionModal() }}
+            onSave={() => handleClose()}
+            affirmTxt="Continue"
+            cancelTxt="cancel"
+            disableAffirm={!Boolean(setInfo)}
+            loading={loading}
+        >
+            {/* <p>Admission Summary</p>
+                <hr/> */}
+
+            <div>
+
+                {renderSetInfo()}
+
+            </div>
+
+            <hr />
+
+
+            <div className="preview">
+                {renderSetStats()}
+
+
+            </div>
+
+        </Modal>
+    )
+
+}
 
 const OpenedSetStudents = ({ setId, setInfo})=>{
 
@@ -233,6 +474,7 @@ const OpenedSetStudents = ({ setId, setInfo})=>{
 
     const [loading, setLoading] = useState(true);
     const [studentToApprove, setStudentToApprove] = useState(null); // object of student and sponsor
+    const [showConclusionModal, setCloseConclusionModal] = useState(false); // object of student and sponsor
 
 
     const handleDelete = async (_id)=>{
@@ -258,6 +500,17 @@ const OpenedSetStudents = ({ setId, setInfo})=>{
             closeApproval={() => {
                 setStudentToApprove(()=>null);
                 storeDispatch(loadSetStudents(setId));
+            }}
+        />
+    }
+
+    const renderConcludeSet = () => {
+        if (!showConclusionModal) return
+
+        return <CloseSet
+            setId={setId}
+            closeConclusionModal={() => {
+                setCloseConclusionModal(false);
             }}
         />
     }
@@ -401,6 +654,7 @@ const OpenedSetStudents = ({ setId, setInfo})=>{
     return(
         <>
             {renderApproval()}
+            {renderConcludeSet()}
 
             <div className="card">
 
@@ -419,7 +673,7 @@ const OpenedSetStudents = ({ setId, setInfo})=>{
 
                         <button
                             className="btn btn-secondary"
-                            onClick={() => {}}
+                            onClick={() => { setCloseConclusionModal(true)}}
                         >
                             Conclude
                         </button>
@@ -461,44 +715,22 @@ const OpenedSetStudents = ({ setId, setInfo})=>{
 
 
 const AdmissionProcess = () => {
-    let query = useQuery();
+
     const { setId } = useParams();
+
+    const setInfo = useSelector((state) => getSetById(state, setId));
+    const status = useSelector(getSetStatus);
     const navigate = useNavigate();
 
 
-    const setInfo = useSelector((state) => getSetById(state, setId));    
-    
-    const conclude = false;
+    const handleSetIsClosed = ()=>{
 
+        if(status !== statuses.loaded) return;
 
-    const renderConclusion = () => {
-
-        // Gather Set Information
-        // Gather Students Meta information
-
-
-
-        return (
-            // <Conclusion
-            //     setId={setId}
-            //     onClose={handleConclusion}
-            //     onSave={(action_params) => { handleConclusion(action_params) }}
-            //     modify={state.modify}
-            // />
-            <></>
-        )
+        if (!setInfo?.isOpened){
+            navigate(admissionUrl, { replace: true });
+        }
     }
-
-
-
-    const handleConclusion = (action_params = null) => {}
-
-
-    const handleApproval = (id = null) => {}
-
-
-
-
 
     const display_meta = () => {
     
@@ -526,14 +758,12 @@ const AdmissionProcess = () => {
     }
 
 
+    useEffect(()=>{
+        handleSetIsClosed();
+    }, [setInfo, status])
 
-
-    // console.log(state);
     return (
         <>
-            {/* {state.loading ? <h1>Loading...</h1>: renderPageContent()} */}
-            {/* {state.showConclusion ? renderConclusion() : null}
-            {state.approveWho ? renderApproval(state.approveWho) : null} */}
             <div className="admission">
                 <>
 
@@ -541,8 +771,6 @@ const AdmissionProcess = () => {
                     <hr />
                     <OpenedSetStudents
                         setId={setId}
-                        onApprove={handleApproval}
-                        onConclude={handleConclusion}
                         setInfo={setInfo}
                     />
 

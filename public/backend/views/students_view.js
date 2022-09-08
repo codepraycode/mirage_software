@@ -23,7 +23,6 @@ class SchoolSet {
             if (Boolean(any_set_label)) {
                 throw Error("Set label already exists");
             }
-
             
             let doc = await setsDb.insert(set_data);
 
@@ -225,22 +224,41 @@ class SchoolSet {
 
         const { _id: set_id } = set_data;
 
-        const students = await this.load_admitted_students(set_id);
-        let male = 0;
-        let female = 0;
+        const students = await this.load_students(set_id);
+
+        let total = 0;
+        let total_male = 0;
+        let total_female = 0;
+        
+        let admitted_male = 0;
+        let admitted_female = 0;
 
         students.forEach(student => {
+            total += 1;
+
             if (student.gender === 'male') {
-                male += 1;
+                total_male += 1;
+
+                if(Boolean(student.admission_no)){
+                    admitted_male += 1;
+                }
+
             } else if (student.gender === 'female') {
-                female += 1;
+                total_female += 1;
+
+                if (Boolean(student.admission_no)) {
+                    admitted_female += 1;
+                }
             }
         });
 
+
         return {
-            male,
-            female,
-            total: students.length,
+            total,
+            total_male,
+            total_female,
+            admitted_male,
+            admitted_female,
         }
     }
 

@@ -38,6 +38,12 @@ export const createSet = createAsyncThunk('set/createSet', async (set_data) => {
     return data;
 });
 
+export const closeOpenedSet = createAsyncThunk('set/closeOpenedSet', async (setId) => {
+    await window.api.request(schoolset_channel.update, { _id: setId, isOpened:false});
+
+    return setId;
+});
+
 export const updateSet = createAsyncThunk('set/updateSet', async (set_data) => {
     await window.api.request(schoolset_channel.update, set_data);
 
@@ -112,6 +118,31 @@ const setSlice = createSlice({
 
             })
             .addCase(updateSet.rejected, (state, action) => {
+                state.update_status = statuses.failed;
+                state.update_error = action.error.message;
+            })
+
+
+            // Close Set
+            .addCase(closeOpenedSet.fulfilled, (state, action) => {
+
+                const _id = action.payload;
+
+                state.sets = state.sets.map((st)=>{
+                    if(st._id === _id){
+                        return {
+                            ...st,
+                            isOpened:false
+                        }
+                    }
+
+                    return st;
+                });
+
+                state.openSetStudents = [];
+
+            })
+            .addCase(closeOpenedSet.rejected, (state, action) => {
                 state.update_status = statuses.failed;
                 state.update_error = action.error.message;
             })
