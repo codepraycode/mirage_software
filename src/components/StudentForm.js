@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import Loading from '../widgets/Preloader/loading';
-import { createFormDataFromSchema, isObjectEmpty, capitalize, parseFileUrl, createField } from '../constants/utils';
+import React, { useState } from 'react'
+import { createFormDataFromSchema, createField } from '../constants/utils';
 import { StudentDataSchema } from '../constants/form_configs';
 import { schoolset_channel } from '../constants/channels';
 
 
 const StudentForm = ({setId, proceed, predata}) => {
     // Admission Form Component
-    console.log(predata);
-
 
     const [studentData, setStudentData] = useState(() => {
         const form_ = createFormDataFromSchema(StudentDataSchema);
@@ -27,10 +24,6 @@ const StudentForm = ({setId, proceed, predata}) => {
     });
 
     const [loading, setLoading] = useState(false);
-
-    const loadState = () => {}
-
-    const runStateFill = () => {}
 
     const handleInputChange = (e) => {
 
@@ -78,20 +71,20 @@ const StudentForm = ({setId, proceed, predata}) => {
 
         let response = gatherData();
 
-        if (!response['admission_no']) {
-            response['admission_no'] = null;
+
+        if(Boolean(predata)){
+            response = {...predata, ...response }
+        }else{
+            if (!response['admission_no']) {
+                response['admission_no'] = null;
+            }
+            response['set_id'] = setId;
         }
 
-
-        response['set_id'] = setId;
         
-        console.log(response);
 
         window.api.request(schoolset_channel.save_student, response)
         .then(async(res)=>{
-
-            // setLoading(false);
-            console.log(res);
 
             await window.api.request("students:modified");
             proceed(res);

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import Loading from '../widgets/Preloader/loading';
-import { createFormDataFromSchema, isObjectEmpty, capitalize, parseFileUrl, createField } from '../constants/utils';
+import React, { useState } from 'react'
+import { createFormDataFromSchema, createField } from '../constants/utils';
 import { SponsorDataSchema } from '../constants/form_configs';
 import { schoolset_channel } from '../constants/channels';
 
@@ -26,10 +25,6 @@ const SponsorForm = ({ student_id, proceed, predata}) => {
     });
 
     const [loading, setLoading] = useState(false);
-
-    const loadState = () => {}
-
-    const runStateFill = () => {}
 
     const handleInputChange = (e) => {
 
@@ -76,14 +71,9 @@ const SponsorForm = ({ student_id, proceed, predata}) => {
         e.preventDefault();
 
         let data = gatherData();
-        
-        console.log(data);
 
         window.api.request(schoolset_channel.save_sponsor, { student_id, data})
         .then(async(res)=>{
-
-            // setLoading(false);
-            console.log(res);
 
             await window.api.request("students:modified");
             proceed(res);

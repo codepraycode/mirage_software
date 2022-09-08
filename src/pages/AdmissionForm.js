@@ -127,16 +127,27 @@ const AdmissionForm = () => {
 
                 setStudent(()=>rest)
                 setSponsor(()=>ssponsor);
+
+                if (!Boolean(ssponsor)){
+                    setPahse(2);
+                }else {
+                    setPahse(3);
+                }
             }
         }
         
     }
 
 
-    const handlePhase = (skip = null) => {
+    const switchPhase = (index = null) => {
         // Phase SWicther
 
         setPahse((prev)=>{
+
+            if (Boolean(index) && index <= default_phase.length){
+                return index
+            }
+
             if (prev > default_phase.length){
                 return default_phase.length
             }
@@ -153,18 +164,51 @@ const AdmissionForm = () => {
 
 
     const renderPhaseHeaders = () => {
+
+
+        const getHeaderProps = (index, checker)=>{
+            if (phase === index){
+                return 'wizard-step wizard-step-active'
+            }
+
+            if(Boolean(checker)){
+                return 'wizard-step wizard-step-success'
+            }
+
+
+            return 'wizard-step';
+        }
+
+
         // console.log(state.current_phase);
         let template = default_phase.map((each_phase, e) => {
             let i = e + 1
-            let className = ['wizard-step', 'wizard-step-active']
+
+            let checker;
+            let disable = true;
+
+            if (i === 1){
+                checker = student;
+                disable = !Boolean(student);
+            }
+            else if(i === 2){
+                checker = sponsor;
+                disable = !Boolean(sponsor);
+            }
+            else if (i === default_phase.length) {
+                checker = Boolean(sponsor) && Boolean(student);
+                disable = !Boolean(sponsor) && !Boolean(student);
+            }
+
 
             
+
 
             return (
                 <div
                     key={i}
-                    className={className.join(' ')}
-                    onClick={() => { handlePhase(i) }}
+                    className={getHeaderProps(i, checker )}
+                    onClick={() => { if (disable) return; switchPhase(i) }}
                     style={{ cursor: 'pointer' }}
                 >
                     <div className="wizard-step-icon">
@@ -189,7 +233,7 @@ const AdmissionForm = () => {
         /* 
             {student_id,phase_id, proceed, summarize,button_templates}
         */
-        if (Boolean(student) && Boolean(sponsor)) {
+        if (phase === default_phase.length && (Boolean(student) && Boolean(sponsor))) {
 
             const { _id, set_id, CreatedAt, UpdatedAt, ...rest_student_data} = student;
             template = (<>
@@ -202,23 +246,23 @@ const AdmissionForm = () => {
         }
 
         else {
-            if (!Boolean(student)) {
+            if (phase === 1 || !Boolean(student)) {
                 template = (
                     <StudentForm
                         setId={setId}
-                        proceed={(data) => setStudent(() => data)}
+                        proceed={(data) => {setStudent(() => data); switchPhase();}}
                         predata = {student}
                     />
                 )
             }
-            else if (!Boolean(sponsor)) {
+            else if (phase === 2 ||!Boolean(sponsor)) {
                 template = (<>
                     
                     <SponsorForm
                         
                         student_id={student._id}
                         
-                        proceed={(data) => setSponsor(()=>data)}
+                        proceed={(data) => { setSponsor(() => data); switchPhase(); }}
                         predata={sponsor}
                         
                     />

@@ -114,10 +114,9 @@ class SchoolSet {
                 return doc;
             }
 
-            await studentsDb.update({ _id }, { ...data}, {upsert:true});
+            await studentsDb.update({ _id }, { ...std,...data}, {upsert:true});
 
             return data;
-
         }
 
         this.delete_student = async(_id)=>{
@@ -125,7 +124,6 @@ class SchoolSet {
             await studentsDb.remove({ _id });
 
             return null;
-
         }
 
         this.load_students = async (set_id) => {
@@ -159,9 +157,9 @@ class SchoolSet {
 
             return sponsor;
         }
-
         this.reset = () => { }
     }
+    
 
 
     serialize = (document, students=false) => {

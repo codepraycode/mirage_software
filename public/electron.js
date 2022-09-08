@@ -156,9 +156,9 @@ function loadLauncher() {
     const appUrl = `file://${path.join(__dirname,'launcher.html')}`
 
     launcher_win.loadURL(appUrl);
-    if (!app.isPackaged) {
-        launcher_win.webContents.openDevTools();
-    }
+    // if (!app.isPackaged) {
+    //     launcher_win.webContents.openDevTools();
+    // }
 
 }
 
