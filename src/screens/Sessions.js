@@ -1,16 +1,16 @@
-import { getDate } from 'date-fns';
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getSessionError, getSessions, getSessionStatus, loadSessions } from '../app/sessionSlice';
 import { NewSessionFormConfig } from '../constants/form_configs';
 import { statuses } from '../constants/statuses';
-import { createField, createFormDataFromSchema, getDateAge, isArrayEmpty } from '../constants/utils';
+import { createField, createFormDataFromSchema, isArrayEmpty } from '../constants/utils';
 import Loading from '../widgets/Preloader/loading';
 import Modal from '../widgets/Modal/modal';
 import { getSettingsLevels, getSettingsRoles, getSettingsSessions } from '../app/settingsSlice';
 import { academic_session_channel } from '../constants/channels';
-import Time from '../widgets/Time';
+import { useNavigate } from 'react-router-dom';
+import { sessionUrl } from '../constants/app_urls';
 
 const SessionError = ({message, action, onAction, icon}) =>{
     return (
@@ -179,11 +179,11 @@ const CreateSession = ({onClose}) =>{
 }
 
 
-const SessionItem = ({session})=>{
-  const onGoing = !Boolean(session.date_closed)
+const SessionItem = ({session, onClick})=>{
+  const onGoing = !Boolean(session.date_closed);
   return(
     <div className="col">
-      <div className="record-item" onClick={() => {}}>
+      <div className="record-item" onClick={() => onClick()}>
         <div className="record-icons">
 
           <p className="folder-icon">
@@ -238,7 +238,9 @@ const Sessions = () => {
 
   const error = useSelector(getSessionError);
   const status = useSelector(getSessionStatus);
-  const sessions = useSelector(getSessions)
+  const sessions = useSelector(getSessions);
+
+  const navigate = useNavigate();
 
   const [createSession, setCreateSession] = useState(false);
 
@@ -279,6 +281,7 @@ const Sessions = () => {
             return <SessionItem
               session={session}
               key={session._id}
+              onClick={() => navigate(`${sessionUrl}/${session._id}`)}
             />
 
           })

@@ -1,8 +1,12 @@
-import React from 'react'
+import React from 'react';
+import { useParams } from 'react-router-dom';
+
 
 const Session = () => {
+  const {sessionId} = useParams();
+
   return (
-    <div>Session</div>
+    <div>Session with id {sessionId}</div>
   )
 }
 
