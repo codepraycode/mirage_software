@@ -47,4 +47,9 @@ export const academic_session_channel = {
     create: `${academic_session}:create`,
     all: `${academic_session}:all`,
     get: `${academic_session}:get`,
+
+    createTerm: `${academic_session}:createTerm`,
+    getTerms: `${academic_session}:getTerms`,
+    getTerm: `${academic_session}:getTerm`,
+    queryTerm: `${academic_session}:queryTerm`,
 }

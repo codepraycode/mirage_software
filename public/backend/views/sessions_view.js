@@ -1,6 +1,7 @@
 const { dbFactory } = require('../base');
 
 const sessionsDb = dbFactory('sessions.db')
+const termsDb = dbFactory('terms.db')
 
 
 // Sessions
@@ -32,7 +33,21 @@ class Sessions {
             }
         }
 
+
+
+        * Session Term
+        {
+            - label: string,
+            - date_started: Date,
+            - date_concluded:Date,
+            - session_id:String,
+            - term_index:int,
+            - no_of_times_opened:int,
+            - next_term_begins:Date // ends the term
+        }
+
     */
+
 
 
     constructor(){
@@ -75,9 +90,37 @@ class Sessions {
             return this.serialize(doc);
         }
 
+        // Terms
+        this.createTerm = async (term_data) => {
 
+            // Prepare Session data
+            let doc = await termsDb.insert(term_data);
+
+            return this.serialize(doc);
+        }
+
+        this.getTerms = async (session_id) => {
+
+            let doc = await termsDb.find({ session_id });
+
+            return this.serialize(doc);
+        }
+
+
+        this.getTerm = async (term_id) => {
+
+            let doc = await termsDb.findOne({ _id:term_id });
+
+            return this.serialize(doc);
+        }
+
+        this.queryTerm = async (query) => {
+
+            let doc = await termsDb.findOne(query);
+
+            return this.serialize(doc);
+        }
     }
-
 
     serializeSessionData = async(new_session_data)=>{
         const {auto_promote_students, ...session_data} = new_session_data;

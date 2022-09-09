@@ -261,7 +261,6 @@ ipcMain.handle("session:create", async (_e, session_data) => {
     return doc;
 });
 
-
 ipcMain.handle("session:all", async () => {
     // fetch sessions    
 
@@ -269,8 +268,6 @@ ipcMain.handle("session:all", async () => {
 
     return docs;
 });
-
-
 
 ipcMain.handle("session:get", async (_e, session_id) => {
     // fetch sessions    
@@ -280,6 +277,38 @@ ipcMain.handle("session:get", async (_e, session_id) => {
     return docs;
 });
 
+
+// ================= Session Terms =======================
+ipcMain.handle("session:createTerm", async (_e, term_data) => {
+
+    const doc = await academicSession.createTerm(term_data);
+
+    return doc;
+});
+
+ipcMain.handle("session:getTerms", async (_e, session_id) => {
+    // fetch sessions    
+
+    const docs = await academicSession.getTerms(session_id);
+
+    return docs;
+});
+
+ipcMain.handle("session:getTerm", async (_e, term_id) => {
+    // fetch sessions    
+
+    const docs = await academicSession.getTerm(term_id);
+
+    return docs;
+});
+
+ipcMain.handle("session:queryTerm", async (_e, query) => {
+    // fetch sessions    
+
+    const docs = await academicSession.queryTerm(query);
+
+    return docs;
+});
 // ============================================
 
 module.exports = { app_files_dir };

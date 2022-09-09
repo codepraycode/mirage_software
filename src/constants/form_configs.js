@@ -676,6 +676,28 @@ const NewSessionFormConfig = {
 };
 
 
+const NewTermFormConfig = {
+    form_data: {
+        label: {
+            data_type: 'text',
+            name: 'label',
+            placeholder: 'what will be displayed in reports',
+            required: true,
+        },
+        date_started: {
+            data_type: 'date',
+            name: 'date_started',
+            placeholder: "",
+        }
+    },
+    groups: [
+        [
+            ['label', 'date_started']
+        ]
+    ]
+}
+
+
 
 
 export { 
@@ -684,4 +706,5 @@ export {
     NewSessionFormConfig, form_configs_options,
     StaffsDataSchema, UserUpdateFormConfig,
     StudentDataSchema, SponsorDataSchema,
+    NewTermFormConfig, 
 }
