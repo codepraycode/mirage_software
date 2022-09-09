@@ -1,12 +1,16 @@
 import { getDate } from 'date-fns';
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { getSessionError, getSessions, getSessionStatus } from '../app/sessionSlice';
+import { getSessionError, getSessions, getSessionStatus, loadSessions } from '../app/sessionSlice';
 import { NewSessionFormConfig } from '../constants/form_configs';
 import { statuses } from '../constants/statuses';
-import { createField, createFormDataFromSchema, isArrayEmpty } from '../constants/utils';
+import { createField, createFormDataFromSchema, getDateAge, isArrayEmpty } from '../constants/utils';
 import Loading from '../widgets/Preloader/loading';
+import Modal from '../widgets/Modal/modal';
+import { getSettingsLevels, getSettingsRoles, getSettingsSessions } from '../app/settingsSlice';
+import { academic_session_channel } from '../constants/channels';
+import Time from '../widgets/Time';
 
 const SessionError = ({message, action, onAction, icon}) =>{
     return (
@@ -47,6 +51,12 @@ const SessionError = ({message, action, onAction, icon}) =>{
 }
 
 const CreateSession = ({onClose}) =>{
+
+  const settings = useSelector(getSettingsSessions);
+  const levels = useSelector(getSettingsLevels);
+  const roles = useSelector(getSettingsRoles);
+
+  const storeDispatch = useDispatch();
 
   const [sessionData, setSessionData] = useState(() => {
     const form_ = createFormDataFromSchema(NewSessionFormConfig);
@@ -100,12 +110,48 @@ const CreateSession = ({onClose}) =>{
   }
 
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
+  const handleSubmit = () => {
     const data = gatherData();
 
-    console.log(data);
+    const { no_of_terms } = settings;
+
+    // add session settings
+    const session_settings = {
+      ...settings,
+      terms:{},
+      levels:{},
+      roles:{
+        ...roles
+      }
+    };
+
+
+    // ADD TERMS
+    for (let termIndex = 1; termIndex <= Number(no_of_terms); termIndex++) {
+      session_settings.terms[termIndex] = null;
+    }
+
+    Object.keys(levels).forEach((level_id)=>{
+      session_settings.levels[level_id] = {
+        set_id:null
+      };
+    });
+
+
+    const new_session_data = {
+      ...data,
+      settings:session_settings
+    }
+
+    window.api.request(academic_session_channel.create, new_session_data)
+    .then((res)=>{
+      storeDispatch(loadSessions());
+      onClose();
+    })
+    .catch(err=>{
+      setErr(err.message);
+      setLoading(false);
+    })
 
     setLoading(true);
 
@@ -134,7 +180,7 @@ const CreateSession = ({onClose}) =>{
 
 
 const SessionItem = ({session})=>{
-  const onGoing = Boolean(session.date_closed)
+  const onGoing = !Boolean(session.date_closed)
   return(
     <div className="col">
       <div className="record-item" onClick={() => {}}>
@@ -142,7 +188,7 @@ const SessionItem = ({session})=>{
 
           <p className="folder-icon">
             {
-              !onGoing ?
+              onGoing ?
                 <i className="fad fa-folder-open text-secondary"></i>
                 :
                 <i className="fad fa-folder text-secondary"></i>
@@ -173,11 +219,12 @@ const SessionItem = ({session})=>{
 
 
             <li>
-              Started: <span>{getDate(session.date_started)}</span>
+              Started: {session.date_started}
+                
             </li>
 
             {
-              !onGoing && (<li>Ended: <span>{getDate(session.date_closed)}</span></li>)
+              !onGoing && (<li>Ended: {session.date_closed}</li>)
             }
             
           </ul>
@@ -195,41 +242,42 @@ const Sessions = () => {
 
   const [createSession, setCreateSession] = useState(false);
 
-
-  if(status === statuses.loading){
-    return <Loading/>;
-  }
-
   if(Boolean(error)){
     return <SessionError 
       message={error}
       icon={<i className="fa fa-exclamation-triangle" aria-hidden="true"></i>}
     />
   }
-  
-  if (isArrayEmpty(sessions)) {
-    return <SessionError 
-      message={"No Session"} 
-      action={"Create session"}
-      onAction={() => setCreateSession(true)}
-    />
-  }
 
   // A session is ongoing if it has no date_closed set
-  const anyOngoing = sessions.find((ech)=> ech.date_closed === null);
+  const onGoingSession = sessions.filter((ech) => !Boolean(ech.date_closed));
+
+  const renderContent = ()=>{
+
+    if (status === statuses.loading) {
+      return <Loading />;
+    }
 
 
-  return (
-    <>
-      {createSession && <CreateSession onClose={() => setCreateSession(false)}/>}
-    
+    if (isArrayEmpty(sessions)) {
+      return <SessionError
+        message={"No Session"}
+        action={"Create session"}
+        onAction={() => setCreateSession(true)}
+      />
+    }
+
+
+
+    return (
+
       <div className="row folder-record">
-        
+
         {
-          
-          sessions.map((session)=>{
-            return <SessionItem 
-              session={session} 
+
+          sessions.map((session) => {
+            return <SessionItem
+              session={session}
               key={session._id}
             />
 
@@ -239,7 +287,7 @@ const Sessions = () => {
 
 
         {
-          !anyOngoing && (
+          onGoingSession.length === 0 && (
             <div className="col">
 
               <div
@@ -254,8 +302,22 @@ const Sessions = () => {
           )
         }
 
-        
+
       </div>
+    )
+
+  }
+
+
+
+  return (
+    <>
+      {createSession && <CreateSession onClose={() => setCreateSession(false)}/>}
+
+      {
+        renderContent()
+      }
+
     </>
   )
 }

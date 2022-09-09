@@ -666,11 +666,11 @@ const NewSessionFormConfig = {
             name: 'date_started',
             required: true
         },
-        auto_promote_students: {
-            data_type: 'checked_text',
-            name: 'auto_promote_students',
-            label: 'Auto promote students',
-        }
+        // auto_promote_students: {
+        //     data_type: 'checked_text',
+        //     name: 'auto_promote_students',
+        //     label: 'Auto promote students',
+        // }
 
     }
 };

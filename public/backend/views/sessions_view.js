@@ -15,25 +15,27 @@ class Sessions {
             - date_closed: date, // if null, that means the session is ongoing
             - settings:{
                 - terms:{
-                    - levels:{
-                        [level_id]:{
-                            - set_id: string,
-                        },
-                        ...
-                    },
-
-                    - roles:{
-                        - school_head:...,
-                        - levels:...,
-                        - subjects:...,
-                    }
+                    1:[term_id],
+                    ...
                 },
+                - levels:{
+                    [level_id]:{
+                        - set_id: string,
+                    },
+                    ...
+                },
+                - roles:{
+                    - school_head:...,
+                    - levels:...,
+                    - subjects:...,
+                }
             }
         }
+
     */
 
-    constructor(){
 
+    constructor(){
 
         this.create = async (session_data) => {
             const {title, label} = session_data;
