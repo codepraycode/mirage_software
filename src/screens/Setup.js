@@ -5,7 +5,7 @@ import { initializeUrl, loginUrl } from '../constants/app_urls';
 import { statuses } from '../constants/statuses';
 import { useNavigate } from 'react-router-dom';
 import { loadUsers } from '../app/userSlice';
-import { loadSets } from '../app/setSlice';
+import { loadAdmittedStudents, loadSets } from '../app/setSlice';
 
 const SetupScreen = () => {
     // This screen decides login, initialization or just directly to the home screen
@@ -29,6 +29,7 @@ const SetupScreen = () => {
             storeDispatch(loadSettings());
             storeDispatch(loadUsers());
             storeDispatch(loadSets())
+            storeDispatch(loadAdmittedStudents())
         }
         
         

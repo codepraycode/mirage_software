@@ -12,7 +12,8 @@ const initialState = {
 
     // Settings
     sets: null,
-    openSetStudents:[]
+    students:null,
+    openSetStudents:[],
 }
 
 
@@ -24,6 +25,12 @@ export const loadSets = createAsyncThunk('set/loadSets', async () => {
 });
 export const loadSetStudents = createAsyncThunk('set/loadSetStudents', async (set_id) => {
     const students = await window.api.request(schoolset_channel.load_students, set_id);
+
+    return students;
+});
+
+export const loadAdmittedStudents = createAsyncThunk('set/loadAdmittedStudents', async () => {
+    const students = await window.api.request(schoolset_channel.load_admitted_students);
 
     return students;
 });
@@ -75,6 +82,20 @@ const setSlice = createSlice({
             })
             .addCase(loadSets.rejected, (state, action) => {
                 state.status = statuses.failed;
+                state.error = action.error.message;
+            })
+
+            // Load admitted students
+            .addCase(loadAdmittedStudents.pending, (state, action) => {
+                state.update_status = statuses.loading;
+                state.update_error = null;
+            })
+            .addCase(loadAdmittedStudents.fulfilled, (state, action) => {
+                state.update_status = statuses.idle;
+                state.students = action.payload;
+            })
+            .addCase(loadAdmittedStudents.rejected, (state, action) => {
+                state.update_status = statuses.failed;
                 state.error = action.error.message;
             })
 
@@ -165,7 +186,9 @@ const setSlice = createSlice({
 export const getAllSets = (state) => state.set.sets;
 export const getOpenedSet = (state) => state.set.sets?.find((st) => st.isOpened === true);
 export const getOpenedSetStudents = (state) => state.set.openSetStudents;
+
 export const getSetById = (state,setId) => state.set.sets?.find((st) => st._id === setId);
+export const getSetAdmittedStudents = (state,setId) => state.set.students?.filter((st) => st.set_id === setId);
 
 export const getSetError = (state) => state.set.error;
 export const getSetStatus = (state) => state.set.status;

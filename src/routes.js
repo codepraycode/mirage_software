@@ -9,16 +9,19 @@ import SetupScreen from './screens/Setup';
 import Authentication from './screens/Authentication';
 import DashboardLayout from './layout/DashboardLayout';
 import SettingsLayout from './layout/SettingsLayout';
+import SetsLayout from './layout/SetLayout';
 
 
 const Initialization = React.lazy(()=> import ('./screens/Initialization'));
 const Home = React.lazy(() => import('./screens/Home'));
 const Admission = React.lazy(() => import('./screens/Admission'));
+const Settings = React.lazy(() => import('./screens/settings'));
+const Sets = React.lazy(() => import('./screens/Sets'));
+
+
 const OpenedSet = React.lazy(() => import('./pages/OpenedSet'));
 const AdmissionForm = React.lazy(() => import('./pages/AdmissionForm'));
-
-
-const Settings = React.lazy(() => import('./screens/settings'));
+const Students = React.lazy(() => import('./pages/Students'));
 const SettingPage = React.lazy(() => import('./pages/SettingsPage'));
 
 
@@ -71,11 +74,25 @@ const AppRoutes = ()=>{
                         </Suspense>
                     } />
 
-                    <Route path={"sets"} exact element={
-                        <Suspense fallback={<Preloader type={"module_loader"} />}>
-                            <Home />
-                        </Suspense>
-                    } />
+
+                    <Route
+                        path={"sets"}
+                        element={<SetsLayout />}
+                    >
+
+                        <Route path={""} index element={
+                            <Suspense fallback={<Preloader type={"module_loader"} />}>
+                                <Sets />
+                            </Suspense>
+                        } />
+
+                        <Route path={":setId"} index element={
+                            <Suspense fallback={<Preloader type={"module_loader"} />}>
+                                <Students />
+                            </Suspense>
+                        } />
+
+                    </Route>
 
                     <Route path={"session"} exact element={
                         <Suspense fallback={<Preloader type={"module_loader"} />}>

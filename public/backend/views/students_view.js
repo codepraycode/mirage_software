@@ -80,7 +80,6 @@ class SchoolSet {
             }
 
         }
-
         
         this.query = async (query, many=false) => {
 
@@ -159,13 +158,14 @@ class SchoolSet {
 
         }
 
-        this.load_admitted_students = async (set_id) => {
+        this.load_admitted_students = async () => {
 
-            let docs = await studentsDb.find({ set_id, admission_no: { $ne: null } }, {multi:true});
+            let docs = await studentsDb.find({ admission_no: { $ne: null } }, {multi:true});
 
             return this.serialize(docs, true);
         }
 
+        
         // Sponsors
         this.save_sponsor = async (_id, sponsor) => {
             let student = await studentsDb.findOne({ _id });
@@ -179,7 +179,6 @@ class SchoolSet {
         this.reset = () => { }
     }
     
-
 
     serialize = (document, students=false) => {
 
@@ -263,7 +262,7 @@ class SchoolSet {
     }
 
 
-
+cls
     __exists = async (query = null) => {
         if (query === null) {
             // check if there is at least a document
