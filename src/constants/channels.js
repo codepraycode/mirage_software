@@ -44,6 +44,7 @@ export const schoolset_channel = {
 
 
 export const academic_session_channel = {
-    new: `${academic_session}:new`,
+    create: `${academic_session}:create`,
     all: `${academic_session}:all`,
+    get: `${academic_session}:get`,
 }

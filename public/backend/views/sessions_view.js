@@ -6,6 +6,32 @@ const sessionsDb = dbFactory('sessions.db')
 // Sessions
 class Sessions {
 
+    /* 
+        * Session Data
+        {
+            - label:string,
+            - title: string,
+            - date_started:data,
+            - date_closed: date, // if null, that means the session is ongoing
+            - settings:{
+                - terms:{
+                    - levels:{
+                        [level_id]:{
+                            - set_id: string,
+                        },
+                        ...
+                    },
+
+                    - roles:{
+                        - school_head:...,
+                        - levels:...,
+                        - subjects:...,
+                    }
+                },
+            }
+        }
+    */
+
     constructor(){
 
 

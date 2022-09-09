@@ -158,8 +158,6 @@ const InitializeSchoolFormConfig = {
     ],
 };
 
-
-
 const LoginFormConfig = {
     username: {
         required: true,
@@ -176,7 +174,6 @@ const LoginFormConfig = {
         placeholder: "Enter your password",
     },
 };
-
 
 const UserCreationFormConfig = {
 
@@ -292,7 +289,6 @@ const UserUpdateFormConfig = {
         ],
     ],
 };
-
 
 const StaffsDataSchema = {
     form_data: {
@@ -625,6 +621,7 @@ const SponsorDataSchema = {
 }
 // Set
 
+
 const dt = new Date()
 const yr = dt.getFullYear();
 
@@ -650,21 +647,35 @@ const NewSetFormConfig = {
 
 
 const NewSessionFormConfig = {
-    title: {
-        required: true,
-        type: "text",
-        name: "title",
-        label: "Session's title",
-        placeholder: `for example: Session ${yr}/${yr + 1}`,
-    },
-    date_started: {
-        required: true,
-        type: "date",
-        name: "date_started",
-        label: "Session started",
-        placeholder: `set the date this session started`,
-    },
+    form_data: {
+        title: {
+            data_type: 'text',
+            name: 'title',
+            placeholder: `e.g ${yr}/${yr + 1}`,
+            required: true,
+        },
+
+        label: {
+            data_type: 'text',
+            name: 'label',
+            placeholder: `e.g ${yr}/${yr + 1} Academic Session`,
+            required: true
+        },
+        date_started: {
+            data_type: 'date',
+            name: 'date_started',
+            required: true
+        },
+        auto_promote_students: {
+            data_type: 'checked_text',
+            name: 'auto_promote_students',
+            label: 'Auto promote students',
+        }
+
+    }
 };
+
+
 
 
 export { 

@@ -254,22 +254,9 @@ ipcMain.handle("set:load_admitted_students", async (_e, set_id) => {
 
 
 // ================= Session =======================
-ipcMain.handle("session:new", async (_e, session_data) => {
+ipcMain.handle("session:create", async (_e, session_data) => {
 
-    /* 
-        Add new session
-
-
-        data sample {
-            - title: String|null,    
-            - date_started: Date,
-            - date_ended: Date | null,
-            - last_sync: Date | null,
-        }
-    */
-
-
-    const doc = await academicSession.new(session_data);
+    const doc = await academicSession.create(session_data);
 
     return doc;
 });
@@ -278,6 +265,14 @@ ipcMain.handle("session:all", async () => {
     // fetch sessions    
 
     const docs = await academicSession.all();
+
+    return docs;
+});
+
+ipcMain.handle("session:get", async (_e, session_id) => {
+    // fetch sessions    
+
+    const docs = await academicSession.get(session_id);
 
     return docs;
 });

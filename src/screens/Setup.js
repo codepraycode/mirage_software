@@ -6,6 +6,7 @@ import { statuses } from '../constants/statuses';
 import { useNavigate } from 'react-router-dom';
 import { loadUsers } from '../app/userSlice';
 import { loadAdmittedStudents, loadSets } from '../app/setSlice';
+import { loadSessions } from '../app/sessionSlice';
 
 const SetupScreen = () => {
     // This screen decides login, initialization or just directly to the home screen
@@ -28,8 +29,9 @@ const SetupScreen = () => {
             // Loading for the first time
             storeDispatch(loadSettings());
             storeDispatch(loadUsers());
-            storeDispatch(loadSets())
-            storeDispatch(loadAdmittedStudents())
+            storeDispatch(loadSets());
+            storeDispatch(loadAdmittedStudents());
+            storeDispatch(loadSessions());
         }
         
         
