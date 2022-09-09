@@ -1,9 +1,10 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getSessionById } from '../app/sessionSlice';
 import { getAllSets } from '../app/setSlice';
 import { getSettingsLevels } from '../app/settingsSlice';
+import { sessionUrl } from '../constants/app_urls';
 import { isArrayEmpty, isObjectEmpty } from '../constants/utils';
 
 
@@ -151,6 +152,7 @@ const LevelsDisplay = ({session}) => {
 
 const Session = () => {
   const {sessionId} = useParams();
+  const navigate = useNavigate();
 
   const session = useSelector((state) => getSessionById(state,sessionId));
 
@@ -201,7 +203,7 @@ const Session = () => {
                   templateDiv = (
                     <div
                       className="wizard-step wizard-step-active"
-                      onClick={() => {}}
+                      onClick={() => navigate(`${sessionUrl}/${session._id}/${termIndex}`)}
                       style={{ cursor: 'pointer' }}
                       key={i}
                     >

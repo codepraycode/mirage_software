@@ -116,13 +116,13 @@ const AppRoutes = ()=>{
                             </Suspense>
                         } />
 
-                        <Route path={":sessionId/:termId"} exact element={
+                        <Route path={":sessionId/:termIndex"} exact element={
                             <Suspense fallback={<Preloader type={"module_loader"} />}>
                                 <TermPage />
                             </Suspense>
                         } />
 
-                        <Route path={":sessionId/:termId/:studentId"} exact element={
+                        <Route path={":sessionId/:termIndex/:studentId"} exact element={
                             <Suspense fallback={<Preloader type={"module_loader"} />}>
                                 <TermStudentRecordPage />
                             </Suspense>
