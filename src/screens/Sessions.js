@@ -128,7 +128,10 @@ const CreateSession = ({onClose}) =>{
 
     // ADD TERMS
     for (let termIndex = 1; termIndex <= Number(no_of_terms); termIndex++) {
-      session_settings.terms[termIndex] = null;
+      session_settings.terms[termIndex] = {
+        term_id:null,
+        date_concluded:null,
+      };
     }
 
     Object.keys(levels).forEach((level_id)=>{

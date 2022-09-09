@@ -57,6 +57,7 @@ const sessionSlice = createSlice({
 // Selectors
 
 export const getSessions = (state) => state.session.sessions;
+export const getSessionById = (state, session_id) => state.session.sessions?.find((ses)=>ses._id === session_id);
 
 export const getSessionError = (state) => state.session.error;
 export const getSessionStatus = (state) => state.session.status;

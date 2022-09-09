@@ -261,6 +261,7 @@ ipcMain.handle("session:create", async (_e, session_data) => {
     return doc;
 });
 
+
 ipcMain.handle("session:all", async () => {
     // fetch sessions    
 
@@ -268,6 +269,8 @@ ipcMain.handle("session:all", async () => {
 
     return docs;
 });
+
+
 
 ipcMain.handle("session:get", async (_e, session_id) => {
     // fetch sessions    

@@ -258,6 +258,7 @@ class SchoolSet {
             total_female,
             admitted_male,
             admitted_female,
+            admitted_total: admitted_male + admitted_female
         }
     }
 
