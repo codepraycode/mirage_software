@@ -1,11 +1,93 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getSessionById } from '../app/sessionSlice';
-import { getAllSets } from '../app/setSlice';
+import { getAllSets, getSetById } from '../app/setSlice';
 import { getSettingsLevels } from '../app/settingsSlice';
 import { sessionUrl } from '../constants/app_urls';
 import { isArrayEmpty, isObjectEmpty } from '../constants/utils';
+import Modal from '../widgets/Modal/modal';
+
+
+
+const LevelSetting = ({ onClose, all_sets, session, level }) => {
+
+  const {levels} = session.settings;
+
+  let pairedSet = null;
+
+  let paired_sets = []; // ids of sets that is already assigned
+
+  Object.entries(levels).forEach(([level_id, config])=>{
+
+    if (!Boolean(config.set_id)) return
+
+
+    if(level_id === level._id){
+      pairedSet = all_sets.find((ech)=>ech._id === config.set_id);
+      return
+    }
+
+    paired_sets.push(config.set_id);
+  })
+
+
+  return (
+    <Modal
+      title={`${level.label} setting`}
+      onClose={() => { onClose() }}
+      onSave={() => { onClose() }}
+      hideActionBtn={true}
+    >
+      <div className="table-responsive">
+        <table className="table table-hover table-bordered table-md v_center">
+          <thead>
+            <tr>
+              <th>S\N</th>
+              <th>Class set</th>
+              <th></th>
+
+            </tr>
+          </thead>
+
+          <tbody>
+            {
+              all_sets.map((each_set, i) => {
+                return (
+                  <tr
+                    key={i}
+                    onClick={() => { onClose() }}
+                    // style={{ cursor: notNull ? 'pointer' : 'default' }}
+                    // className={!notNull ? 'text-muted' : ''}
+                  >
+                    <td>{i + 1}</td>
+
+                    <td>
+                      {each_set.label}
+                    </td>
+
+                    <td>
+                      <button
+                        onClick={() => { }}
+                        className="btn btn-warning outline-warning text-center"
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })
+            }
+
+
+          </tbody>
+
+        </table>
+      </div>
+
+    </Modal>
+  )
+}
 
 
 const LevelsDisplay = ({session}) => {
@@ -14,6 +96,8 @@ const LevelsDisplay = ({session}) => {
   const onGoing = !Boolean(session.date_closed);
   const all_levels = useSelector(getSettingsLevels);
   const all_sets = useSelector(getAllSets);
+
+  const [levelInSettings, setLevelInSettings] = useState(null);
   
 
   const renderSetDetails = (set_id) => {
@@ -97,7 +181,16 @@ const LevelsDisplay = ({session}) => {
                   onGoing &&
                     (<Link
                       to={`/session/${session._id}/settings?levelId=${level_id}`}
-                      onClick={(e)=>e.preventDefault()}
+                      onClick={(e)=>{
+                        e.preventDefault();
+                        setLevelInSettings(()=>{
+                          return {
+                            _id:level_id,
+                            ...level_data,
+                          }
+                        })
+                      }}
+
                       target="_blank"
                       className="btn text-primary"
                     >
@@ -140,12 +233,24 @@ const LevelsDisplay = ({session}) => {
   )
 
   return (
-    <div className="row" style={{ width: '100%' }}>
+    <>
+      {
+        Boolean(levelInSettings) && <LevelSetting 
+          session={session} 
+          level={levelInSettings} 
+          all_sets={all_sets}
+          onClose={()=>setLevelInSettings(null)}
+        />
+      }
 
-      {renderClasses()}
+      <div className="row" style={{ width: '100%' }}>
+
+        {renderClasses()}
 
 
-    </div>
+      </div>
+    </>
+   
   );
 };
 
