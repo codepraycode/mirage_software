@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { getSessionById } from '../app/sessionSlice';
-import { getAllSets, getSetById } from '../app/setSlice';
+import { getSessionById, updateSession } from '../app/sessionSlice';
+import { getAllSets } from '../app/setSlice';
 import { getSettingsLevels } from '../app/settingsSlice';
 import { sessionUrl } from '../constants/app_urls';
+import { academic_session_channel } from '../constants/channels';
 import { isArrayEmpty, isObjectEmpty } from '../constants/utils';
 import Modal from '../widgets/Modal/modal';
 
@@ -13,6 +14,8 @@ import Modal from '../widgets/Modal/modal';
 const LevelSetting = ({ onClose, all_sets, session, level }) => {
 
   const {levels} = session.settings;
+
+  const storeDispatch = useDispatch();
 
   let pairedSet = null;
 
@@ -30,6 +33,63 @@ const LevelSetting = ({ onClose, all_sets, session, level }) => {
 
     paired_sets.push(config.set_id);
   })
+
+
+  const handleEngageSet = (each_set)=>{
+
+
+    const { settings, ...rest } = session;
+
+    const {levels, ...rest_settings} = settings;
+
+    const updated_session_data = {
+      ...rest,
+      settings:{
+        ...rest_settings,
+        levels:{
+          ...levels,
+          [level._id]:{
+            ...levels[level._id],
+            set_id:each_set._id
+          }
+        }
+      }
+    }
+    
+    // console.log(level._id, each_set._id)
+    // console.log(updated_session_data);
+    storeDispatch(updateSession(updated_session_data))
+    onClose()
+  }
+
+
+  const handleDisEngageSet = async()=>{
+
+
+    const { settings, ...rest } = session;
+
+    const {levels, ...rest_settings} = settings;
+
+    const updated_session_data = {
+      ...rest,
+      settings:{
+        ...rest_settings,
+        levels:{
+          ...levels,
+          [level._id]:{
+            ...levels[level._id],
+            set_id:null
+          }
+        }
+      }
+    }
+    
+    
+    await window.api.request(academic_session_channel.update, updated_session_data);
+
+    storeDispatch(updateSession(updated_session_data))
+    onClose()
+  }
 
 
   return (
@@ -53,12 +113,19 @@ const LevelSetting = ({ onClose, all_sets, session, level }) => {
           <tbody>
             {
               all_sets.map((each_set, i) => {
+
+                const shouldDisable = paired_sets.includes(each_set._id);
+                const canDelete = pairedSet?._id === each_set._id;
                 return (
                   <tr
                     key={i}
-                    onClick={() => { onClose() }}
-                    // style={{ cursor: notNull ? 'pointer' : 'default' }}
-                    // className={!notNull ? 'text-muted' : ''}
+                    onClick={() => { 
+                      if (shouldDisable) return
+
+                      handleEngageSet(each_set)
+                    }}
+                    style={{ cursor: !shouldDisable ? 'pointer' : 'default' }}
+                    className={shouldDisable ? 'text-muted' : ''}
                   >
                     <td>{i + 1}</td>
 
@@ -68,8 +135,12 @@ const LevelSetting = ({ onClose, all_sets, session, level }) => {
 
                     <td>
                       <button
-                        onClick={() => { }}
-                        className="btn btn-warning outline-warning text-center"
+                        onClick={() => {
+                          // if (!canDelete) return
+                          handleDisEngageSet()
+                         }}
+                        disabled={shouldDisable || !canDelete}
+                        className={`btn btn-danger outline-danger text-center ${shouldDisable || !canDelete ? 'disabled':''}`}
                       >
                         <i className="fas fa-trash"></i>
                       </button>
@@ -98,7 +169,6 @@ const LevelsDisplay = ({session}) => {
   const all_sets = useSelector(getAllSets);
 
   const [levelInSettings, setLevelInSettings] = useState(null);
-  
 
   const renderSetDetails = (set_id) => {
 
@@ -128,9 +198,9 @@ const LevelsDisplay = ({session}) => {
     return (
       <div>
         <div className='text-center'>
-          <h4 className="lead m-0">
+          <h3 className="lead m-0">
             {set_info.label}
-          </h4>
+          </h3>
 
           <p>
             {set_info.name}
@@ -138,24 +208,12 @@ const LevelsDisplay = ({session}) => {
 
         </div>
 
-        <div className="pr-5" style={{ width: "70%", margin: "2px auto" }}>
-          <ul >
-            <li className="d-flex align-items-center justify-content-between">
-              <span>Male(s):</span>
-              <span>{stats?.admitted_male}</span>
-            </li>
+        <div className="" style={{ width: "80%",display:'flex', alignItems:'center', justifyContent:'space-around', textAlign:'center'}}>
 
-            <li className="d-flex align-items-center justify-content-between">
-              <span>Female(s):</span>
-              <span>{stats?.admitted_female}</span>
-            </li>
+          <p>{stats?.admitted_male} Male{stats?.admitted_male > 1 && 's'}</p>
+          
 
-
-            <li className="d-flex align-items-center justify-content-between">
-              <span>Total:</span>
-              <span>{stats?.admitted_total}</span>
-            </li>
-          </ul>
+          <p>{stats?.admitted_female} Female{stats?.admitted_female > 1 && 's'}</p>
         </div>
       </div>
     )
@@ -166,6 +224,7 @@ const LevelsDisplay = ({session}) => {
     // console.log(props.all_levels)
     let template = Object.entries(all_levels).map(([level_id, level_data]) => {
 
+      const assignedSetId = levels[level_id]?.set_id;
       return (
         <div className="col-4" key={level_id}>
           
@@ -205,7 +264,7 @@ const LevelsDisplay = ({session}) => {
             <div className="card-body ">
 
               <div className="details">
-                {renderSetDetails(level_data.set_id)}
+                {renderSetDetails(assignedSetId)}
               </div>
 
             </div>

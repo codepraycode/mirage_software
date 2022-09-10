@@ -90,6 +90,17 @@ class Sessions {
             return this.serialize(doc);
         }
 
+        this.update = async ({ _id, ...updates_session_data }) => {
+
+            let prev_doc = await sessionsDb.findOne({ _id });
+
+            if (!prev_doc) return null;// Error
+
+            await sessionsDb.update({ _id }, { ...prev_doc, ...updates_session_data });
+
+            return { _id, ...prev_doc, ...updates_session_data }; //this.serialize({ _id, ...prev_doc, ...updates_session_data });
+        }
+
         // Terms
         this.createTerm = async (term_data) => {
 
@@ -138,6 +149,7 @@ class Sessions {
         if (!Array.isArray(document)) {
             const { createdAt, updatedAt } = document;
 
+            
             if (Boolean(createdAt)) {
                 document.createdAt = createdAt.toISOString();
             }

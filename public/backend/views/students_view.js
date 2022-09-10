@@ -262,8 +262,6 @@ class SchoolSet {
         }
     }
 
-
-cls
     __exists = async (query = null) => {
         if (query === null) {
             // check if there is at least a document

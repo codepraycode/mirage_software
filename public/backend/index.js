@@ -261,6 +261,14 @@ ipcMain.handle("session:create", async (_e, session_data) => {
     return doc;
 });
 
+
+ipcMain.handle("session:update", async (_e, session_data) => {
+
+    const doc = await academicSession.update(session_data);
+
+    return doc;
+});
+
 ipcMain.handle("session:all", async () => {
     // fetch sessions    
 

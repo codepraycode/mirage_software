@@ -21,13 +21,32 @@ export const loadSessions = createAsyncThunk('session/loadSessions', async () =>
     return all_sessions;
 });
 
+// export const updateSession = createAsyncThunk('session/updateSession', async (updated_session_data) => {
+
+//     await window.api.request(academic_session_channel.update, updated_session_data);
+
+//     return updated_session_data;
+// });
+
 
 const sessionSlice = createSlice({
     name: 'session',
     initialState,
     reducers: {
-        sampleSettings(state, action) {
-            console.log("Hello Redux!")
+        updateSession(state, action) {
+            const { _id } = action.payload;
+
+            state.sessions = state.sessions.map((each) => {
+                if (each._id === _id) {
+                    console.log(action.payload);
+                    return {
+                        // ...each,
+                        ...action.payload
+                    }
+                }
+
+                return each;
+            });
         },
     },
 
@@ -46,12 +65,35 @@ const sessionSlice = createSlice({
                 state.status = statuses.failed;
                 state.error = action.error.message;
             })
+
+            // // Update session
+            // .addCase(updateSession.fulfilled, (state, action) => {
+
+            //     const {_id} =  action.payload;
+            //     // console.log(action.payload);
+
+            //     state.sessions = state.sessions.map((each)=>{
+            //         if(each._id === _id){
+            //             console.log(action.payload);
+            //             return{
+            //                 // ...each,
+            //                 ...action.payload
+            //             }
+            //         }
+
+            //         return each;
+            //     });
+
+            // })
+            // .addCase(updateSession.rejected, (state, action) => {
+            //     state.error = action.error.message;
+            // })
     }
 });
 
 
 // Actions
-// export const {} = sessionSlice.actions;
+export const { updateSession } = sessionSlice.actions;
 
 
 // Selectors
