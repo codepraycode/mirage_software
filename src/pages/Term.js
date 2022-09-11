@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react'
-import {useParams} from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import Loading from '../widgets/Preloader/loading';
 import Modal from '../widgets/Modal/modal';
 
-import {createField, createFormDataFromSchema, isObjectEmpty, useQuery} from '../constants/utils';
+import {createField, createFormDataFromSchema, isObjectEmpty, parseFileUrl, useQuery} from '../constants/utils';
 import { academic_session_channel } from '../constants/channels';
 import { NewTermFormConfig } from '../constants/form_configs';
 import { avatar } from '../constants/assets';
 
 import { getSessionById } from '../app/sessionSlice';
 import { getSettingsLevels } from '../app/settingsSlice';
+import { getAllSets, getSetAdmittedStudents } from '../app/setSlice';
 
 
 const CreateTerm = ({ session, termIndex, onCreate })=>{
@@ -147,10 +148,10 @@ const CreateTerm = ({ session, termIndex, onCreate })=>{
 }
 
 
-const LevelSwitch = ({title, handler, level_setting})=>{
+const LevelSwitch = React.memo(({title, handler, level_setting})=>{
 
   const levels = useSelector(getSettingsLevels);
-  const class_sets = [];
+  const class_sets = useSelector(getAllSets);
 
   return(
     <Modal
@@ -190,12 +191,15 @@ const LevelSwitch = ({title, handler, level_setting})=>{
                   class_set.set = set_data
                 }
 
-                const notNull = Boolean(class_set.set);
+                const notNull = !isObjectEmpty(class_set.set);
 
                 return (
                   <tr
                     key={i}
-                    onClick={() => { handler(class_set)}}
+                    onClick={() => { 
+                      if (!notNull) return
+                      handler(class_set)
+                    }}
                     style={{ cursor: notNull ? 'pointer' : 'default' }}
                     className={!notNull ? 'text-muted' : ''}
                   >
@@ -221,11 +225,12 @@ const LevelSwitch = ({title, handler, level_setting})=>{
 
     </Modal>
   )
-}
+});
 
 
 
-const ClassStats = ({stats}) =>{
+const ClassStats = React.memo(({stats}) =>{
+  
   return(
     <div className="row text-center">
       <div className="col-lg-4 col-md-4 col-sm-6 col-12">
@@ -275,7 +280,7 @@ const ClassStats = ({stats}) =>{
       </div>
     </div>
   )
-}
+})
 
 
 const ClassStudentItem = ({index, student, level_data, term_data}) =>{
@@ -350,7 +355,7 @@ const ClassStudentItem = ({index, student, level_data, term_data}) =>{
 }
 
 const ClassStudents = ({level,set, term})=>{
-  const students = [];
+  const students = useSelector((state) => getSetAdmittedStudents(state, set._id));
 
   const [processing, setProcessing] = useState(false);
 
@@ -486,7 +491,10 @@ const TermLobby = ({ session, termData, })=>{
       {
         (showLevelSwitcher && !Boolean(levelFocused)) && <LevelSwitch
           title="Select class level"
-          handler={() => setShowLevelSwitcher(false)}
+          handler={(set_data=null) => {
+            setLevelFocused(() => set_data);
+            setShowLevelSwitcher(false);
+          }}
           level_setting={levels}
       />}
 

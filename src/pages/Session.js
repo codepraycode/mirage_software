@@ -11,7 +11,7 @@ import Modal from '../widgets/Modal/modal';
 
 
 
-const LevelSetting = ({ onClose, all_sets, session, level }) => {
+const LevelSetting = React.memo(({ onClose, all_sets, session, level }) => {
 
   const {levels} = session.settings;
 
@@ -35,7 +35,7 @@ const LevelSetting = ({ onClose, all_sets, session, level }) => {
   })
 
 
-  const handleEngageSet = (each_set)=>{
+  const handleEngageSet = async(each_set)=>{
 
 
     const { settings, ...rest } = session;
@@ -58,6 +58,8 @@ const LevelSetting = ({ onClose, all_sets, session, level }) => {
     
     // console.log(level._id, each_set._id)
     // console.log(updated_session_data);
+    await window.api.request(academic_session_channel.update, updated_session_data);
+
     storeDispatch(updateSession(updated_session_data))
     onClose()
   }
@@ -158,10 +160,10 @@ const LevelSetting = ({ onClose, all_sets, session, level }) => {
 
     </Modal>
   )
-}
+});
 
 
-const LevelsDisplay = ({session}) => {
+const LevelsDisplay = React.memo(({session}) => {
 
   const {levels} = session.settings;
   const onGoing = !Boolean(session.date_closed);
@@ -311,7 +313,7 @@ const LevelsDisplay = ({session}) => {
     </>
    
   );
-};
+});
 
 
 const Session = () => {

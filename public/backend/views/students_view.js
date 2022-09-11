@@ -62,7 +62,16 @@ class SchoolSet {
 
             let docs = await setsDb.find({}, { multi: true });
 
-            return this.serialize(docs);
+            const docs_dt = await Promise.all(docs.map(async(ech)=>{
+                const stats = await this.get_stats(ech);
+
+                return {
+                    ...ech,
+                    stats
+                }
+            }))
+
+            return this.serialize(docs_dt);
 
         }
 
@@ -217,6 +226,7 @@ class SchoolSet {
 
         return document
     }
+
 
     get_stats = async(set_data) => {
         if (!set_data) return null;
