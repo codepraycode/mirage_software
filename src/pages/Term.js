@@ -13,6 +13,7 @@ import { avatar } from '../constants/assets';
 import { getSessionById } from '../app/sessionSlice';
 import { getSettingsLevels } from '../app/settingsSlice';
 import { getAllSets, getSetAdmittedStudents } from '../app/setSlice';
+import { sessionUrl } from '../constants/app_urls';
 
 
 const CreateTerm = ({ session, termIndex, onCreate })=>{
@@ -327,7 +328,7 @@ const ClassStudentItem = ({index, student, level_data, term_data}) =>{
 
       <td >
         <Link
-          to={`/session/${term_data.session_id}/${term_data.term_index}/${student._id}`}
+          to={`${sessionUrl}/${term_data.session_id}/${term_data.term_index}/${student._id}`}
           onClick={()=>{}}
           className="btn btn-warning outline-warning text-center"
         >
