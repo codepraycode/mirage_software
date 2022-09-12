@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import {Link, useLocation, useNavigate, useParams} from 'react-router-dom';
+import {Link, useNavigate, useParams} from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import Loading from '../widgets/Preloader/loading';
@@ -475,7 +475,7 @@ const ClassStats = React.memo(({stats}) =>{
 })
 
 
-const ClassStudentItem = React.memo(({index, student, level_data, term_data}) =>{
+const ClassStudentItem = React.memo(({index, student, level_data, term_data, link}) =>{
   const [termRecord, setTermRecord] = useState(null);
 
   const [loading, setLoading] = useState(true);
@@ -554,8 +554,14 @@ const ClassStudentItem = React.memo(({index, student, level_data, term_data}) =>
         <Link
           className={`btn ${!Boolean(termRecord) ? 'btn-outline-light disabled' : 'btn-outline-success'}`}
           target="_blank"
-          to={'/'}
-          onClick={(e)=>e.preventDefault()}
+          to={`${sessionUrl}/${term_data._id}/${level_data._id}/${student._id}/report`}
+          onClick={(e)=>{
+            
+            if (!Boolean(termRecord)) {
+              e.preventDefault();
+            }
+            
+          }}
         >
           {
             loading ?

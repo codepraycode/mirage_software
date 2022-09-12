@@ -58,4 +58,5 @@ export const academic_session_channel = {
     createTermRecord: `${academic_session}:createTermRecord`,
     updateTermRecord: `${academic_session}:updateTermRecord`,
     getTermRecord: `${academic_session}:getTermRecord`,
+    getTermReport: `${academic_session}:getTermReport`,
 }

@@ -13,12 +13,14 @@ import SetsLayout from './layout/SetLayout';
 import SessionLayout from './layout/SessionLayout';
 
 
+
 const Initialization = React.lazy(()=> import ('./screens/Initialization'));
 const Home = React.lazy(() => import('./screens/Home'));
 const Admission = React.lazy(() => import('./screens/Admission'));
 const Settings = React.lazy(() => import('./screens/settings'));
 const Sets = React.lazy(() => import('./screens/Sets'));
 const Sessions = React.lazy(() => import('./screens/Sessions'));
+const Report = React.lazy(() => import('./screens/Report'));
 
 
 const OpenedSet = React.lazy(() => import('./pages/OpenedSet'));
@@ -135,6 +137,12 @@ const AppRoutes = ()=>{
                 <Route path={`${dashboardUrl}/admission/:setId/new`} exact element={
                     <Suspense fallback={<Preloader type={"module_loader"} />}>
                         <AdmissionForm />
+                    </Suspense>
+                } />
+
+                <Route path={`${dashboardUrl}/session/:termId/:levelId/:studentId/report`} exact element={
+                    <Suspense fallback={<Preloader type={"module_loader"} />}>
+                        <Report />
                     </Suspense>
                 } />
 

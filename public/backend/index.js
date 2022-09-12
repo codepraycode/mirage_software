@@ -350,6 +350,287 @@ ipcMain.handle("session:getTermRecord", async (_e, query) => {
     return docs;
 });
 
-// ============================================
+ipcMain.handle("session:getTermReport", async (_e, { term_id, student_id, level_id }) => {    
+
+    const report = await proccessReport({ term_id, student_id, level_id });
+
+    return report;
+});
+
+// =================================================
+
+
+const getSchoolInfo = (school) =>{
+    const {
+        logo,
+        name,
+        motto,
+        address,
+        state,
+        city,
+        contacts,
+        email,
+        website
+    } = school;
+
+
+    return {
+        logo,
+        name,
+        motto,
+        address,
+        state,
+        city,
+        contacts,
+        email,
+        website
+    }
+}
+
+const getStudentInfo = (student) => {
+    const {
+        first_name,
+        last_name,
+        admission_no,
+        gender,
+        date_of_birth,
+        
+        sponsor,
+    } = student;
+
+    const {
+        title,
+        first_name:sponsor_firstname,
+        last_name:sponsor_lastname,
+        email,
+        passport:sponsor_passport,
+        relationship,
+    } = sponsor;
+
+
+    return {
+        first_name,
+        last_name,
+        admission_no,
+        gender,
+        date_of_birth,
+
+        sponsor:{
+            title,
+            first_name: sponsor_firstname,
+            last_name: sponsor_lastname,
+            email,
+            passport: sponsor_passport,
+            relationship,
+        }
+    }
+}
+
+const getSessionDetails = (session)=>{
+    const {
+        label,
+        title,
+        date_started,
+        date_closed
+    } = session;
+
+    return {
+        label,
+        title,
+        date_started,
+        date_closed
+    }
+}
+
+const getTermDetails = (term) => {
+    const {
+        label,
+        date_started,
+        date_concluded,
+        term_index,
+        no_of_times_opened,
+        next_term_begins
+    } = term;
+
+    return {
+        label,
+        date_started,
+        date_concluded,
+        term_index,
+        no_of_times_opened,
+        next_term_begins
+    }
+}
+
+const getStudentAttendance = (termRecord, no_of_times_opened) => {
+    
+    const {
+        no_of_times_present,
+        no_of_times_absent,
+    } = termRecord.attendance ||{};
+
+    let percent = (Number(no_of_times_present || 0) - Number(no_of_times_absent || 0)) / no_of_times_opened
+
+    percent = percent.toFixed(2);
+
+
+
+    return {
+        no_of_times_opened,
+        no_of_times_present,
+        no_of_times_absent,
+        percentage: Number(percent) || 0
+    }
+}
+
+const getStudentAttr = (termRecord, attr_settings) =>{
+
+    const { attr } = termRecord
+
+    const {keys, mappings} = attr_settings;
+
+    const data = Object.entries(attr).map(([key, point])=>{
+        let key_data = keys.find((eky)=>eky._id === key);
+
+        return{
+            label:key_data.value,
+            point,
+        }
+    });
+
+
+    const rating = {}
+    
+    mappings.forEach((emp)=>{
+        rating[emp.point] = emp.value
+    })
+
+    return {
+        rating,
+        data
+    }
+
+
+}
+
+const getStudentRemarks = (termRecord) =>{
+
+    const { remarks } = termRecord
+    return remarks;
+
+}
+
+
+const getStudentAcademicPerformance = (grade_scale, termRecord, other_students_subjects_data)=>{
+    // proccess according to students subjects
+    // that means only proccess subject data of students that offered same subjects
+    // as the current student
+
+    // student_subjects_data -> object
+    // other_students_subjects_data -> [objects]
+
+    const { subjects: student_subjects_data } = termRecord;
+
+    let student_total_obtainable = 0;
+    let student_total_obtained = 0;
+
+
+    const data = Object.entries(student_subjects_data || []).map(([subject_id, subject_data])=>{
+
+        const { name, short, ca, exam, total_obtainable} = subject_data;
+
+
+        const obtained = Number(ca) + Number(exam);
+
+        let percent = (Number(obtained)) / total_obtainable
+
+        percent = percent.toFixed(2);
+
+
+        student_total_obtainable += Number(total_obtainable);
+        student_total_obtained += obtained;
+
+        return {
+            name,short,
+            ca,exam,
+            obtained, percent
+        }
+
+        //  filter other students data
+        // other_student_data = other_students_subjects_data.filter((otrs) => Boolean(otrs[subject_id])); 
+    });
+
+    let percentage = (Number(student_total_obtained)) / student_total_obtainable
+
+    percentage = Number(percentage.toFixed(2)) || 0;
+
+    const scale = grade_scale.map((scl)=>{
+        const {key, value, remark} = scl;
+
+        return { key, value, remark }
+    })
+
+    return {
+        scale,
+        data,
+        total_obtainable: student_total_obtainable,
+        total_obtained: student_total_obtained,
+        percentage,
+        no_of_pupils: other_students_subjects_data.length
+    }
+}
+
+const proccessReport = async({term_id, student_id, level_id})=>{
+
+    const app_settings = await settings.all();
+
+
+    // Get school data
+    const { school:schoolInfo, grades, attrs:attrs_settings } = app_settings;
+
+    // get student data
+    const studentInfo = await schoolset.get_student(student_id);
+
+    // get students in student's levels term record
+    const other_students_term_record = await academicSession.queryTermRecord({ term_id, level_id, student_id: { $ne: String(student_id) } });
+    const term_record = await academicSession.getTermRecord({ term_id, student_id });
+
+
+    // get term data
+    const termInfo = await academicSession.getTerm(term_id);
+
+    // get session data
+    const sesssionInfo = await academicSession.get(termInfo.session_id);
+
+
+    // gather data
+
+    const school = getSchoolInfo(schoolInfo);
+    const student = getStudentInfo(studentInfo);
+    const session = getSessionDetails(sesssionInfo);
+    const term = getTermDetails(termInfo);
+    const { no_of_times_opened } = term;
+    const attendance = getStudentAttendance(term_record, no_of_times_opened);
+    const behavioural_data = getStudentAttr(term_record, attrs_settings);
+    const academic_performance = getStudentAcademicPerformance(grades, term_record, other_students_term_record)
+    const remarks = getStudentRemarks(term_record)
+
+
+
+    return {
+        school,
+        student,
+        session,
+        term,
+        attendance,
+        behavioural_data,
+        academic_performance,
+        remarks,
+    }
+
+
+
+
+}
 
 module.exports = { app_files_dir };

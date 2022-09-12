@@ -26,7 +26,7 @@ class Sessions {
                     },
                     ...
                 },
-                - roles:{
+                - roles:{ 
                     - school_head:...,
                     - levels:...,
                     - subjects:...,
@@ -52,7 +52,7 @@ class Sessions {
         {
             - term_id: string,
             - student_id: string,
-            - level_id: string,
+            - level_id: string, 
             - subjects:
                 [
                     ...subject_info,
@@ -208,6 +208,15 @@ class Sessions {
 
             return this.serialize(doc);
         }
+
+        this.queryTermRecord = async (query) => {
+
+
+            // get previous data
+            const doc = await termRecordsDb.find(query);
+
+            return this.serialize(doc);
+        }
     }
 
     serializeSessionData = async(new_session_data)=>{
@@ -256,6 +265,11 @@ class Sessions {
         })
 
         return document
+    }
+
+
+    proccessReport = ({school, student, })=>{
+
     }
 
 }
