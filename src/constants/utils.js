@@ -6,6 +6,17 @@ import moment from 'moment';
 import { form_configs_options} from './form_configs';
 import { image_placeholder } from './assets';
 
+
+export const supify = (n) => {
+
+    const num = Number(n);
+    if (num === 1) return 'st'
+    if (num === 2) return 'nd'
+    if (num === 3) return 'rd'
+
+    return 'th'
+}
+
 export const getDate = (date_stamp, withTime=false) => {
     // console.log(date_stamp);
     if(date_stamp === null){

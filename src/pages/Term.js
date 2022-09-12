@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import {Link, useParams} from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import Loading from '../widgets/Preloader/loading';
 import Modal from '../widgets/Modal/modal';
@@ -10,7 +10,7 @@ import { academic_session_channel } from '../constants/channels';
 import { NewTermFormConfig } from '../constants/form_configs';
 import { avatar } from '../constants/assets';
 
-import { getSessionById } from '../app/sessionSlice';
+import { getSessionById, updateSession } from '../app/sessionSlice';
 import { getSettingsLevels } from '../app/settingsSlice';
 import { getAllSets, getSetAdmittedStudents } from '../app/setSlice';
 import { sessionUrl } from '../constants/app_urls';
@@ -18,6 +18,7 @@ import { sessionUrl } from '../constants/app_urls';
 
 const CreateTerm = ({ session, termIndex, onCreate })=>{
 
+  const storeDispatch = useDispatch();
 
   const [termData, setTermData] = useState(() => {
     const form_ = createFormDataFromSchema(NewTermFormConfig);
@@ -91,11 +92,35 @@ const CreateTerm = ({ session, termIndex, onCreate })=>{
     // console.log(data);
 
     window.api.request(academic_session_channel.createTerm, data)
-    .then((res)=>{
-        onCreate(res);
+    .then(async(res)=>{
+
+      const {settings} = session;
+
+      const {terms} = settings;
+
+      const ses = {
+        ...session,
+        settings:{
+          ...settings,
+          terms:{
+            ...terms,
+            [termIndex]:{
+              ...terms[termIndex],
+              term_id:res._id
+            }
+          }
+        }
+      }
+
+      // ses.settings.terms[termIndex].term_id = res._id;
+
+      await window.api.request(academic_session_channel.update, ses);
+      storeDispatch(updateSession(ses));
+
+      onCreate(res);
     })
     .catch(err=>{
-      setErr(()=>err);
+      setErr(()=>String(err.message));
       setLoading(false);
     })
 

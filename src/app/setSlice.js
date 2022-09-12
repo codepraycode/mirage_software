@@ -188,6 +188,7 @@ export const getOpenedSetStudents = (state) => state.set.openSetStudents;
 
 export const getSetById = (state,setId) => state.set.sets?.find((st) => st._id === setId);
 export const getSetAdmittedStudents = (state,setId) => state.set.students?.filter((st) => st.set_id === setId);
+export const getSetAdmittedStudent = (state, studentId) => state.set.students?.find((st) => st._id === studentId);
 
 export const getSetError = (state) => state.set.error;
 export const getSetStatus = (state) => state.set.status;

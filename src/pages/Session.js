@@ -6,7 +6,7 @@ import { getAllSets } from '../app/setSlice';
 import { getSettingsLevels } from '../app/settingsSlice';
 import { sessionUrl } from '../constants/app_urls';
 import { academic_session_channel } from '../constants/channels';
-import { isArrayEmpty, isObjectEmpty } from '../constants/utils';
+import { isArrayEmpty, isObjectEmpty, supify } from '../constants/utils';
 import Modal from '../widgets/Modal/modal';
 
 
@@ -325,15 +325,7 @@ const Session = () => {
 
   const session_settings = session?.settings;
 
-  const supify = (n) => {
-
-    const num = Number(n);
-    if (num === 1) return 'st'
-    if (num === 2) return 'nd'
-    if (num === 3) return 'rd'
-
-    return 'th'
-  }
+  
 
   const renderTabs = ()=>{
 

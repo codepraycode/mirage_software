@@ -261,6 +261,7 @@ export const getSettingsStaffById = (state, staff_id) => state.settings.staffs.f
 
 export const getSettingsRoles = (state) => state.settings.roles;
 export const getSettingsLevels = (state) => state.settings.levels;
+export const getSettingsLevelById = (state, levelId) => state.settings.levels[levelId];
 
 
 export const getSettingsGrades = (state) => state.settings.grades;
