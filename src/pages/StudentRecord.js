@@ -1242,7 +1242,10 @@ const StudentRecord = () => {
   const handleComponentSumbit = async(section_data)=>{
     let updating_data = {
       ...termRecord,
-      ...section_data
+      ...section_data,
+      term_id: termInfo._id,
+      student_id: studentId,
+      level_id: student_level_id,
     }
 
     
@@ -1254,9 +1257,7 @@ const StudentRecord = () => {
       updating_data = {
         ...updating_data,
         ...res,
-        term_id:termInfo._id,
-        student_id: studentId,
-        level_id: student_level_id,
+        
       }
     }else{
       // update

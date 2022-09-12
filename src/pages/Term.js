@@ -3,9 +3,10 @@ import {Link, useLocation, useNavigate, useParams} from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import Loading from '../widgets/Preloader/loading';
+import Preloader from '../widgets/Preloader';
 import Modal from '../widgets/Modal/modal';
 
-import {createField, createFormDataFromSchema, isObjectEmpty, parseFileUrl, useQuery} from '../constants/utils';
+import { createField, createFormDataFromSchema, isObjectEmpty, parseFileUrl, useQuery, getDateAge } from '../constants/utils';
 import { academic_session_channel } from '../constants/channels';
 import { NewTermFormConfig, SessionSettingFormConfig, SessionTermSettingFormConfig } from '../constants/form_configs';
 import { avatar } from '../constants/assets';
@@ -205,7 +206,7 @@ const LevelSwitch = React.memo(({ title, handler, sessionId, termIndex, level_se
               Object.entries(levels).map(([level_id, level_data], i) => {
 
                 let class_set = {
-                  level: level_data,
+                  level: {_id:level_id, ...level_data},
                   set:{},
                 };
 
@@ -474,14 +475,39 @@ const ClassStats = React.memo(({stats}) =>{
 })
 
 
-const ClassStudentItem = ({index, student, level_data, term_data}) =>{
-  const termRecord = null;
+const ClassStudentItem = React.memo(({index, student, level_data, term_data}) =>{
+  const [termRecord, setTermRecord] = useState(null);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const getLastUpdated = ()=>{
-    return '----'
+    // console.log(termRecord);
+    if(isObjectEmpty(termRecord)) return '----'
+
+    return getDateAge(termRecord.updatedAt);
   }
+
+  const loadStudentTermReport = async ()=>{
+
+    const query = {
+      term_id: term_data._id,
+      student_id: student._id,
+      level_id: level_data._id
+    }
+
+    // console.log(query);
+
+    const doc = await window.api.request(academic_session_channel.getTermRecord, query)
+
+    setTermRecord(()=>doc);
+    setLoading(false);
+  }
+
+
+
+  useEffect(()=>{
+    loadStudentTermReport();
+  },[])
 
   return (
     <tr>
@@ -528,7 +554,8 @@ const ClassStudentItem = ({index, student, level_data, term_data}) =>{
         <Link
           className={`btn ${!Boolean(termRecord) ? 'btn-outline-light disabled' : 'btn-outline-success'}`}
           target="_blank"
-          to={() => { }}
+          to={'/'}
+          onClick={(e)=>e.preventDefault()}
         >
           {
             loading ?
@@ -543,13 +570,12 @@ const ClassStudentItem = ({index, student, level_data, term_data}) =>{
 
     </tr>
   );
-}
+});
 
 const ClassStudents = ({level,set, term})=>{
   const students = useSelector((state) => getSetAdmittedStudents(state, set._id));
 
   const [processing, setProcessing] = useState(false);
-
 
   const processReports = ()=>{};
 
@@ -692,7 +718,7 @@ const TermLobby = ({ session, termData, termIndex,})=>{
     const level_data = levels[focus];
 
     let class_set = {
-      level: level_data,
+      level: {_id:focus, ...level_data},
       set: {},
     };
 
