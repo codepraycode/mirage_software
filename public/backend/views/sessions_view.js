@@ -2,6 +2,7 @@ const { dbFactory } = require('../base');
 
 const sessionsDb = dbFactory('sessions.db')
 const termsDb = dbFactory('terms.db')
+const termRecordsDb = dbFactory('termRecords.db')
 
 
 // Sessions
@@ -44,6 +45,39 @@ class Sessions {
             - term_index:int,
             - no_of_times_opened:int,
             - next_term_begins:Date // ends the term
+        }
+
+
+        * Session Term Student Record
+        {
+            - term_id: string,
+            - student_id: string,
+            - level_id: string,
+            - subjects:
+                [
+                    ...subject_info,
+                    - ca: number,
+                    - exam:number,
+                ],
+            - attendance:
+                - no_of_times_present: number,
+                - no_of_times_absent: number,
+            - remarks:
+                - school_head:
+                    - staff:...details,
+                    - remark: string,
+                    - role_label: string,
+                - level_head:
+                    - staff:...details,
+                    - remark: string,
+                    - role_label: string,
+                
+            - attr:
+                [
+                    - key_id:,
+                    - point:
+                ]
+            ...other_meta_data
         }
 
     */
@@ -117,6 +151,16 @@ class Sessions {
             return this.serialize(doc);
         }
 
+        this.updateTerm = async (term_data) => {
+
+            const {_id} = term_data;
+
+
+
+            await termsDb.update({ _id }, { ...term_data });
+
+            return term_data; //this.serialize(doc);
+        }
 
         this.getTerm = async (term_id) => {
 
@@ -128,6 +172,39 @@ class Sessions {
         this.queryTerm = async (query) => {
 
             let doc = await termsDb.findOne(query);
+
+            return this.serialize(doc);
+        }
+
+        // Term record
+        this.createTermRecord = async (term_record_data) => {
+            
+            // Prepare Session data
+            let doc = await termRecordsDb.insert(term_record_data);
+
+            return this.serialize(doc);
+        }
+
+        this.updateTermRecord = async (term_record_data) => {
+
+
+            const {_id} = term_record_data;
+
+            // get previous data
+            const prev = await termRecordsDb.findOne({_id});
+
+            if (!Boolean(prev)) return term_record_data;
+
+            await termRecordsDb.update({_id}, {...prev, ...term_record_data});
+
+            return { ...prev, ...term_record_data } //this.serialize(doc);
+        }
+
+        this.getTermRecord = async ({ term_id, student_id }) => {
+
+
+            // get previous data
+            const doc = await termRecordsDb.findOne({ term_id, student_id});
 
             return this.serialize(doc);
         }

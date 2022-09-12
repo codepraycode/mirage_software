@@ -302,6 +302,10 @@ export const createFormDataFromSchema = (form_config)=>{
                 config_option = {...form_configs_options.text}
                 break;
             
+            case 'number':
+                config_option = { ...form_configs_options.number }
+                break;
+            
             case 'password':
                 config_option = {...form_configs_options.password}
                 break;

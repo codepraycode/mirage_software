@@ -302,6 +302,14 @@ ipcMain.handle("session:getTerms", async (_e, session_id) => {
     return docs;
 });
 
+ipcMain.handle("session:updateTerm", async (_e, term_data) => {
+    // fetch sessions    
+
+    const docs = await academicSession.updateTerm(term_data);
+
+    return docs;
+});
+
 ipcMain.handle("session:getTerm", async (_e, term_id) => {
     // fetch sessions    
 
@@ -317,6 +325,31 @@ ipcMain.handle("session:queryTerm", async (_e, query) => {
 
     return docs;
 });
+
+
+// ================= Session Term Record=======================
+ipcMain.handle("session:createTermRecord", async (_e, record_data) => {
+
+    const doc = await academicSession.createTermRecord(record_data);
+
+    return doc;
+});
+
+ipcMain.handle("session:updateTermRecord", async (_e, record_data) => {
+
+    const doc = await academicSession.updateTermRecord(record_data);
+
+    return doc;
+});
+
+ipcMain.handle("session:getTermRecord", async (_e, query) => {
+    // fetch sessions    
+
+    const docs = await academicSession.getTermRecord(query);
+
+    return docs;
+});
+
 // ============================================
 
 module.exports = { app_files_dir };

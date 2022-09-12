@@ -15,7 +15,15 @@ const form_configs_options = {
         elem: 'input',
         config: {
             type: 'text',
-            value: '',
+            
+        }
+    },
+    number: {
+        elem: 'input',
+        config: {
+            type: 'number',
+            min:0,
+            value:0,
         }
     },
     long_text: {
@@ -698,6 +706,83 @@ const NewTermFormConfig = {
 }
 
 
+const SessionSettingFormConfig = {
+    form_data: {
+        label: {
+            data_type: 'text',
+            readOnly: true,
+            name: 'label'
+        },
+        title: {
+            data_type: 'text',
+            readOnly: true,
+            name: 'title'
+        },
+        date_started: {
+            data_type: 'date',
+            readOnly: true,
+            name: 'date_started'
+        },
+        date_closed: {
+            data_type: 'date',
+            
+            readOnly: true,
+            name: 'date_closed'
+        },
+    },
+
+    groups: [
+        [
+            ['label', 'title',],
+            ['date_started', 'date_closed', ]
+        ],
+    ],
+}
+
+
+const SessionTermSettingFormConfig = {
+    form_data: {
+        label: {
+            data_type: 'text',
+            required: true,
+            name: 'label'
+        },
+        date_started: {
+            data_type: 'date',
+            required: true,
+            name: 'date_started'
+        },
+        date_concluded: {
+            data_type: 'date',
+            required: false,
+            name: 'date_concluded',
+            validation: {
+                msg: 'Filling this field will end this term and activate the next'
+            }
+        },
+
+        no_of_times_opened: {
+            data_type: 'number',
+            required: false,
+            name: 'no_of_times_opened'
+        },
+
+        next_term_begins: {
+            data_type: 'date',
+            
+            required: false,
+            name: 'next_term_begins'
+        },
+    },
+
+    groups: [
+        [
+            ['label', 'date_started', 'date_concluded',],
+            ['no_of_times_opened', 'next_term_begins',]
+        ],
+    ],
+}
+
 
 
 export { 
@@ -706,5 +791,6 @@ export {
     NewSessionFormConfig, form_configs_options,
     StaffsDataSchema, UserUpdateFormConfig,
     StudentDataSchema, SponsorDataSchema,
-    NewTermFormConfig, 
+    NewTermFormConfig, SessionSettingFormConfig,
+    SessionTermSettingFormConfig, 
 }

@@ -97,19 +97,21 @@ const StudentPreview = ({ student, level_id })=>{
 }
 
 
-const MetaRecords = ({requestData, updateData, termInfo})=>{
+const MetaRecords = ({ requestData, updateData, termInfo})=>{
+  // Attendance
 
   const {no_of_times_opened} = termInfo;
 
   const [data, setData] = useState(()=>{
 
+    const preData = requestData('attendance') || {};
+
     return {
-      no_of_times_present: 0,
-      no_of_times_absent: 0,
+      no_of_times_present: preData['no_of_times_present'] || 0,
+      no_of_times_absent: preData['no_of_times_absent'] || 0,
       no_of_times_opened:no_of_times_opened || 0,
     }
     
-
   });
 
   const [loading, setLoading] = useState(false);
@@ -119,15 +121,28 @@ const MetaRecords = ({requestData, updateData, termInfo})=>{
   const anyChanges = noOfChanges > 0;
 
 
-  const handleSave = ()=>{
-    console.log(data);
+  const handleSave = async ()=>{
+
+    // Update term data setting for number of times opened
+
+    const { no_of_times_present, no_of_times_absent } = data;
+
+    const updating_data = {
+      attendance:{
+        no_of_times_present,
+        no_of_times_absent,
+      }
+    }
+
+    await updateData(updating_data);
+    setNoOfChanges(0);
   }
 
   const handleInputChange = (e) => {
     
     // Modifying state's term data;
     let field_name = e.target.name;
-    let field_value = e.target.value;
+    let field_value = parseInt(e.target.value);
 
     
     // console.log(data[field_name], field_name, field_value);
@@ -433,7 +448,7 @@ const SelectStaffModal = ({staffs, onSelected, onClose})=>{
 }
 
 const AcademicRecord = (props)=>{
-  const { requestData, updateData, termInfo, all_staffs, level_id } = props;
+  const { requestData, updateData, all_staffs, level_id } = props;
   
   const all_levels = useSelector(getSettingsLevels);
   const all_subjects = useSelector(getSettingsSubjects);
@@ -445,13 +460,19 @@ const AcademicRecord = (props)=>{
   const [loading, setLoading] = useState(false);
   const [noOfChanges, setNoOfChanges] = useState(0);
   const [subjectData, setSubjectData] = useState(()=>{
+    
+    const preData = requestData('subjects') || {};
+
     const sbdt = {};
+    
 
     subjects.forEach((subj_id)=>{
+      const preSub = preData[subj_id] || {};
+
       const subj_data = all_subjects[subj_id];
       // const {name, total_obtainable, required} = subj_data;
 
-      sbdt[subj_id] = { ca: null, exam: null, teacher: null, ...subj_data,  }
+      sbdt[subj_id] = { ca: null, exam: null, teacher: null, ...subj_data, ...preSub, }
     });
 
 
@@ -463,8 +484,38 @@ const AcademicRecord = (props)=>{
   const anyChanges = noOfChanges > 0;
 
 
-  const handleSave = () => {
-    console.log(subjectData);
+  const handleSave = async () => {
+    // console.log(subjectData);
+
+    const updating_data = {
+      subjects:{
+        // ...subjectData
+      }
+    }
+
+    Object.entries(subjectData).forEach(([id, dat])=>{
+      const isCa = Boolean(dat.ca);
+      const isExam = Boolean(dat.exam);
+
+
+      if (!isCa && !isExam) return
+
+      else if(isCa && !isExam){
+        dat.exam = 0;
+      }
+
+      else if (!isCa && isExam) {
+        dat.ca = 0;
+      }
+
+      updating_data.subjects[id] = {
+        ...dat,
+      }
+
+    })
+
+    await updateData(updating_data);
+    setNoOfChanges(0);
   }
 
 
@@ -728,7 +779,8 @@ const AcademicRecord = (props)=>{
           return {...prev};
         })
 
-        setSubjectTeacherSelectId(null)
+        setSubjectTeacherSelectId(null);
+        setNoOfChanges((pp)=>pp+1);
       }}
     />
   }
@@ -758,20 +810,23 @@ const AcademicRecord = (props)=>{
 }
 
 
-const AttrRecord = ()=>{
+const AttrRecord = ({ requestData, updateData })=>{
   const attrs_settings = useSelector(getSettingsAttrs);
 
   const { keys, mappings } = attrs_settings;
 
   const [attrData, setAttrData] = useState(()=>{
     let _data = {};
+    
+    const preData = requestData('attr') || {};
 
     keys.forEach((eky)=>{
-      _data[eky._id] = null;
+      _data[eky._id] = preData[eky._id] || null;
     })
 
     return _data;
   });
+
   const [loading, setLoading] = useState(false);
   const [noOfChanges, setNoOfChanges] = useState(0);
 
@@ -792,8 +847,24 @@ const AttrRecord = ()=>{
     })
   }
 
-  const handleSave =()=>{
-    console.log(attrData);
+  const handleSave = async ()=>{
+
+    const updating_data = {
+      attr:{}
+    }
+
+
+    Object.entries(attrData).forEach(([id, dat]) => {
+
+
+      if (!dat) return
+
+      updating_data.attr[id] = dat;
+
+    })
+
+    await updateData(updating_data);
+    setNoOfChanges(0);
   }
 
   const checkIsSelected = (key_id, point) => {
@@ -919,9 +990,7 @@ const AttrRecord = ()=>{
 
 }
 
-
-
-const StaffRemarks = ({ session_setting, level_id, all_staffs })=>{
+const StaffRemarks = ({ session_setting, level_id, all_staffs, requestData, updateData })=>{
 
   const {roles} = session_setting;
 
@@ -932,8 +1001,7 @@ const StaffRemarks = ({ session_setting, level_id, all_staffs })=>{
   const [remarkData, setRemarkData] = useState(()=>{
 
     const level_role = level_roles?.find(elv => elv.level_id === level_id);
-
-    console.log(level_roles, level_id, level_role)
+    const preData = requestData('remarks') || {};
 
     let _data = {
       school_head:{
@@ -943,12 +1011,12 @@ const StaffRemarks = ({ session_setting, level_id, all_staffs })=>{
       level_head: {
         ...level_role,
         staff:null
-      }
+      },
+
+      ...preData,
     }
 
-
-
-    if (Boolean(school_head.staff_id)) {
+    if (Boolean(school_head.staff_id) && !Boolean(_data.school_head.staff)) {
       const head_staff_data = all_staffs.find((esf) => esf._id === school_head.staff_id);
 
       if (!isObjectEmpty(head_staff_data)) {
@@ -969,7 +1037,7 @@ const StaffRemarks = ({ session_setting, level_id, all_staffs })=>{
     }
 
 
-    if (Boolean(_data.level_head?.staff_id)){
+    if (Boolean(_data.level_head?.staff_id) && !Boolean(_data.level_head.staff)){
       const staff_data = all_staffs.find((esf) => esf._id === _data.level_head.staff_id);
 
       if (!isObjectEmpty(staff_data)) {
@@ -989,12 +1057,7 @@ const StaffRemarks = ({ session_setting, level_id, all_staffs })=>{
       }
     }
 
-
     return _data;
-    
-
-    
-
 
   })
 
@@ -1096,8 +1159,17 @@ const StaffRemarks = ({ session_setting, level_id, all_staffs })=>{
     )
   }
 
-  const handleSave = () => {
-    console.log(remarkData);
+  const handleSave = async () => {
+    // console.log(remarkData);
+
+    const updating_data = {
+      remarks: {
+        ...remarkData
+      }
+    }
+
+    await updateData(updating_data);
+    setNoOfChanges(0);
   }
 
 
@@ -1167,9 +1239,39 @@ const StudentRecord = () => {
   const [loading, setLoading] = useState(true);
 
 
-  const handleComponentSumbit = ()=>{}
+  const handleComponentSumbit = async(section_data)=>{
+    let updating_data = {
+      ...termRecord,
+      ...section_data
+    }
 
-  const requestComponentData = ()=>{}
+    
+
+    if(!Boolean(termRecord._id)){
+      // create
+      const res = await window.api.request(academic_session_channel.createTermRecord, updating_data);
+
+      updating_data = {
+        ...updating_data,
+        ...res,
+        term_id:termInfo._id,
+        student_id: studentId,
+        level_id: student_level_id,
+      }
+    }else{
+      // update
+      await window.api.request(academic_session_channel.updateTermRecord, updating_data);
+    }
+
+    
+    setTermRecord(()=>{
+      return updating_data
+    })
+  }
+
+  const requestComponentData = (section)=>{
+    return termRecord[section] || {}
+  }
 
   const renderComponents = ()=>{
     const sup = supify(termIndex);
@@ -1185,27 +1287,36 @@ const StudentRecord = () => {
 
             <div className="col col-md-6 col-sm-6 text-center">
               <b>
-                {termInfo?.label}
+              {termIndex}
                 <sup>{sup}</sup> {capitalize(verbose)} Student Academic Record
               </b>
             </div>
           </div>
 
-         <MetaRecords termInfo={termInfo} requestData={() => { }} updateData={() => { }} />
+          <MetaRecords 
+            termInfo={termInfo} 
+            updateData={handleComponentSumbit} 
+            requestData={requestComponentData} 
+          />
           <AcademicRecord 
             all_staffs={all_staffs} 
             level_id= {student_level_id}
             termInfo={termInfo} 
-            requestData={() => { }} 
-            updateData={() => { }} 
+            updateData={handleComponentSumbit}
+            requestData={requestComponentData}  
           />
 
-          <AttrRecord/>
+          <AttrRecord
+          updateData={handleComponentSumbit} 
+          requestData={requestComponentData} 
+          />
 
           <StaffRemarks 
             session_setting={settings}
             level_id={student_level_id}
             all_staffs={all_staffs}
+          updateData={handleComponentSumbit} 
+          requestData={requestComponentData} 
           />
 
 
@@ -1222,9 +1333,18 @@ const StudentRecord = () => {
     const {term_id} = terms[termIndex];
 
     const termData = await window.api.request(academic_session_channel.getTerm, term_id);
+
+    const studentTermRecord = await window.api.request(academic_session_channel.getTermRecord, {term_id, student_id:studentId});
     
     // console.log(termData);
     setTermInfo(()=>termData);
+    setTermRecord(()=>{
+      if(!Boolean(studentTermRecord)){
+        return {}
+      }
+
+      return studentTermRecord;
+    })
     setLoading(false);
 
     // load student record    

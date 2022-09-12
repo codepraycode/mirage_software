@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import {Link, useParams} from 'react-router-dom';
+import {Link, useLocation, useNavigate, useParams} from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import Loading from '../widgets/Preloader/loading';
@@ -7,7 +7,7 @@ import Modal from '../widgets/Modal/modal';
 
 import {createField, createFormDataFromSchema, isObjectEmpty, parseFileUrl, useQuery} from '../constants/utils';
 import { academic_session_channel } from '../constants/channels';
-import { NewTermFormConfig } from '../constants/form_configs';
+import { NewTermFormConfig, SessionSettingFormConfig, SessionTermSettingFormConfig } from '../constants/form_configs';
 import { avatar } from '../constants/assets';
 
 import { getSessionById, updateSession } from '../app/sessionSlice';
@@ -174,10 +174,12 @@ const CreateTerm = ({ session, termIndex, onCreate })=>{
 }
 
 
-const LevelSwitch = React.memo(({title, handler, level_setting})=>{
+const LevelSwitch = React.memo(({ title, handler, sessionId, termIndex, level_setting, levels, class_sets })=>{
 
-  const levels = useSelector(getSettingsLevels);
-  const class_sets = useSelector(getAllSets);
+  // const levels = useSelector(getSettingsLevels);
+  // const class_sets = useSelector(getAllSets);
+
+  const navigate = useNavigate();
 
   return(
     <Modal
@@ -224,7 +226,8 @@ const LevelSwitch = React.memo(({title, handler, level_setting})=>{
                     key={i}
                     onClick={() => { 
                       if (!notNull) return
-                      handler(class_set)
+                      // handler(class_set)
+                      navigate(`${sessionUrl}/${sessionId}/${termIndex}?levelId=${level_id}`,{replace:true})
                     }}
                     style={{ cursor: notNull ? 'pointer' : 'default' }}
                     className={!notNull ? 'text-muted' : ''}
@@ -253,7 +256,169 @@ const LevelSwitch = React.memo(({title, handler, level_setting})=>{
   )
 });
 
+const SessionSettings = ({ sessionData, handleInputChange })=>{
+  
 
+  return (
+    <>
+      {createField({ form: sessionData.form, groups: sessionData.groups }, handleInputChange)}
+    </>
+  )
+
+}
+
+const TermSettings = ({ termData, handleInputChange }) => {
+
+  return (
+    <>
+      {createField({ form: termData.form, groups: termData.groups }, handleInputChange)}
+    </>
+  )
+}
+
+
+const SessionTermSettings = ({ session, termInfo, onClose })=>{
+
+  const [sessionData, setSessionData] = useState(() => {
+    const form_ = createFormDataFromSchema(SessionSettingFormConfig);
+    if (!Boolean(session)) return form_;
+
+
+    for (let [field, config] of Object.entries(form_.form)) {
+
+      if (session[field]) {
+
+        config.config.value = session[field]
+      }
+    }
+
+    return form_
+  });
+
+  const [termData, setTermData] = useState(() => {
+    const form_ = createFormDataFromSchema(SessionTermSettingFormConfig);
+    if (!Boolean(termInfo)) return form_;
+
+
+    for (let [field, config] of Object.entries(form_.form)) {
+
+      if (termInfo[field]) {
+
+        config.config.value = termInfo[field]
+      }
+    }
+
+    return form_
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleInputChange = (e, side) => {
+
+    let field_name = e.target.name;
+    let field_type = e.target.type;
+    let field_value = e.target.value;
+
+
+    if (!['radio'].includes(field_type)) {
+      e.preventDefault();
+    } else {
+      field_value = e.target.dataset.val;
+    }
+
+
+    // console.log(field_name, "changed to", field_value);
+    if(side === 'term'){
+      let _form = termData.form;
+
+      if (!Boolean(_form[field_name])) return;
+
+      setTermData((prev) => {
+        if (field_type === 'number'){
+          field_value = parseInt(field_value) || 0;
+        }
+        
+        prev.form[field_name].config.value = field_value;
+        return {
+          ...prev,
+        }
+      });
+    }
+
+    else{
+      let _form = sessionData.form;
+
+      if (!Boolean(_form[field_name])) return;
+
+      setSessionData((prev) => {
+        if (field_type === 'number') {
+          field_value = parseInt(field_value) || 0;
+        }
+        prev.form[field_name].config.value = field_value;
+        return {
+          ...prev,
+        }
+      });
+    }
+
+  }
+
+
+  const gatherData = () => {
+    // Gather Data from state
+    let term_data = {};
+    for (let [field, config] of Object.entries(termData.form)) {
+      term_data[field] = config.config.value;
+    }
+
+    let session_data = {};
+    for (let [field, config] of Object.entries(sessionData.form)) {
+      session_data[field] = config.config.value;
+    }
+
+    return {
+      term_data,
+      session_data
+    };
+  }
+  
+  const handleSubmit = async() => {
+
+    const data = gatherData();
+
+    const {session_data, term_data} = data;
+
+    const updated_term_data = {
+      ...termInfo,
+      ...term_data
+    }
+    // console.log(updated_term_data);
+
+    await window.api.request(academic_session_channel.updateTerm, updated_term_data);
+
+
+    onClose({ term: updated_term_data });
+  }
+
+  return (
+    <Modal
+      title={"Term Settings"}
+      onClose={() => { onClose() }}
+      onSave={() => { handleSubmit() }}
+      loading={loading}
+    >
+      <form onSubmit={(e)=>e.preventDefault()}>
+        <h3 className='text-muted'>Session setting</h3>
+        <SessionSettings sessionData={sessionData} handleInputChange={(e) => handleInputChange(e, 'session')}/>
+        <hr/>
+        <br/>
+        <h3 className='text-muted'>Term setting</h3>
+        <TermSettings termData={termData} handleInputChange={(e) => handleInputChange(e, 'term')} />
+      </form>
+
+    </Modal>
+  );
+}
 
 const ClassStats = React.memo(({stats}) =>{
   
@@ -495,34 +660,88 @@ const ClassStudents = ({level,set, term})=>{
 
 }
 
-const TermLobby = ({ session, termData, })=>{
+const TermLobby = ({ session, termData, termIndex,})=>{
 
   const query = useQuery();
-  let focus = query.get('level'); // set focus from url
+  let focus = query.get('levelId'); // set focus from url
+  let slt = query.get('slt'); // set focus from url
 
-  
 
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const levels = useSelector(getSettingsLevels);
+  const class_sets = useSelector(getAllSets);
+
+  const [loading, setLoading] = useState(true);
   const [levelFocused, setLevelFocused] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
-  const [showLevelSwitcher, setShowLevelSwitcher] = useState(false);
+  // const [showLevelSwitcher, setShowLevelSwitcher] = useState(false);
 
 
-  const {levels} = session.settings;
+  const {levels:session_levels} = session.settings;
 
+  
+  const loadUp = ()=>{
+
+    // 
+    // console.log(focus);
+    if (!loading) return
+    if (!Boolean(focus)) return;
+    
+
+    const level_data = levels[focus];
+
+    let class_set = {
+      level: level_data,
+      set: {},
+    };
+
+
+    const d_level_session_setting = session_levels[focus];
+
+    if (!isObjectEmpty(d_level_session_setting)) {
+      let { set_id } = d_level_session_setting;
+      const set_data = class_sets.find((ech) => ech._id === set_id);
+
+      class_set.set = set_data
+
+      setLevelFocused(() => class_set);
+    }
+
+    setLoading(false);
+    
+
+  }
+
+  useEffect(()=>{
+    loadUp();
+  },)
   
   return(
     <>
 
       {
-        (showLevelSwitcher && !Boolean(levelFocused)) && <LevelSwitch
+        ((Boolean(slt) && !Boolean(levelFocused))) && <LevelSwitch
           title="Select class level"
+          sessionId={session._id}
+          termIndex={termIndex}
           handler={(set_data=null) => {
-            setLevelFocused(() => set_data);
-            setShowLevelSwitcher(false);
+            // setLevelFocused(() => set_data);
+            navigate(`${sessionUrl}/${session._id}/${termIndex}`, { replace: true })
           }}
-          level_setting={levels}
+          level_setting={session_levels}
+          levels ={levels}
+          class_sets={class_sets}
       />}
+
+
+      {
+        showSettings && (<SessionTermSettings 
+          session={session} 
+          termInfo={termData}
+          onClose={() => setShowSettings(false)}
+        />)
+      }
 
 
       <div 
@@ -537,7 +756,7 @@ const TermLobby = ({ session, termData, })=>{
           {session.label}
         </h6>
 
-        <h6 style={{ cursor: "pointer" }} onClick={() => { }}>
+        <h6 style={{ cursor: "pointer" }} onClick={() => setShowSettings(true)}>
           <b>{termData.label}</b>
         </h6>
 
@@ -546,8 +765,11 @@ const TermLobby = ({ session, termData, })=>{
           <button
             className="btn btn-primary"
             onClick={() => {
+              
               setLevelFocused(null)
-              setShowLevelSwitcher(true)
+              setLoading(true);
+              navigate(`${sessionUrl}/${session._id}/${termIndex}?slt=${true}`, { replace: true })
+              
              }}
           >
             <i className="fa fa-cog mr-2" aria-hidden="true"></i>
@@ -622,7 +844,8 @@ const Term = () => {
   return (
     <TermLobby
       session={session}
-      termData={termData} 
+      termData={termData}
+      termIndex={termIndex}
     />
   );
 };
