@@ -104,11 +104,9 @@ const RoleSettings = () => {
 
     const handleRoleChange = (name, data) => {
         
-        console.log("changes in", name, ">>",data);
 
         let role_setting = roles[name];
 
-        console.log(role_setting);
        
         setRoleData((prev) => {
             if (Boolean(role_setting)){
@@ -166,7 +164,6 @@ const RoleSettings = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // console.log(roleData);
 
         storeDispatch(updateRoles(roleData));
         setLoading(true);
@@ -228,7 +225,7 @@ const RoleSettings = () => {
 
 
     const { school_head, level_roles } = roleData;
-    console.log(level_roles);
+    
 
     return (
         <form onSubmit={handleSubmit}>

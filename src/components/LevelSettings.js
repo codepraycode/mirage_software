@@ -33,12 +33,14 @@ function Levels() {
 
         setEditingLevelFocus((prev) => {
             if (['subjects'].includes(field_name)){
-                let subjects = []
+                let subjects = [];
 
-                if (prev.level.subjects.includes(field_value)){
-                    subjects = prev.level.subjects.filter((subj)=> subj !== field_value);
+                let prev_subjects = prev.level['subjects'] || [];
+
+                if (prev_subjects.includes(field_value)){
+                    subjects = prev_subjects.filter((subj)=> subj !== field_value);
                 }else{
-                    subjects = [...prev.level.subjects, field_value];
+                    subjects = [...prev_subjects, field_value];
                 }
 
                 return {
@@ -195,7 +197,7 @@ function Levels() {
                                         name="subjects"
                                         value={_id ?? ''}
                                         className="selectgroup-input"
-                                        checked={level_subjects.includes(_id)}
+                                        checked={level_subjects?.includes(_id)}
                                         onChange={handleInputChange}
                                     />
 

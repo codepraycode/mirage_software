@@ -38,7 +38,6 @@ const sessionSlice = createSlice({
 
             state.sessions = state.sessions.map((each) => {
                 if (each._id === _id) {
-                    console.log(action.payload);
                     return {
                         // ...each,
                         ...action.payload
@@ -58,36 +57,12 @@ const sessionSlice = createSlice({
             })
             .addCase(loadSessions.fulfilled, (state, action) => {
                 state.status = statuses.loaded;
-
-                state.sessions = action.payload;
+                state.sessions = [...action.payload];
             })
             .addCase(loadSessions.rejected, (state, action) => {
                 state.status = statuses.failed;
                 state.error = action.error.message;
             })
-
-            // // Update session
-            // .addCase(updateSession.fulfilled, (state, action) => {
-
-            //     const {_id} =  action.payload;
-            //     // console.log(action.payload);
-
-            //     state.sessions = state.sessions.map((each)=>{
-            //         if(each._id === _id){
-            //             console.log(action.payload);
-            //             return{
-            //                 // ...each,
-            //                 ...action.payload
-            //             }
-            //         }
-
-            //         return each;
-            //     });
-
-            // })
-            // .addCase(updateSession.rejected, (state, action) => {
-            //     state.error = action.error.message;
-            // })
     }
 });
 

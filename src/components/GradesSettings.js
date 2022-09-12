@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import Loading from '../widgets/Preloader/loading';
+
 import { isArrayEmpty } from '../constants/utils';
 
 import { getSettingsGrades } from '../app/settingsSlice';
@@ -52,7 +52,7 @@ function GradesSettings() {
 
                             <tbody>
                                 {
-                                    grades.map((each, i) => {
+                                    grades?.map((each, i) => {
                                         return (<tr key={i}>
 
                                             <td>{each.value}</td>

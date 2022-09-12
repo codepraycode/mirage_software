@@ -132,7 +132,7 @@ class Sessions {
 
             await sessionsDb.update({ _id }, { ...prev_doc, ...updates_session_data });
 
-            return { _id, ...prev_doc, ...updates_session_data }; //this.serialize({ _id, ...prev_doc, ...updates_session_data });
+            return { _id, ...updates_session_data }; //this.serialize({ _id, ...prev_doc, ...updates_session_data });
         }
 
         // Terms

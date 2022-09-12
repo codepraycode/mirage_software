@@ -236,6 +236,8 @@ const AdmissionForm = () => {
         if (phase === default_phase.length && (Boolean(student) && Boolean(sponsor))) {
 
             const { _id, set_id, createdAt, updatedAt, ...rest_student_data} = student;
+
+            console.log(sponsor);
             template = (<>
                 
                 <Summary data={rest_student_data} />

@@ -85,9 +85,12 @@ const LevelSetting = React.memo(({ onClose, all_sets, session, level }) => {
         }
       }
     }
+
+
     
+    const res = await window.api.request(academic_session_channel.update, updated_session_data);
     
-    await window.api.request(academic_session_channel.update, updated_session_data);
+    // console.log(res);
 
     storeDispatch(updateSession(updated_session_data))
     onClose()
@@ -121,17 +124,19 @@ const LevelSetting = React.memo(({ onClose, all_sets, session, level }) => {
                 return (
                   <tr
                     key={i}
-                    onClick={() => { 
-                      if (shouldDisable) return
-
-                      handleEngageSet(each_set)
-                    }}
+                    
                     style={{ cursor: !shouldDisable ? 'pointer' : 'default' }}
                     className={shouldDisable ? 'text-muted' : ''}
                   >
                     <td>{i + 1}</td>
 
-                    <td>
+                    <td
+                      onClick={() => {
+                        if (shouldDisable || canDelete) return
+
+                        handleEngageSet(each_set)
+                      }}
+                    >
                       {each_set.label}
                     </td>
 
@@ -169,6 +174,8 @@ const LevelsDisplay = React.memo(({session}) => {
   const onGoing = !Boolean(session.date_closed);
   const all_levels = useSelector(getSettingsLevels);
   const all_sets = useSelector(getAllSets);
+
+  // const storeDispatch = useDispatch();
 
   const [levelInSettings, setLevelInSettings] = useState(null);
 
@@ -300,7 +307,11 @@ const LevelsDisplay = React.memo(({session}) => {
           session={session} 
           level={levelInSettings} 
           all_sets={all_sets}
-          onClose={()=>setLevelInSettings(null)}
+          onClose={async()=>{
+
+            // storeDispatch(loadSessions());
+            setLevelInSettings(null)
+          }}
         />
       }
 
@@ -324,8 +335,6 @@ const Session = () => {
 
 
   const session_settings = session?.settings;
-
-  
 
   const renderTabs = ()=>{
 

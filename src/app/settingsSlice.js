@@ -131,7 +131,7 @@ const settingsSlice = createSlice({
                 state.roles = settings.roles || null;
                 state.levels = settings.levels || null;
 
-                state.grades = settings.grades || null;
+                state.grades = settings.grades || [];
                 state.attrs = settings.attrs || null;
 
             })

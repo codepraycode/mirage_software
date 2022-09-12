@@ -587,17 +587,17 @@ const SponsorDataSchema = {
             placeholder: "",
             required: true
         },
-        local_government: {
-            data_type: 'text',
-            name: 'local_government',
-            placeholder: "",
-            required: true
-        },
-        zip_code: {
-            data_type: 'text',
-            name: 'zip_code',
-            placeholder: ""
-        },
+        // local_government: {
+        //     data_type: 'text',
+        //     name: 'local_government',
+        //     placeholder: "",
+        //     required: true
+        // },
+        // zip_code: {
+        //     data_type: 'text',
+        //     name: 'zip_code',
+        //     placeholder: ""
+        // },
 
         main_contact: {
             data_type: 'text',
@@ -622,8 +622,8 @@ const SponsorDataSchema = {
     },
     groups: [
         [
-            ['passport', 'title', 'surname', 'first_name'],
-            ['relationship', 'occupation', 'main_contact', 'other_contact', 'email']
+            ['passport', 'title', 'surname', 'first_name', 'email', ],
+            ['relationship', 'occupation', 'main_contact', 'other_contact', 'residential_address','state_of_residence']
         ],
     ],
 }

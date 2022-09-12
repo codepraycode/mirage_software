@@ -44,7 +44,7 @@ const SponsorForm = ({ student_id, proceed, predata}) => {
 
         let _form = sponsorData.form;
 
-        if (!Boolean(_form[field_name])) return;
+        if (!Object.keys(_form).includes(field_name)) return;
 
         setSponsorData((prev)=>{
             prev.form[field_name].config.value = field_value;
