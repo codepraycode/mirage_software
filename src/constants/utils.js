@@ -244,7 +244,7 @@ export function parseFileUrl(filePath){
     // })
     if(!filePath){
         // filePath = ''
-        return image_placeholder;
+        return null;
     }
 
     

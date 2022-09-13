@@ -394,6 +394,7 @@ const getStudentInfo = (student) => {
         admission_no,
         gender,
         date_of_birth,
+        passport,
         
         sponsor,
     } = student;
@@ -414,6 +415,7 @@ const getStudentInfo = (student) => {
         admission_no,
         gender,
         date_of_birth,
+        passport,
 
         sponsor:{
             title,
@@ -586,10 +588,13 @@ const proccessReport = async({term_id, student_id, level_id})=>{
 
 
     // Get school data
-    const { school:schoolInfo, grades, attrs:attrs_settings } = app_settings;
+    const { school: schoolInfo, grades, attrs: attrs_settings, levels } = app_settings;
 
     // get student data
     const studentInfo = await schoolset.get_student(student_id);
+
+    // get level data
+    const level = levels[level_id];
 
     // get students in student's levels term record
     const other_students_term_record = await academicSession.queryTermRecord({ term_id, level_id, student_id: { $ne: String(student_id) } });
@@ -626,6 +631,7 @@ const proccessReport = async({term_id, student_id, level_id})=>{
         behavioural_data,
         academic_performance,
         remarks,
+        level,
     }
 
 

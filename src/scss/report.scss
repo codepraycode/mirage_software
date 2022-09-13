@@ -1,0 +1,223 @@
+@import './variables';
+
+*{
+    box-sizing: border-box;
+}
+
+@mixin struct {
+    width: 800px;
+    margin: 20px auto;
+}
+
+header{
+    
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .img{
+        width: 100px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: transparent;
+        img{
+            width: 90%;
+            height: auto;
+            border-radius: 6px;
+        }
+    }
+
+
+    .title{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        h2{
+            font-size: $large+5;
+            margin: 0;
+        }
+        h3{
+            font-size: $regular+5;
+
+        }
+        p{
+            font-weight: $medium;
+            margin: 5px 0;
+        }
+        ul{
+            list-style: none;
+            padding: 0;
+            display: flex;
+            
+            li{
+                position: relative;
+                margin-right: 10px;
+                &::after{
+                    content:', ';
+                    position:absolute;
+                    bottom: 0;
+                }
+
+                &:last-of-type{
+                    margin-right: 0px;
+                
+                    &::after {
+                        display: none;
+                
+                    }
+                }
+            }
+
+        }
+    }
+}
+
+
+section{
+    margin: 25px auto;
+    &.student_info{
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        row-gap: 10px;
+        column-gap: 10px;
+
+
+        div{
+            text-align: center;
+            min-width: 150px;
+            width: fit-content;
+            border: 1px solid $primary;
+            padding: 5px;
+        }
+
+
+        .label{
+            font-weight: bold;
+            // position: relative;
+            margin-right: 10px;
+            &::after{
+                content:':';
+                position: relative;
+                right: 0px;
+                bottom: 0;
+            }
+        }
+    }
+
+    &.remarks{
+
+        div{
+            border: 1px solid $primary;
+            padding: 10px;
+            position: relative;
+            border-radius: 6px;
+
+            display: flex;
+            align-items: center;
+            
+            
+            margin: 10px 0;
+
+            span{
+                position: absolute;
+                top: 5px;
+                left: 22px;
+            }
+
+            p{
+                margin: 0;
+                
+                color: $primary;
+                height: 70px;
+                padding: 0 10px;
+                display: flex;
+                align-items: flex-end;
+                &:first-of-type{
+                    width: 80%;
+                    text-align: left;
+                    font-size: $regular+4;
+                    
+                }
+                &:last-of-type{
+                    justify-content: center;
+                    width: 20%;
+                    font-size: $base;
+                    
+                }
+            }
+        }
+    }
+
+    &.scalings{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        column-gap: 10px;
+    }
+}
+
+
+table {
+    // background: $primary;
+    width: 100%;
+    text-align: center;
+
+    tr,
+    th,
+    td {
+        border: 1px solid $primary;
+    }
+
+    tfoot{
+        td{border:0;}
+    }
+}
+
+footer{
+    
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px;
+}
+
+
+.download_btn{
+    position: fixed;
+    bottom: 45px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: $primary;
+    border: 0;
+    color: $white;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: $medium;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+
+}
+
+@media print {
+    .download_btn{
+        display: none;
+    }
+}
+
+@media screen {
+    
+    header,
+        section,
+        footer {
+            @include struct();
+        }
+}
