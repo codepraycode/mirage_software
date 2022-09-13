@@ -59,7 +59,7 @@ const Initialization = ()=>{
 
                 <div className="row">
                     <div className="col-md-3 register-left">
-                        <img src="./logo.png" alt="Mirage School Software" />
+                        <img src="./assets/logo.png" alt="Mirage School Software" />
                         <h3>Welcome</h3>
                         <p>Take a few steps to quickly setup</p>
                     </div>

@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, nanoid } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { settings_channel } from '../constants/channels';
 import { statuses } from '../constants/statuses';
 

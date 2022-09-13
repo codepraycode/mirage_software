@@ -2,6 +2,7 @@
 const { app, BrowserWindow, BrowserView,ipcMain, dialog, protocol } = require('electron');
 const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer');
 
+
 const path = require('path');
 const log = require("electron-log");
 const { autoUpdater } = require('electron-updater');

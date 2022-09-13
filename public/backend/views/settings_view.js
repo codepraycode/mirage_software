@@ -1,5 +1,5 @@
 const { dbFactory } = require('../base');
-const nanoid = require('nanoid');
+const {nanoid} = require('@reduxjs/toolkit');
 const settingsDb = dbFactory('settings.db')
 const staffsDb = dbFactory('staffs.db')
 
@@ -25,11 +25,11 @@ class Settings {
         grades: {
             name: 'grades',
             default: [
-                { _id: nanoid.nanoid(), key: '70-100', value: 'A', remark: 'EXCELLENT' },
-                { _id: nanoid.nanoid(), key: '60-69', value: 'B', remark: 'VERY GOOD' },
-                { _id: nanoid.nanoid(), key: '50-59', value: 'C', remark: 'GOOD' },
-                { _id: nanoid.nanoid(), key: '45-49', value: 'D', remark: 'FAIR' },
-                { _id: nanoid.nanoid(), key: '0-44', value: 'F', remark: 'FAILED' }
+                { _id: nanoid(), key: '70-100', value: 'A', remark: 'EXCELLENT' },
+                { _id: nanoid(), key: '60-69', value: 'B', remark: 'VERY GOOD' },
+                { _id: nanoid(), key: '50-59', value: 'C', remark: 'GOOD' },
+                { _id: nanoid(), key: '45-49', value: 'D', remark: 'FAIR' },
+                { _id: nanoid(), key: '0-44', value: 'F', remark: 'FAILED' }
             ]
         },
 
@@ -37,39 +37,39 @@ class Settings {
             name: 'attrs',
             default: {
                 keys: [
-                    { _id: nanoid.nanoid(), value: 'Obedience' },
-                    { _id: nanoid.nanoid(), value: 'Honesty' },
-                    { _id: nanoid.nanoid(), value: 'Self control' },
-                    { _id: nanoid.nanoid(), value: 'Self reliance' },
-                    { _id: nanoid.nanoid(), value: 'Use of initiative' },
+                    { _id: nanoid(), value: 'Obedience' },
+                    { _id: nanoid(), value: 'Honesty' },
+                    { _id: nanoid(), value: 'Self control' },
+                    { _id: nanoid(), value: 'Self reliance' },
+                    { _id: nanoid(), value: 'Use of initiative' },
                 ],
 
                 mappings: [
                     {
-                        _id: nanoid.nanoid(),
+                        _id: nanoid(),
                         point: 1,
                         value: 'Not Reponsible'
                     },
 
                     {
-                        _id: nanoid.nanoid(),
+                        _id: nanoid(),
                         point: 2,
                         value: 'Fairly responsible',
                     },
 
                     {
-                        _id: nanoid.nanoid(),
+                        _id: nanoid(),
                         point: 3,
                         value: 'Shows Signs of Responsibility',
                     },
 
                     {
-                        _id: nanoid.nanoid(),
+                        _id: nanoid(),
                         point: 4,
                         value: 'Responsible',
                     },
                     {
-                        _id: nanoid.nanoid(),
+                        _id: nanoid(),
                         point: 5,
                         value: 'Very Responsible',
                     },
@@ -81,7 +81,7 @@ class Settings {
         subjects: {
             name:'subjects',
             default: {
-                [nanoid.nanoid()]: {
+                [nanoid()]: {
                     name: 'Mathematics',
                     short: 'MTH',
                     description: 'An abstract science',
@@ -89,7 +89,7 @@ class Settings {
                     total_obtainable: 100,
                     required: true,
                 },
-                [nanoid.nanoid()]: {
+                [nanoid()]: {
                     name: 'English',
                     short: 'ENG',
                     description: 'English studies',
@@ -99,7 +99,7 @@ class Settings {
                     
                 }, 
                 
-                [nanoid.nanoid()]: {
+                [nanoid()]: {
                     name: 'Computer',
                     short: 'COMP',
                     description: 'Study of computer',
@@ -112,19 +112,19 @@ class Settings {
         levels: {
             name:'levels',
             default: {
-                [nanoid.nanoid()]: {
+                [nanoid()]: {
                     label: 'Preparatory',
                     subjects: [],
                 },
-                [nanoid.nanoid()]: {
+                [nanoid()]: {
                     label: 'Grade 1',
                     subjects: [],
                 },
-                [nanoid.nanoid()]: {
+                [nanoid()]: {
                     label: 'Grade 2',
                     subjects: [],
                 },
-                [nanoid.nanoid()]: {
+                [nanoid()]: {
                     label: 'Grade 3',
                     subjects: [],
                 },
