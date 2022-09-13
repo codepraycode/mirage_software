@@ -118,7 +118,7 @@ function createWindow() {
             } catch {}
 
             launcher_win = null;
-        }, 2500)
+        }, 1000)
 
         try {
 

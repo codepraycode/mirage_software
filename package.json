@@ -1,16 +1,21 @@
 {
   "name": "mirage_software",
   "version": "0.1.0",
-  "description": "A software to ease school wor",
+  "description": "A software to ease school work[",
   "main": "./public/electron.js",
   "author": "codepraycode",
   "license": "MIT",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codepraycode/mirage_software"
+  },
   "scripts": {
     "react:start": "webpack-dev-server --mode development --hot",
     "react:build": "webpack --mode production",
     "start": "concurrently -k \"cross-env BROWSER=none yarn react:start\" \"wait-on http://localhost:8090 && electronmon .\"",
-    "package:win": "yarn build && electron-builder build --win --publish never"
+    "package:win": "yarn react:build && electron-builder build --win --publish never",
+    "deploy:win": "yarn react:build && electron-builder build --win --publish always "
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.5",
@@ -45,5 +50,32 @@
     "webpack": "^5.74.0",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.10.1"
+  },
+  "build": {
+    "appId": "com.miragesoftware.app",
+    "copyright": "Copyright © 2021 codepraycode",
+    "productName": "Mirage Software",
+    "publish": {
+      "provider": "github",
+      "owner": "codepraycode",
+      "repo": "mirage_software"
+    },
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "public"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "linux": {
+      "target": "deb"
+    }
   }
 }
