@@ -1,12 +1,41 @@
 @import './variables';
 
-*{
-    box-sizing: border-box;
+@font-face {
+    font-family: "Heebo";
+    src: local("Heebo"), url('./fonts/Heebo-VariableFont_wght.ttf') format('truetype');
+
 }
 
+$appPrimary: lighten($color: $primary, $amount: 15%);
+$borderColor:lighten($color: $primary, $amount: 50%);
+$textColor:lighten($color: $primary, $amount: 5%);
+* {
+    box-sizing: border-box;
+    font-size: $regular;
+    font-family: Heebo, serif;
+    
+}
 @mixin struct {
     width: 800px;
     margin: 20px auto;
+}
+
+table {
+    // background: $appPrimary;
+    width: 100%;
+    text-align: center;
+
+    tr,
+    th,
+    td {
+        border: 1px solid $borderColor;
+    }
+
+    tfoot {
+        td {
+            border: 0;
+        }
+    }
 }
 
 header{
@@ -14,7 +43,9 @@ header{
     display: flex;
     align-items: center;
     justify-content: space-between;
+    color: $textColor;
 
+    // border: 2px solid $appPrimary;
     .img{
         width: 100px;
         height: 100px;
@@ -37,7 +68,9 @@ header{
         justify-content: center;
         h2{
             font-size: $large+5;
+            font-weight: bold;
             margin: 0;
+            text-transform: uppercase;
         }
         h3{
             font-size: $regular+5;
@@ -51,6 +84,9 @@ header{
             list-style: none;
             padding: 0;
             display: flex;
+            font-size: $small;
+            font-style: italic;
+            
             
             li{
                 position: relative;
@@ -78,6 +114,19 @@ header{
 
 section{
     margin: 25px auto;
+    color: $textColor;
+    .title{
+        display: block;
+        width: 100%;
+        background-color: $appPrimary;
+        text-align: center;
+        margin: 0;
+        padding: 5px 0;
+        border-color: $appPrimary;
+        border-radius: 6px 6px 0 0;
+        color: $white;
+    }
+
     &.student_info{
 
         display: flex;
@@ -92,8 +141,8 @@ section{
             text-align: center;
             min-width: 150px;
             width: fit-content;
-            border: 1px solid $primary;
-            padding: 5px;
+            border: 1px solid $appPrimary;
+            padding: 5px 15px;
         }
 
 
@@ -111,44 +160,41 @@ section{
     }
 
     &.remarks{
-
-        div{
-            border: 1px solid $primary;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .remark__item{
+            border: 1px solid $borderColor;
             padding: 10px;
             position: relative;
             border-radius: 6px;
-
-            display: flex;
-            align-items: center;
-            
-            
-            margin: 10px 0;
-
-            span{
-                position: absolute;
-                top: 5px;
-                left: 22px;
-            }
+            width: 380px;
 
             p{
-                margin: 0;
-                
-                color: $primary;
-                height: 70px;
-                padding: 0 10px;
+                margin-bottom: 10px;
+                font-size: $small;
+            }
+            .details{
                 display: flex;
-                align-items: flex-end;
-                &:first-of-type{
-                    width: 80%;
-                    text-align: left;
-                    font-size: $regular+4;
-                    
+                align-items: center;
+                justify-content: flex-end;
+                column-gap: 15px;
+                text-align: right;
+                h4{
+                    font-size: $regular+3;
+                    margin: 0;
                 }
-                &:last-of-type{
-                    justify-content: center;
-                    width: 20%;
-                    font-size: $base;
-                    
+                span{
+                    font-size: $small;
+                }
+                .img{
+                    width: 60px;
+                    height: 60px;
+                    border-radius: 50%;
+
+                    background-position: center center;
+                    background-repeat: no-repeat;
+                    background-size: cover;
                 }
             }
         }
@@ -159,25 +205,38 @@ section{
         align-items: center;
         justify-content: space-between;
         column-gap: 10px;
+
+        .ball{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: $appPrimary;
+            color: $white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin: 2px auto;
+            font-size: $small;
+        }
+
+        table{
+            thead {
+                tr {
+                    border: 0;
+                    margin: 0;
+                    
+                    th{
+                        border: 0;
+                        padding: 0;
+                        margin: 0;
+                    }
+                    
+                }
+            }
+        }
     }
 }
 
-
-table {
-    // background: $primary;
-    width: 100%;
-    text-align: center;
-
-    tr,
-    th,
-    td {
-        border: 1px solid $primary;
-    }
-
-    tfoot{
-        td{border:0;}
-    }
-}
 
 footer{
     
@@ -185,6 +244,11 @@ footer{
     align-items: center;
     justify-content: space-between;
     padding: 0 5px;
+    
+    span, small{
+        color: $gray;
+        font-size: $small;
+    }
 }
 
 
@@ -194,9 +258,9 @@ footer{
     right: 20px;
     width: 50px;
     height: 50px;
-    background-color: $primary;
+    background-color: $appPrimary;
     border: 0;
-    color: $white;
+    color: $white !important;
     border-radius: 50px;
     cursor: pointer;
     font-size: $medium;

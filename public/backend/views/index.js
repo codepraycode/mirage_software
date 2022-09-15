@@ -1,4 +1,4 @@
-const { app_files_dir } = require('../base');
+const { app_files_dir, app_pdf_dir } = require('../base');
 const { Settings } = require('./settings_view');
 const { Account } = require('./account_view');
 const { SchoolSet } =require('./students_view');
@@ -12,5 +12,6 @@ module.exports={
     SchoolSet,
 
     app_files_dir,
+    app_pdf_dir
     
 }

@@ -1,7 +1,7 @@
 const { ipcMain} = require('electron');
 
 // Views
-const { Settings, Account, SchoolSet, Sessions, app_files_dir } = require('./views');
+const { Settings, Account, SchoolSet, Sessions, app_files_dir, app_pdf_dir } = require('./views');
 
 
 const settings = new Settings()
@@ -639,4 +639,4 @@ const proccessReport = async({term_id, student_id, level_id})=>{
 
 }
 
-module.exports = { app_files_dir };
+module.exports = { app_files_dir, app_pdf_dir };

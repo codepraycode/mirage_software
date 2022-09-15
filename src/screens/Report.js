@@ -61,7 +61,7 @@ const ReportTemplate = ({report})=>{
                     </div>
 
                     <div>
-                        <span className='label'>Admission NO</span>
+                        <span className='label'>Admission Number</span>
                         <span>{student.admission_no}</span>
                     </div>
 
@@ -95,7 +95,7 @@ const ReportTemplate = ({report})=>{
 
 
                 <section className='academy'>
-                    {/* <p className="title">ACADEMIC PERFORMANCE</p> */}
+                    <p className="title">ACADEMIC PERFORMANCE</p>
 
                     <table>
 
@@ -113,17 +113,17 @@ const ReportTemplate = ({report})=>{
 
                         <tbody>
                             <tr>
-                                <th>Marks Obtainable</th>
-                                <th>40</th>
-                                <th>60</th>
-                                <th>100</th>
+                                <th><i>Marks Obtainable</i></th>
+                                <th><i>40</i></th>
+                                <th><i>60</i></th>
+                                <th><i>100</i></th>
                             </tr>
 
 
                             {
                                 academic_performance?.data.map((ech, i)=>(
                                     <tr key={i}>
-                                        <td>{ech.name}</td>
+                                        <th>{ech.name}</th>
                                         <td>{ech.ca}</td>
                                         <td>{ech.exam}</td>
                                         <td>{ech.obtained}</td>
@@ -139,7 +139,7 @@ const ReportTemplate = ({report})=>{
                         <tfoot>
                             <tr>
                                 <td>
-                                    Total obtainable:
+                                    <b>Total obtainable:</b>
                                     &nbsp;
                                     {academic_performance?.total_obtainable}
                                 </td>
@@ -149,13 +149,13 @@ const ReportTemplate = ({report})=>{
                                 <td>100</td> */}
 
                                 <td>
-                                    Total obtained:
+                                    <b>Total obtained:</b>
                                     &nbsp;
                                     {academic_performance?.total_obtained}
                                 </td>
                                 
                                 <td>
-                                    Percentage:
+                                    <b>Percentage:</b>
                                     &nbsp;
                                     {(Number(academic_performance?.percentage) * 100).toFixed(1)}%
                                 </td>
@@ -175,8 +175,10 @@ const ReportTemplate = ({report})=>{
                     <table>
 
                         <thead>
-                            <tr>
-                                <th colSpan={3}>Behavioural data</th>
+                            <tr >
+                                <th colSpan={3} >
+                                    <span className="title"> Behavioural data</span>
+                                </th>
                             </tr>
                         </thead>
 
@@ -185,9 +187,11 @@ const ReportTemplate = ({report})=>{
                             {
                                 behavioural_data?.data.map((edt,i)=>(
                                     <tr key={i}>
-                                        <th colSpan={2}>{edt.label}</th>
+                                        <td colSpan={2}>{edt.label}</td>
 
-                                        <th>{edt.point}</th>
+                                        <th>
+                                            <span className='ball'>{edt.point}</span>
+                                        </th>
                                     </tr>
                                 ))
                             }
@@ -202,7 +206,10 @@ const ReportTemplate = ({report})=>{
 
                         <thead>
                             <tr>
-                                <th colSpan={3}>Grade Scale</th>
+                                <th colSpan={3}>
+                                    
+                                    <span className="title">Grade Scale</span>
+                                </th>
                             </tr>
                         </thead>
 
@@ -211,9 +218,12 @@ const ReportTemplate = ({report})=>{
                             {
                                 Object.entries(behavioural_data?.rating).map(([point, val],i) => (
                                     <tr key={i}>
-                                        <th colSpan={2}>{point}</th>
+                                        <th>
+                                            
+                                            <span className='ball'>{point}</span>
+                                        </th>
 
-                                        <th>{val}</th>
+                                        <td>{val}</td>
                                     </tr>
                                 ))
                             }
@@ -225,9 +235,13 @@ const ReportTemplate = ({report})=>{
 
                     <table>
 
+
                         <thead>
                             <tr>
-                                <th colSpan={4}>Ratings</th>
+                                <th colSpan={4}>
+
+                                    <span className="title">Ratings</span>
+                                </th>
                             </tr>
                         </thead>
 
@@ -238,8 +252,8 @@ const ReportTemplate = ({report})=>{
                                     <tr key={i}>
                                         <th colSpan={2}>{scl.key}</th>
 
-                                        <th>{scl.value}</th>
-                                        <th>{scl.remark}</th>
+                                        <td>{scl.value}</td>
+                                        <td>{scl.remark}</td>
                                     </tr>
                                 ))
                             }
@@ -252,29 +266,60 @@ const ReportTemplate = ({report})=>{
                 </section>
 
                 <section className='remarks'>
-                    <div>
-                        <span><b>{remarks?.school_head.label}</b></span>
+                    <div className='remark__item'>
+                        {/* <p>{remarks?.school_head.remark}</p> */}
 
-                        <p>{remarks?.school_head.remark}</p>
+                        <p>
+                            Sit proident elit incididunt laborum nostrud ea aliqua irure culpa ipsum veniam excepteur adipisicing. Pariatur elit enim est magna minim aliqua consequat laborum. Laboris cupidatat laborum incididunt nisi ullamco aliquip in id aliquip ex ullamco esse velit. Consectetur elit reprehenderit cupidatat aute qui deserunt aute nostrud qui adipisicing.
+                        </p>
 
-                        <p className='text-muted'>Stamp</p>
+                        <div className='details'>
+
+                            <div>
+                                <h4>Mr Lorem</h4>
+                                <span className='text-muted'><i>class teacher</i></span>
+                            </div>
+
+
+                            <div className="img" style={{ backgroundImage: `url(${avatar})` }}>
+                                {/* <img
+                                    src={avatar}
+                                    alt={"passport"}
+                                    // className="img-responsive"
+                                /> */}
+                            </div>
+                        </div>
+                        
                     </div>
 
+                    
+                    <div className='remark__item'>
+                        {/* <p>{remarks?.school_head.remark}</p> */}
 
-                    <div>
-                        <span><b>{remarks?.level_head.label}</b></span>
+                        <p>
+                            Sit proident elit incididunt laborum nostrud ea aliqua irure culpa ipsum veniam excepteur adipisicing. Pariatur elit enim est magna minim aliqua consequat laborum. Laboris cupidatat laborum incididunt nisi ullamco aliquip in id aliquip ex ullamco esse velit. Consectetur elit reprehenderit cupidatat aute qui deserunt aute nostrud qui adipisicing.
+                        </p>
 
-                        <p>{remarks?.level_head.remark}</p>
+                        <div className='details'>
 
-                        <p className='text-muted'>Stamp</p>
+                            <div>
+                                <h4>Mr Lorem</h4>
+                                <span className='text-muted'><i>class teacher</i></span>
+                            </div>
+
+
+                            <div className="img" style={{backgroundImage:`url(${avatar})`}}/>
+                        </div>
+                        
                     </div>
+
                 </section>
             </main>
             
 
-            <footer className='text-muted'>
+            <footer>
                 <span>
-                    &copy; {new Date().getFullYear()}, Sample School
+                    &copy; {new Date().getFullYear()}, {school.name}
                 </span>
 
 
@@ -311,6 +356,17 @@ const Report = () => {
           
     }
 
+    window.api.response("printed:pdf", (pdfPath)=>{
+        console.log("response", pdfPath)
+    })
+
+    const printPdf = async ()=>{
+        const pdfPath = window.api.request("print:pdf", "report1.pdf")
+
+        console.log("printing...", pdfPath)
+
+    }
+
 
     useEffect(() => {
         loadManifest()
@@ -337,7 +393,7 @@ const Report = () => {
             <ReportTemplate  report={report}/>
 
             <button 
-                onClick={() => window.print("sample_report")} 
+                onClick={() => printPdf()} 
                 className="download_btn"
             >
                 <i className="fas fa-download"></i>

@@ -9,6 +9,7 @@ const app_data_dir = path.join(appDocumentDir, ".mirage_software_data")
 
 const app_db_dir = path.join(app_data_dir, "db")
 const app_files_dir = path.join(app_data_dir, "files");
+const app_pdf_dir = path.join(appDocumentDir, "mirage_reports");
 
 
 const dbFactory = (db_name)=>{
@@ -29,6 +30,7 @@ const dbFactory = (db_name)=>{
 module.exports = {
     dbFactory,
     app_files_dir,
+    app_pdf_dir
 }
 
 

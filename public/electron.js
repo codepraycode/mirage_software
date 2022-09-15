@@ -4,11 +4,13 @@ const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = req
 
 
 const path = require('path');
+const fs = require('fs');
+const os = require('os')
 const log = require("electron-log");
 const { autoUpdater } = require('electron-updater');
 
 // Backend
-const {app_files_dir} = require('./backend');
+const { app_files_dir, app_pdf_dir } = require('./backend');
 
 // File manager
 const { ImageManager } = require('./backend/file_managers');
@@ -404,5 +406,46 @@ ipcMain.handle('students:modified', (event, args = {}) => {
     mainWindow.webContents.send('students:reload');
 
     return null;
+})
+
+ipcMain.handle('print:pdf', async(event, filename = 'file.pdf') => {
+    const pdf_path = path.join(os.tmpdir(), filename);
+    const win = BrowserWindow.fromWebContents(event.sender);
+
+    console.log("Got here, saving to", pdf_path)
+
+
+    try{
+        const pdfData = await win.webContents.printToPDF({
+            printBackground:true
+        });
+
+
+        fs.writeFile(pdf_path, pdfData, err => {
+            if (err) return console.log(err.message);
+
+            console.log("Saved to ", (pdf_path))
+            mainWindow.webContents.send("printed:pdf", pdf_path)
+        })
+    }catch(err){
+        console.log(err.message);
+        return null;
+    }
+
+
+
+    
+    
+
+    /* (error,data)=>{
+
+        console.log("Written to pdf", pdf_path)
+        if(error){
+            console.log(error.message);
+            return
+        }
+
+
+        */
 })
 // ==================== ooooooooooooooooooooo ========================
