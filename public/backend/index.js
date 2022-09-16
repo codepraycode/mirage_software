@@ -420,10 +420,10 @@ const getStudentInfo = (student) => {
         sponsor:{
             title,
             first_name: sponsor_firstname,
-            last_name: sponsor_lastname,
+            last_name: sponsor_lastname || last_name,
             email,
             passport: sponsor_passport,
-            relationship,
+            relationship:relationship || "Parent/Guardian",
         }
     }
 }

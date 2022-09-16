@@ -71,6 +71,11 @@ const ReportTemplate = ({report})=>{
                     </div>
 
                     <div>
+                        <span className='label'>{student.sponsor.relationship}</span>
+                        <span>{student.sponsor.first_name} {student.sponsor.last_name}</span>
+                    </div>
+
+                    <div>
                         <span className='label'>Term</span>
                         <span>{term.term_index}<sup>{sup}</sup> Term</span>
                     </div>
