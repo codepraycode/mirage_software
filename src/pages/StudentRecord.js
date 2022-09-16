@@ -222,7 +222,7 @@ const MetaRecords = ({ requestData, updateData, termInfo})=>{
                 <input
                   type="date"
                   className="form-control"
-                  value={term_data.date_concluded}
+                  value={termInfo.date_concluded}
                   readOnly
                 />
                 :
@@ -239,7 +239,7 @@ const MetaRecords = ({ requestData, updateData, termInfo})=>{
             <small><b>Next Term Begins</b></small>
 
             {
-              termInfo.date_concluded ?
+              termInfo.next_term_begins ?
 
                 <input
                   type="date"

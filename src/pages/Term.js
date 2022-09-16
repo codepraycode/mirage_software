@@ -11,7 +11,7 @@ import { academic_session_channel } from '../constants/channels';
 import { NewTermFormConfig, SessionSettingFormConfig, SessionTermSettingFormConfig } from '../constants/form_configs';
 import { avatar } from '../constants/assets';
 
-import { getSessionById, updateSession } from '../app/sessionSlice';
+import { getSessionById, loadSessions, updateSession } from '../app/sessionSlice';
 import { getSettingsLevels } from '../app/settingsSlice';
 import { getAllSets, getSetAdmittedStudents } from '../app/setSlice';
 import { sessionUrl } from '../constants/app_urls';
@@ -393,12 +393,49 @@ const SessionTermSettings = ({ session, termInfo, onClose })=>{
       ...termInfo,
       ...term_data
     }
+
+    let updated_session_data = {
+      ...session,
+      ...session_data
+    }
     // console.log(updated_term_data);
+
+    const { term_index, date_concluded } = updated_term_data
+    if (Boolean(date_concluded)){
+      // set the date concluded in session settings
+      try{
+        // updated_session_data.settings.terms[term_index].date_concluded = date_concluded;
+
+        const { settings, ...rest_up_dt } = updated_session_data;
+        const {terms,...rst_st} = settings;
+
+        const prev_trm = terms[term_index];
+
+        updated_session_data = {
+          ...rest_up_dt,
+          settings:{
+            ...rst_st,
+            terms:{
+              ...terms,
+              [term_index]:{
+                ...prev_trm,
+                date_concluded
+              }
+            }
+          }
+        }
+      }catch(err){
+        console.error(err);
+      }
+      
+    }
+
+    await window.api.request(academic_session_channel.update, updated_session_data);
 
     await window.api.request(academic_session_channel.updateTerm, updated_term_data);
 
 
-    onClose({ term: updated_term_data });
+    onClose({ term: updated_term_data, session: updated_session_data });
   }
 
   return (
@@ -409,11 +446,11 @@ const SessionTermSettings = ({ session, termInfo, onClose })=>{
       loading={loading}
     >
       <form onSubmit={(e)=>e.preventDefault()}>
-        <h3 className='text-muted'>Session setting</h3>
+        <h4 className='text-muted'>Session setting</h4>
         <SessionSettings sessionData={sessionData} handleInputChange={(e) => handleInputChange(e, 'session')}/>
         <hr/>
         <br/>
-        <h3 className='text-muted'>Term setting</h3>
+        <h4 className='text-muted'>Term setting</h4>
         <TermSettings termData={termData} handleInputChange={(e) => handleInputChange(e, 'term')} />
       </form>
 
@@ -692,7 +729,7 @@ const ClassStudents = ({level,set, term})=>{
 
 }
 
-const TermLobby = ({ session, termData, termIndex,})=>{
+const TermLobby = ({ session, termData, termIndex, reload })=>{
 
   const query = useQuery();
   let focus = query.get('levelId'); // set focus from url
@@ -771,7 +808,10 @@ const TermLobby = ({ session, termData, termIndex,})=>{
         showSettings && (<SessionTermSettings 
           session={session} 
           termInfo={termData}
-          onClose={() => setShowSettings(false)}
+          onClose={() => {
+            setShowSettings(false)
+            reload()
+          }}
         />)
       }
 
@@ -839,6 +879,8 @@ const Term = () => {
   const [loading, setLoading] = useState(true);
   const [termData, setTermData] = useState(null);
 
+  const storeDispatch = useDispatch();
+
 
   const loadUp = async ()=>{
 
@@ -846,11 +888,18 @@ const Term = () => {
 
     if (isObjectEmpty(termData) && loading) {
       // Load term data
-      const data = await window.api.request(academic_session_channel.queryTerm, {term_index: Number(termIndex)})
+      const data = await window.api.request(academic_session_channel.queryTerm, {term_index: Number(termIndex), session_id:sessionId})
       setTermData(()=>data);
     }
 
     setLoading(false)
+  }
+
+
+  const reload = async() =>{
+    const data = await window.api.request(academic_session_channel.queryTerm, { term_index: Number(termIndex), session_id: sessionId })
+    setTermData(() => data);
+    storeDispatch(loadSessions())
   }
 
 
@@ -878,6 +927,7 @@ const Term = () => {
       session={session}
       termData={termData}
       termIndex={termIndex}
+      reload={() => reload()}
     />
   );
 };

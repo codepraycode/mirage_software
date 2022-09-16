@@ -710,23 +710,23 @@ const SessionSettingFormConfig = {
     form_data: {
         label: {
             data_type: 'text',
-            readOnly: true,
+            // readOnly: true,
             name: 'label'
         },
         title: {
             data_type: 'text',
-            readOnly: true,
+            // readOnly: true,
             name: 'title'
         },
         date_started: {
             data_type: 'date',
-            readOnly: true,
+            // readOnly: true,
             name: 'date_started'
         },
         date_closed: {
             data_type: 'date',
             
-            readOnly: true,
+            // readOnly: true,
             name: 'date_closed'
         },
     },
