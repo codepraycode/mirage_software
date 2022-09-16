@@ -618,10 +618,6 @@ const ClassStudentItem = React.memo(({index, student, level_data, term_data, lin
 const ClassStudents = ({level,set, term})=>{
   const students = useSelector((state) => getSetAdmittedStudents(state, set._id));
 
-  const [processing, setProcessing] = useState(false);
-
-  const processReports = ()=>{};
-
   const { stats } = set;
 
   return (
@@ -634,49 +630,7 @@ const ClassStudents = ({level,set, term})=>{
             <div className="card-header">
               
               <h4>{level.label} Students</h4>
-
-              <div className="card-header-form">
-
-                {/* <button
-                  className={`btn btn-primary disabled`}
-                  disabled={term_info === null}
-                  onClick={() => { }} //downloadBroadsheet()}}
-                >
-                  Get Broadsheet
-                </button> */}
-
-                <form className="form-inline">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="search by name, or admission number"
-                    onChange={()=>{}}
-                  />
-                  <button type="button" className="btn btn-primary">
-                    {/* <i className="fa fa-search" aria-hidden="true"></i> */}
-                    <i className="fas fa-filter"></i>
-                  </button>
-                </form>
-
-                <button
-                  className={`btn btn-primary ${processing ? "disabled" : ''}`}
-                  disabled={processing}
-                  onClick={() => processReports()}
-                >
-                  {
-                    processing ?
-                      <>
-                        Processing
-                        <Preloader type="spinner" className='ml-3' />
-                      </>
-
-                      :
-                      "Process reports"
-                  }
-                </button>
-
-              </div>
-
+              
             </div>
 
             <div className="card-body p-0 text-center">

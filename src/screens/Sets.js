@@ -33,7 +33,7 @@ const ClassSets = ({ set, link }) => {
     const girls = stats?.admitted_female;
 
     return (
-        <div className={`set_card ${isOpened ? 'disabled':''}`} title={isOpened && "Set is not closed, check admission screen"} onClick={() => {
+        <div className={`set_card ${isOpened ? 'disabled':''}`} title={isOpened ? "Set is not closed, check admission screen": undefined} onClick={() => {
 
             if (isOpened) return
             navigate(link)

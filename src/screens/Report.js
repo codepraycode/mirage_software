@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {useParams} from 'react-router-dom';
 import { academic_session_channel } from '../constants/channels';
 import { avatar, school_logo_placeholder } from '../constants/assets';
-import { parseFileUrl, supify } from '../constants/utils';
+import { capitalize, parseFileUrl, supify } from '../constants/utils';
 import '../scss/report.scss';
 import Preloader from '../widgets/Preloader';
 
@@ -11,6 +11,8 @@ const ReportTemplate = ({report})=>{
     if(!Boolean(report)) return;
 
     const { school, student, level, term, session, attendance, academic_performance, behavioural_data, remarks } = report;
+
+    // console.log(report)
 
     const sup = supify(term.term_index)
     return(
@@ -72,7 +74,7 @@ const ReportTemplate = ({report})=>{
 
                     <div>
                         <span className='label'>{student.sponsor.relationship}</span>
-                        <span>{student.sponsor.first_name} {student.sponsor.last_name}</span>
+                        <span>{capitalize(`${student.sponsor.title} ${student.sponsor.first_name} ${student.sponsor.last_name}`).trim()}</span>
                     </div>
 
                     <div>
@@ -132,9 +134,9 @@ const ReportTemplate = ({report})=>{
                                         <td>{ech.ca}</td>
                                         <td>{ech.exam}</td>
                                         <td>{ech.obtained}</td>
-                                        <td>-</td>
+                                        <td>{ech.grade || '--'}</td>
                                         <td>{(Number(ech.percent)*100).toFixed(1)}%</td>
-                                        <td>----</td>
+                                        <td>{ech.remark || '--'}</td>
                                     </tr>
                                 ))
                             }
@@ -163,6 +165,10 @@ const ReportTemplate = ({report})=>{
                                     <b>Percentage:</b>
                                     &nbsp;
                                     {(Number(academic_performance?.percentage) * 100).toFixed(1)}%
+                                </td>
+                                
+                                <td>
+                                    <b>{academic_performance.remark || null}</b>
                                 </td>
                                 
 

@@ -533,6 +533,12 @@ const getStudentAcademicPerformance = (grade_scale, termRecord, other_students_s
 
     const { subjects: student_subjects_data } = termRecord;
 
+    const scale = grade_scale.map((scl) => {
+        const { key, value, remark } = scl;
+
+        return { key, value, remark }
+    })
+
     let student_total_obtainable = 0;
     let student_total_obtained = 0;
 
@@ -552,10 +558,22 @@ const getStudentAcademicPerformance = (grade_scale, termRecord, other_students_s
         student_total_obtainable += Number(total_obtainable);
         student_total_obtained += obtained;
 
+        const tot_obtained = parseInt(percent * 100)
+
+        let grade_val = scale.find((gscl)=>{
+            let ky = gscl.key;
+
+            let [least, best] = ky.split('-');
+
+            return (tot_obtained >= parseInt(least)) && (tot_obtained <= parseInt(best))
+        })
+
         return {
             name,short,
             ca,exam,
-            obtained, percent
+            obtained, percent,
+            grade: grade_val?.value,
+            remark: grade_val?.remark
         }
 
         //  filter other students data
@@ -566,11 +584,19 @@ const getStudentAcademicPerformance = (grade_scale, termRecord, other_students_s
 
     percentage = Number(percentage.toFixed(2)) || 0;
 
-    const scale = grade_scale.map((scl)=>{
-        const {key, value, remark} = scl;
 
-        return { key, value, remark }
+    const tot_obtained = parseInt(percentage*100)
+
+    let perfom_val = scale.find((gscl) => {
+        let ky = gscl.key;
+
+        let [least, best] = ky.split('-');
+
+
+
+        return (tot_obtained >= parseInt(least)) && (tot_obtained <= parseInt(best))
     })
+   
 
     return {
         scale,
@@ -578,7 +604,9 @@ const getStudentAcademicPerformance = (grade_scale, termRecord, other_students_s
         total_obtainable: student_total_obtainable,
         total_obtained: student_total_obtained,
         percentage,
-        no_of_pupils: other_students_subjects_data.length
+        no_of_pupils: other_students_subjects_data.length,
+        // grade: perfom_val?.value,
+        remark: perfom_val?.remark
     }
 }
 
