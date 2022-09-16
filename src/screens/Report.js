@@ -339,6 +339,11 @@ const Report = () => {
 
     const [report,setReport] = useState(null);
 
+
+    const [downloading, setDownloading] = useState(false);
+    const [downloadError, setDownloadError] = useState(null);
+    const [downloadPath, setDownloadPath] = useState(null);
+
     const loadManifest = async()=>{
 
         if(!loading) return;
@@ -356,21 +361,51 @@ const Report = () => {
           
     }
 
-    window.api.response("printed:pdf", (pdfPath)=>{
-        console.log("response", pdfPath)
-    })
-
     const printPdf = async ()=>{
-        const pdfPath = window.api.request("print:pdf", "report1.pdf")
 
-        console.log("printing...", pdfPath)
+        if(!Boolean(report)) return
+        if(downloading) return
+
+        const {session, student, term} = report;
+
+        const filename = `${student.first_name}_${student.last_name}_${session.label}_${term.label}_report.pdf`
+
+        let parsed_use_filename = filename.toLowerCase().replaceAll('/','_').replaceAll(' ','_')
+
+        window.api.request("print:pdf", parsed_use_filename)
+        .then(([error, pdfPath])=>{
+
+            if(error){
+                setDownloadError(()=>error);
+            }else if(pdfPath){
+                setDownloadPath(()=>pdfPath);
+            }
+
+            setDownloading(false);
+        })
+        .catch((err)=>{
+            console.log(err)
+            setDownloadError(() => err);
+            setDownloading(false);
+        })
+
+        setDownloading(true);
+
+        if (Boolean(downloadError)){
+            setDownloadError(null);
+        }
+
+
+        if (Boolean(downloadPath)){
+            setDownloadPath(null);
+        }
 
     }
 
 
     useEffect(() => {
         loadManifest()
-    }, []);
+    });
 
 
     if(loading){
@@ -388,16 +423,50 @@ const Report = () => {
     console.log(report);
 
 
+    let template = (
+        <button
+            onClick={() => printPdf()} 
+            className={"download_btn"}
+        >
+            <i className="fas fa-download"></i>
+        </button>
+    )
+
+
+    if(downloading){
+       template = ( <button
+            // onClick={() => printPdf()} 
+            className={`download_btn ${Boolean(downloadError) ? 'error' : ''} ${Boolean(downloadPath) ? 'checked' : ''}`}
+        >
+            <span className={`spinner`}>
+                <i className="fas fa-spinner"></i>
+            </span>
+        </button>)
+    }
+    else if(Boolean(downloadError)){
+       template = ( <button
+            // onClick={() => printPdf()} 
+            className={`download_btn error`}
+        >
+            <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        </button>)
+    }
+
+    else if(Boolean(downloadPath)){
+       template = ( <button
+            // onClick={() => printPdf()} 
+            className={`download_btn checked`}
+        >
+           <i className="fa fa-check-circle" aria-hidden="true"></i>
+        </button>)
+    }
+
     return (
         <>
             <ReportTemplate  report={report}/>
 
-            <button 
-                onClick={() => printPdf()} 
-                className="download_btn"
-            >
-                <i className="fas fa-download"></i>
-            </button>
+            {template}
+
         </>
     )
 }

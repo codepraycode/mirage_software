@@ -162,7 +162,7 @@ section{
     &.remarks{
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: space-evenly;
         .remark__item{
             border: 1px solid $borderColor;
             padding: 10px;
@@ -263,13 +263,28 @@ footer{
     color: $white !important;
     border-radius: 50px;
     cursor: pointer;
-    font-size: $medium;
+    
     display: flex;
     align-items: center;
     justify-content: center;
 
+    &:focus{
+        outline: none;
+    }
 
+    i{
+        font-size: $medium;
+    }
+
+    &.checked{
+        background-color: darken($color: $green, $amount: 20%);
+    }
+    &.error{
+        background-color: darken($color: $red, $amount: 10%);
+    }
 }
+
+
 
 @media print {
     .download_btn{

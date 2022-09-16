@@ -409,43 +409,46 @@ ipcMain.handle('students:modified', (event, args = {}) => {
 })
 
 ipcMain.handle('print:pdf', async(event, filename = 'file.pdf') => {
-    const pdf_path = path.join(os.tmpdir(), filename);
+    const pdf_path = path.join(app_pdf_dir, filename);
     const win = BrowserWindow.fromWebContents(event.sender);
 
-    console.log("Got here, saving to", pdf_path)
+    // console.log("Got here, saving to", pdf_path)
 
+    let pdfData;
+    
+    try{
+        pdfData = await win.webContents.printToPDF({
+            printBackground:true,
+            pageSize:'A4'
+        });
+    }catch(err){
+        // console.log(err.message);
+        return [err.message, null];
+    }
 
     try{
-        const pdfData = await win.webContents.printToPDF({
-            printBackground:true
+        await new Promise((resolved, rejected) => {
+            fs.writeFile(pdf_path, pdfData, err => {
+                if (err) {
+                    rejected(err);
+                    return
+                }
+
+                // console.log("Saved to ", (pdf_path))
+                // mainWindow.webContents.send("printed:pdf", pdf_path)
+                resolved(pdf_path);
+            })
         });
-
-
-        fs.writeFile(pdf_path, pdfData, err => {
-            if (err) return console.log(err.message);
-
-            console.log("Saved to ", (pdf_path))
-            mainWindow.webContents.send("printed:pdf", pdf_path)
-        })
-    }catch(err){
-        console.log(err.message);
-        return null;
+    } catch (err) {
+        // console.log(err.message);
+        return [err.message, null];
     }
 
 
-
-    
-    
-
-    /* (error,data)=>{
-
-        console.log("Written to pdf", pdf_path)
-        if(error){
-            console.log(error.message);
-            return
-        }
+    return [null, pdf_path];
 
 
-        */
+
+
 })
 // ==================== ooooooooooooooooooooo ========================
