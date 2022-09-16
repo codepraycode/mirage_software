@@ -1,9 +1,10 @@
 import React from 'react'
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { getSetAdmittedStudents, getSetUpdateError, getSetUpdateStatus } from '../app/setSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
+import { getSetAdmittedStudents, getSetById, getSetUpdateError, getSetUpdateStatus, updateSet } from '../app/setSlice';
 import { avatar } from '../constants/assets';
 import { statuses } from '../constants/statuses';
+import { admissionUrl } from '../constants/app_urls';
 import { capitalize, isArrayEmpty, parseFileUrl } from '../constants/utils';
 import Loading from '../widgets/Preloader/loading';
 
@@ -84,9 +85,46 @@ const SetStudentsError = ({ message, icon }) => {
 }
 
 
+const MenuBar = ({ setInfo })=>{
+    const storeDispatch = useDispatch();
+
+    const navigate = useNavigate();
+
+    return(
+        <div className="app__toolbar">
+            <div className="tool_left">
+                <b>
+
+                    {capitalize(setInfo.label.trim())} -- {capitalize(setInfo.name.trim())}
+                </b>
+            </div>
+
+            <div className="tool_right">
+
+                <Link
+                    to={`/`}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        storeDispatch(updateSet({
+                            ...setInfo,
+                            isOpened:true
+                        }));
+                        navigate(admissionUrl, {replace:true});
+                    }}
+                    className={`btn btn-primary`}
+                >
+                    Edit class set
+                </Link>
+            </div>
+        </div>
+    )
+}
+
+
 const StudentPage = () => {
     const { setId } = useParams();
 
+    const setInfo = useSelector((state) => getSetById(state, setId));
     const students = useSelector((state) => getSetAdmittedStudents(state,setId));
     const setError = useSelector(getSetUpdateError);
     const status = useSelector(getSetUpdateStatus)
@@ -118,18 +156,25 @@ const StudentPage = () => {
 
 
     return (
-        <div className="set_students">
-            {
-                students.map((student) => (
 
-                    <StudentItem 
-                        key={student._id} 
-                        student={student} 
-                    />
-                    
-                ))
-            }
-        </div>
+        <>
+            <MenuBar setInfo={setInfo}/>
+
+            <br/>
+
+            <div className="set_students">
+                {
+                    students.map((student) => (
+
+                        <StudentItem 
+                            key={student._id} 
+                            student={student} 
+                        />
+                        
+                    ))
+                }
+            </div>
+        </>
     )
 
 

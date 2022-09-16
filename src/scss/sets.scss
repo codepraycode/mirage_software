@@ -19,6 +19,12 @@
         flex-direction: column;
         padding: 10px 0;
 
+        &.disabled{
+            background-color: $gray;
+            opacity: 0.5;
+            cursor: default;
+        }
+
 
         .title{
             display: flex;

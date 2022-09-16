@@ -27,13 +27,18 @@ const ClassSetError = ({message, icon}) => {
 
 const ClassSets = ({ set, link }) => {
     const navigate = useNavigate();
-    const { name, label, createdAt, updatedAt, stats } = set;
+    const { name, label, createdAt, updatedAt, stats, isOpened} = set;
     const total = stats?.total;
     const boys = stats?.admitted_male;
     const girls = stats?.admitted_female;
 
     return (
-        <div className="set_card" onClick={() => navigate(link)}>
+        <div className={`set_card ${isOpened ? 'disabled':''}`} title={isOpened && "Set is not closed, check admission screen"} onClick={() => {
+
+            if (isOpened) return
+            navigate(link)
+
+        }}>
 
             <div className="title">
                 <span className='icon'>
@@ -82,13 +87,13 @@ const ClassSets = ({ set, link }) => {
                 </div>
 
 
-                <div className="ribbi">
+                {/* <div className="ribbi">
                     <span>
                         <i className="fa fa-graduation-cap" aria-hidden="true"></i>
                     </span>
 
                     <b>Class level</b>
-                </div>
+                </div> */}
 
             </div>
 
