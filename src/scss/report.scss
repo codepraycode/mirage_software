@@ -172,7 +172,7 @@ section{
 
             p{
                 margin-bottom: 10px;
-                font-size: $small;
+                font-size: $small+5;
             }
             .details{
                 display: flex;
@@ -181,7 +181,7 @@ section{
                 column-gap: 15px;
                 text-align: right;
                 h4{
-                    font-size: $regular+3;
+                    font-size: $regular;
                     margin: 0;
                 }
                 span{
@@ -242,7 +242,8 @@ footer{
     
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    // justify-content: space-between;
+    column-gap: 5px;
     padding: 0 5px;
     
     span, small{
