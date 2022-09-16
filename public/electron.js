@@ -1,5 +1,5 @@
 // Main App Module
-const { app, BrowserWindow, BrowserView,ipcMain, dialog, protocol } = require('electron');
+const { app, BrowserWindow,ipcMain, dialog, protocol } = require('electron');
 const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer');
 
 
@@ -7,7 +7,8 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os')
 const log = require("electron-log");
-const { autoUpdater } = require('electron-updater');
+// const { autoUpdater } = require('electron-updater');
+const updateApp = require('update-electron-app');
 
 // Backend
 const { app_files_dir, app_pdf_dir } = require('./backend');
@@ -17,9 +18,9 @@ const { ImageManager } = require('./backend/file_managers');
 
 
 // Autoupdater Debug Setup
-autoUpdater.logger = log
-autoUpdater.logger.transports.file.level = "info"
-autoUpdater.autoDownload = false;
+// autoUpdater.logger = log
+// autoUpdater.logger.transports.file.level = "info"
+// autoUpdater.autoDownload = false;
 
 // log.info(`[${Date()}]App Starting...`);
 
@@ -213,26 +214,21 @@ app.on('activate', async function () {
 app.whenReady().then(async()=>{
     await launchApp() // launch application
 
-
-    // const view = new BrowserView();
-
-    // mainWindow.setBrowserView(view);
-    // view.setBounds({
-    //     x: 0, y: 0, 
-    //     width: 990, height: 550,        
-    // });
-    // view.webContents.loadURL()
-
     
 
-    autoUpdater.checkForUpdates()
-        .then(res => {
-            console.log("Update Response => ", res);
-        })
-        .catch((err) => {
-            // console.log(err);
-            console.log("Unable to Check update");
-        })
+    // autoUpdater.checkForUpdates()
+    //     .then(res => {
+    //         console.log("Update Response => ", res);
+    //     })
+    //     .catch((err) => {
+    //         // console.log(err);
+    //         console.log("Unable to Check update");
+    //     })
+    updateApp({
+        // repo: '', // defaults to package.json
+        updateInterval: '1 hour',
+        notifyUser: true
+    });
     
     protocol.registerFileProtocol('mirage', (request, callback) => {
         // console.log("Received URL", request.url)
@@ -262,37 +258,37 @@ app.on('window-all-closed', () => {
 
 // ==================== AUTO UPDATER ==============================
 
-autoUpdater.on('error', (error) => {
-    // dialog.showErrorBox('Error: ', error == null ? "unknown" : (error.stack || error).toString())
-    // silence autoupdate error
-    console.log("Error Occured");
-});
+// autoUpdater.on('error', (error) => {
+//     // dialog.showErrorBox('Error: ', error == null ? "unknown" : (error.stack || error).toString())
+//     // silence autoupdate error
+//     console.log("Error Occured");
+// });
 
 
-autoUpdater.on('update-available', () => {
-    dialog.showMessageBox({
-        type: 'info',
-        title: 'Found New Update',
-        message: 'Found new update, do you want update now?',
-        buttons: ['Sure', 'No']
-    }).then((buttonIndex) => {
-        if (buttonIndex === 0) {
-            autoUpdater.downloadUpdate()
-        } else {
-            updater.enabled = true
-            updater = null
-        }
-    })
-})
+// autoUpdater.on('update-available', () => {
+//     dialog.showMessageBox({
+//         type: 'info',
+//         title: 'Found New Update',
+//         message: 'Found new update, do you want update now?',
+//         buttons: ['Sure', 'No']
+//     }).then((buttonIndex) => {
+//         if (buttonIndex === 0) {
+//             autoUpdater.downloadUpdate()
+//         } else {
+//             updater.enabled = true
+//             updater = null
+//         }
+//     })
+// })
 
-autoUpdater.on('update-downloaded', () => {
-    dialog.showMessageBox({
-        title: 'Install Updates',
-        message: 'Updates downloaded, application will be quit for update...'
-    }).then(() => {
-        setImmediate(() => autoUpdater.quitAndInstall())
-    })
-})
+// autoUpdater.on('update-downloaded', () => {
+//     dialog.showMessageBox({
+//         title: 'Install Updates',
+//         message: 'Updates downloaded, application will be quit for update...'
+//     }).then(() => {
+//         setImmediate(() => autoUpdater.quitAndInstall())
+//     })
+// })
 
 // ==================== oooooooooooo ==============================
 

@@ -1,7 +1,7 @@
 {
   "name": "mirage_software",
   "version": "0.1.0",
-  "description": "A software to ease school work[",
+  "description": "A software to ease school work",
   "main": "./public/electron.js",
   "author": "codepraycode",
   "license": "MIT",
@@ -31,7 +31,8 @@
     "react-router-dom": "^6.3.0",
     "sass": "^1.54.8",
     "sass-loader": "^13.0.2",
-    "sharp": "^0.30.7"
+    "sharp": "^0.30.7",
+    "update-electron-app": "^2.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.18.13",
@@ -68,10 +69,10 @@
     "directories": {
       "buildResources": "public"
     },
-    "extraMetadata":{
-      "main":"build/electron.js"
+    "extraMetadata": {
+      "main": "build/electron.js"
     },
-    "extends":null,
+    "extends": null,
     "mac": {
       "target": "dmg"
     },
